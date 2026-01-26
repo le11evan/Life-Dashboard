@@ -17,6 +17,7 @@ import { getGroceryItems, getGroceryItemsCount } from "@/lib/actions/groceries";
 import { getJournalStreak, getRecentEntryCount } from "@/lib/actions/journal";
 import { getTodayQuote } from "@/lib/actions/quotes";
 import { getWorkouts, getWorkoutsThisWeek } from "@/lib/actions/fitness";
+import { getPortfolioStats } from "@/lib/actions/finance";
 import { DashboardClient } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
@@ -279,6 +280,71 @@ async function FitnessWidget() {
   );
 }
 
+async function FinanceWidget() {
+  const stats = await getPortfolioStats();
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+
+  const formatPercent = (value: number) =>
+    `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-base font-medium">
+            <Wallet className="w-4 h-4 text-muted-foreground" />
+            Finance
+          </span>
+          <Link
+            href="/finance"
+            className="text-xs text-muted-foreground hover:text-primary flex items-center"
+          >
+            View all
+            <ChevronRight className="w-3 h-3" />
+          </Link>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {stats.holdingsCount === 0 ? (
+          <div className="py-4 text-center">
+            <p className="text-sm text-muted-foreground">No positions yet</p>
+            <Link
+              href="/finance"
+              className="text-sm text-primary hover:underline"
+            >
+              Add a position
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <div className="text-center py-2">
+              <p className="text-2xl font-bold">{formatCurrency(stats.totalValue)}</p>
+              <p
+                className={`text-sm ${
+                  stats.totalGain >= 0 ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {formatPercent(stats.totalGainPercent)} all time
+              </p>
+            </div>
+          </div>
+        )}
+        <div className="flex items-center justify-between pt-3 mt-3 border-t text-sm">
+          <span className="text-muted-foreground">Positions</span>
+          <span className="font-medium">{stats.holdingsCount}</span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function PlaceholderWidget({
   title,
   icon: Icon,
@@ -360,12 +426,9 @@ export default function DashboardPage() {
         <FitnessWidget />
       </Suspense>
 
-      <PlaceholderWidget
-        title="Finance"
-        icon={Wallet}
-        message="No bills due soon"
-        milestone={5}
-      />
+      <Suspense fallback={<WidgetSkeleton />}>
+        <FinanceWidget />
+      </Suspense>
 
       <PlaceholderWidget
         title="Goals"

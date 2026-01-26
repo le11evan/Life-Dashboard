@@ -85,3 +85,39 @@ model WorkoutExercise {
   @@index([workoutId])
   @@index([exerciseName])
 }
+
+// Milestone 5: Finance - Portfolio Holdings
+model Holding {
+  id           String   @id @default(cuid())
+  symbol       String   @unique
+  shares       Float
+  avgCost      Float
+  currentPrice Float?   // Optional: manually updated or from API
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([symbol])
+}
+
+// Milestone 5: Finance - Watchlist
+model WatchlistItem {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([symbol])
+}
+
+// Milestone 5: Finance - Stock Research Cache
+model StockResearch {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  // JSON: {financials, catalysts, sentiment, predictions, summary}
+  data        Json
+  generatedAt DateTime @default(now())
+
+  @@index([symbol])
+}

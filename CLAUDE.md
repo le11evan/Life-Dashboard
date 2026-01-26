@@ -70,12 +70,13 @@ Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping 
 ```
 
 ## Current Milestone
-**Milestone 4 - Fitness (Workout Logging)**
+**Milestone 5 - Finance (Portfolio, Watchlist, Research)**
 
 ## Completed
 - Milestone 1: Foundation (app shell, auth, nav)
 - Milestone 2: Tasks + Groceries (CRUD, filters, dashboard widgets)
 - Milestone 3: Journal + Daily Quote + Today Mode
+- Milestone 4: Fitness (Workout logging with progressive overload)
 
 ## Commands
 - `/plan` - Output milestone plan, no coding
