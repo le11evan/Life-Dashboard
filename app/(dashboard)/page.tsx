@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import Link from "next/link";
-
-export const dynamic = "force-dynamic";
 import {
   CheckSquare,
   ShoppingCart,
@@ -11,11 +9,16 @@ import {
   Target,
   ChevronRight,
   Circle,
+  Flame,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTasks, getTodayTasksCount } from "@/lib/actions/tasks";
 import { getGroceryItems, getGroceryItemsCount } from "@/lib/actions/groceries";
-import { DashboardAnimations } from "./dashboard-animations";
+import { getJournalStreak, getRecentEntryCount } from "@/lib/actions/journal";
+import { getTodayQuote } from "@/lib/actions/quotes";
+import { DashboardClient } from "./dashboard-client";
+
+export const dynamic = "force-dynamic";
 
 async function TasksWidget() {
   const [tasks, counts] = await Promise.all([
@@ -136,7 +139,9 @@ async function GroceriesWidget() {
   );
 }
 
-function QuoteWidget() {
+async function QuoteWidget() {
+  const quote = await getTodayQuote();
+
   return (
     <Card className="rounded-2xl md:col-span-2 lg:col-span-1">
       <CardHeader className="pb-2">
@@ -148,9 +153,63 @@ function QuoteWidget() {
       <CardContent>
         <div className="py-4">
           <p className="text-sm italic text-muted-foreground">
-            &ldquo;The only way to do great work is to love what you do.&rdquo;
+            &ldquo;{quote.quote}&rdquo;
           </p>
-          <p className="text-xs text-muted-foreground mt-2">— Steve Jobs</p>
+          {quote.author && (
+            <p className="text-xs text-muted-foreground mt-2">— {quote.author}</p>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+async function JournalWidget() {
+  const [streak, recentCount] = await Promise.all([
+    getJournalStreak(),
+    getRecentEntryCount(),
+  ]);
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-base font-medium">
+            <BookOpen className="w-4 h-4 text-muted-foreground" />
+            Journal
+          </span>
+          <Link
+            href="/journal"
+            className="text-xs text-muted-foreground hover:text-primary flex items-center"
+          >
+            View all
+            <ChevronRight className="w-3 h-3" />
+          </Link>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="py-4 text-center">
+          {streak > 0 ? (
+            <div className="flex items-center justify-center gap-2 text-orange-500 mb-2">
+              <Flame className="w-5 h-5" />
+              <span className="text-2xl font-bold">{streak}</span>
+              <span className="text-sm">day streak!</span>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground mb-2">
+              Start your journaling streak
+            </p>
+          )}
+          <Link
+            href="/journal?add=true"
+            className="text-sm text-primary hover:underline"
+          >
+            Write today&apos;s entry
+          </Link>
+        </div>
+        <div className="flex items-center justify-between pt-3 mt-3 border-t text-sm">
+          <span className="text-muted-foreground">Last 30 days</span>
+          <span className="font-medium">{recentCount} entries</span>
         </div>
       </CardContent>
     </Card>
@@ -212,56 +271,48 @@ export default function DashboardPage() {
     day: "numeric",
   });
 
-  // Determine greeting based on time
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
-    <DashboardAnimations>
-      <div className="p-4 md:p-6 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold">
-            {greeting}, Evan
-          </h1>
-          <p className="text-muted-foreground">{today}</p>
-        </div>
+    <DashboardClient greeting={greeting} today={today}>
+      <Suspense fallback={<WidgetSkeleton />}>
+        <TasksWidget />
+      </Suspense>
 
-        {/* Widgets Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Suspense fallback={<WidgetSkeleton />}>
-            <TasksWidget />
-          </Suspense>
+      <Suspense fallback={<WidgetSkeleton />}>
+        <GroceriesWidget />
+      </Suspense>
 
-          <Suspense fallback={<WidgetSkeleton />}>
-            <GroceriesWidget />
-          </Suspense>
+      <Suspense fallback={<WidgetSkeleton />}>
+        <QuoteWidget />
+      </Suspense>
 
-          <QuoteWidget />
+      <Suspense fallback={<WidgetSkeleton />}>
+        <JournalWidget />
+      </Suspense>
 
-          <PlaceholderWidget
-            title="Fitness"
-            icon={Dumbbell}
-            message="No workouts this week"
-            milestone={4}
-          />
+      <PlaceholderWidget
+        title="Fitness"
+        icon={Dumbbell}
+        message="No workouts this week"
+        milestone={4}
+      />
 
-          <PlaceholderWidget
-            title="Finance"
-            icon={Wallet}
-            message="No bills due soon"
-            milestone={5}
-          />
+      <PlaceholderWidget
+        title="Finance"
+        icon={Wallet}
+        message="No bills due soon"
+        milestone={5}
+      />
 
-          <PlaceholderWidget
-            title="Goals"
-            icon={Target}
-            message="No active goals"
-            milestone={6}
-          />
-        </div>
-      </div>
-    </DashboardAnimations>
+      <PlaceholderWidget
+        title="Goals"
+        icon={Target}
+        message="No active goals"
+        milestone={6}
+      />
+    </DashboardClient>
   );
 }

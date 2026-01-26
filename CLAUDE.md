@@ -70,7 +70,11 @@ Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping 
 ```
 
 ## Current Milestone
-**Milestone 1 - Foundation**
+**Milestone 3 - Journal + Daily Quote**
+
+## Completed
+- Milestone 1: Foundation (app shell, auth, nav)
+- Milestone 2: Tasks + Groceries (CRUD, filters, dashboard widgets)
 
 ## Commands
 - `/plan` - Output milestone plan, no coding
