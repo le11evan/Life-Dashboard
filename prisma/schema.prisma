@@ -55,3 +55,33 @@ model DailyQuote {
   source    String?
   createdAt DateTime @default(now())
 }
+
+// Milestone 4: Fitness - Workouts
+model Workout {
+  id        String            @id @default(cuid())
+  date      DateTime          @default(now())
+  name      String?           // e.g., "Push Day", "Leg Day"
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  exercises WorkoutExercise[]
+
+  @@index([date])
+}
+
+// Milestone 4: Fitness - Exercises within a workout
+model WorkoutExercise {
+  id           String   @id @default(cuid())
+  workoutId    String
+  exerciseName String
+  // JSON array: [{weight: number, reps: number, notes?: string}]
+  sets         Json     @default("[]")
+  notes        String?
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  workout      Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  @@index([workoutId])
+  @@index([exerciseName])
+}

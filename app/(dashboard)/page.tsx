@@ -16,6 +16,7 @@ import { getTasks, getTodayTasksCount } from "@/lib/actions/tasks";
 import { getGroceryItems, getGroceryItemsCount } from "@/lib/actions/groceries";
 import { getJournalStreak, getRecentEntryCount } from "@/lib/actions/journal";
 import { getTodayQuote } from "@/lib/actions/quotes";
+import { getWorkouts, getWorkoutsThisWeek } from "@/lib/actions/fitness";
 import { DashboardClient } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
@@ -216,6 +217,68 @@ async function JournalWidget() {
   );
 }
 
+async function FitnessWidget() {
+  const [workouts, workoutsThisWeek] = await Promise.all([
+    getWorkouts(3),
+    getWorkoutsThisWeek(),
+  ]);
+
+  const recentWorkout = workouts[0];
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-base font-medium">
+            <Dumbbell className="w-4 h-4 text-muted-foreground" />
+            Fitness
+          </span>
+          <Link
+            href="/fitness"
+            className="text-xs text-muted-foreground hover:text-primary flex items-center"
+          >
+            View all
+            <ChevronRight className="w-3 h-3" />
+          </Link>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {workoutsThisWeek === 0 ? (
+          <div className="py-4 text-center">
+            <p className="text-sm text-muted-foreground">No workouts this week</p>
+            <Link
+              href="/fitness?add=true"
+              className="text-sm text-primary hover:underline"
+            >
+              Log a workout
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-center gap-2 py-2">
+              <Dumbbell className="w-5 h-5 text-primary" />
+              <span className="text-2xl font-bold">{workoutsThisWeek}</span>
+              <span className="text-sm text-muted-foreground">
+                workout{workoutsThisWeek !== 1 ? "s" : ""} this week
+              </span>
+            </div>
+            {recentWorkout && (
+              <p className="text-xs text-muted-foreground text-center">
+                Last: {recentWorkout.name || "Workout"} •{" "}
+                {new Date(recentWorkout.date).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+        )}
+        <div className="flex items-center justify-between pt-3 mt-3 border-t text-sm">
+          <span className="text-muted-foreground">Total logged</span>
+          <span className="font-medium">{workouts.length > 0 ? `${workouts.length}+` : 0}</span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function PlaceholderWidget({
   title,
   icon: Icon,
@@ -293,12 +356,9 @@ export default function DashboardPage() {
         <JournalWidget />
       </Suspense>
 
-      <PlaceholderWidget
-        title="Fitness"
-        icon={Dumbbell}
-        message="No workouts this week"
-        milestone={4}
-      />
+      <Suspense fallback={<WidgetSkeleton />}>
+        <FitnessWidget />
+      </Suspense>
 
       <PlaceholderWidget
         title="Finance"
