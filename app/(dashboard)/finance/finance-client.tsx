@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Wallet,
@@ -16,14 +16,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   createHolding,
   deleteHolding,
@@ -31,6 +30,7 @@ import {
   deleteWatchlistItem,
 } from "@/lib/actions/finance";
 import { performStockResearch } from "@/lib/actions/research";
+import { getQuoteForCategory, type Quote } from "@/lib/quotes";
 import type { Holding, WatchlistItem } from "@prisma/client";
 import type { StockResearchData } from "@/lib/validations/finance";
 
@@ -48,7 +48,7 @@ interface FinanceClientProps {
 
 // Color palette for pie chart
 const COLORS = [
-  "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
+  "#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6",
   "#ec4899", "#06b6d4", "#84cc16", "#f97316", "#6366f1",
 ];
 
@@ -61,7 +61,8 @@ export function FinanceClient({
   const [holdings, setHoldings] = useState(initialHoldings);
   const [watchlist, setWatchlist] = useState(initialWatchlist);
   const [stats, setStats] = useState(initialStats);
-  const [activeTab, setActiveTab] = useState("portfolio");
+  const [activeTab, setActiveTab] = useState<"portfolio" | "watchlist">("portfolio");
+  const [quote, setQuote] = useState<Quote | null>(null);
 
   // Add holding state
   const [addHoldingOpen, setAddHoldingOpen] = useState(false);
@@ -79,6 +80,10 @@ export function FinanceClient({
   const [researchSymbol, setResearchSymbol] = useState("");
   const [researchData, setResearchData] = useState<StockResearchData | null>(null);
   const [researchLoading, setResearchLoading] = useState(false);
+
+  useEffect(() => {
+    setQuote(getQuoteForCategory("finance"));
+  }, []);
 
   // Calculate allocation for pie chart
   const allocation = holdings.map((h, i) => {
@@ -194,157 +199,190 @@ export function FinanceClient({
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Wallet className="w-6 h-6" />
-          Finance
-        </h1>
-        <p className="text-muted-foreground">
-          Portfolio value: {formatCurrency(stats.totalValue)}
-          {stats.totalGain !== 0 && (
-            <span
-              className={`ml-2 ${
-                stats.totalGain >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              ({formatPercent(stats.totalGainPercent)})
-            </span>
-          )}
-        </p>
-      </motion.div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full mb-4">
-          <TabsTrigger value="portfolio" className="flex-1">
-            <PieChart className="w-4 h-4 mr-2" />
-            Portfolio
-          </TabsTrigger>
-          <TabsTrigger value="watchlist" className="flex-1">
-            <Star className="w-4 h-4 mr-2" />
-            Watchlist
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Portfolio Tab */}
-        <TabsContent value="portfolio" className="space-y-4">
-          {/* Allocation Chart */}
-          {holdings.length > 0 && (
-            <Card className="p-4 rounded-xl">
-              <h3 className="text-sm font-medium mb-3">Allocation</h3>
-              <div className="flex items-center gap-4">
-                {/* Simple bar chart */}
-                <div className="flex-1 h-8 rounded-full overflow-hidden bg-muted flex">
-                  {allocation.map((a) => (
-                    <div
-                      key={a.symbol}
-                      className="h-full transition-all"
-                      style={{
-                        width: `${a.percentage}%`,
-                        backgroundColor: a.color,
-                      }}
-                      title={`${a.symbol}: ${a.percentage.toFixed(1)}%`}
-                    />
-                  ))}
+      <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20">
+                <Wallet className="w-6 h-6 text-emerald-400" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Finance</h1>
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <span>{formatCurrency(stats.totalValue)}</span>
+                  {stats.totalGain !== 0 && (
+                    <span className={stats.totalGain >= 0 ? "text-emerald-400" : "text-red-400"}>
+                      ({formatPercent(stats.totalGainPercent)})
+                    </span>
+                  )}
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3 mt-3">
-                {allocation.map((a) => (
-                  <div key={a.symbol} className="flex items-center gap-1.5 text-xs">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: a.color }}
-                    />
-                    <span className="font-medium">{a.symbol}</span>
-                    <span className="text-muted-foreground">
-                      {a.percentage.toFixed(1)}%
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
+            </div>
 
-          {/* Holdings List */}
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">Holdings ({holdings.length})</h3>
             <Button
+              onClick={() => activeTab === "portfolio" ? setAddHoldingOpen(true) : setAddWatchlistOpen(true)}
               size="sm"
-              onClick={() => setAddHoldingOpen(true)}
-              className="gap-1"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white"
             >
-              <Plus className="w-4 h-4" />
-              Add Position
+              <Plus className="w-4 h-4 mr-1" />
+              Add
             </Button>
           </div>
 
-          <AnimatePresence mode="popLayout">
-            {holdings.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-12 text-center"
-              >
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                  <PieChart className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <p className="text-muted-foreground">No positions yet</p>
-                <Button
-                  variant="link"
-                  onClick={() => setAddHoldingOpen(true)}
-                  className="mt-2"
-                >
-                  Add your first position
-                </Button>
-              </motion.div>
-            ) : (
-              holdings.map((holding) => {
-                const currentPrice = holding.currentPrice ?? holding.avgCost;
-                const value = currentPrice * holding.shares;
-                const cost = holding.avgCost * holding.shares;
-                const gain = value - cost;
-                const gainPercent = cost > 0 ? (gain / cost) * 100 : 0;
-                const isUp = gain >= 0;
+          {/* Quote */}
+          {quote && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/20"
+            >
+              <p className="text-sm text-emerald-200 italic">&ldquo;{quote.text}&rdquo;</p>
+              <p className="text-xs text-emerald-400 mt-1">- {quote.author}</p>
+            </motion.div>
+          )}
 
-                return (
-                  <motion.div
-                    key={holding.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+          {/* Tabs */}
+          <div className="flex gap-2">
+            {[
+              { key: "portfolio", label: "Portfolio", icon: PieChart },
+              { key: "watchlist", label: "Watchlist", icon: Star },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key as typeof activeTab)}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2",
+                  activeTab === key
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                    : "bg-slate-800/50 text-slate-400"
+                )}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="px-4 py-4 space-y-4">
+        {activeTab === "portfolio" ? (
+          <>
+            {/* Allocation Chart */}
+            {holdings.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-green-500/5 border border-emerald-500/20"
+              >
+                <h3 className="text-sm font-medium text-slate-400 mb-3">Allocation</h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-8 rounded-full overflow-hidden bg-slate-800 flex">
+                    {allocation.map((a) => (
+                      <div
+                        key={a.symbol}
+                        className="h-full transition-all"
+                        style={{
+                          width: `${a.percentage}%`,
+                          backgroundColor: a.color,
+                        }}
+                        title={`${a.symbol}: ${a.percentage.toFixed(1)}%`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3 mt-3">
+                  {allocation.map((a) => (
+                    <div key={a.symbol} className="flex items-center gap-1.5 text-xs">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: a.color }}
+                      />
+                      <span className="font-medium text-white">{a.symbol}</span>
+                      <span className="text-slate-500">
+                        {a.percentage.toFixed(1)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Holdings List */}
+            <AnimatePresence mode="popLayout">
+              {holdings.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-16"
+                >
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                    <PieChart className="w-8 h-8 text-emerald-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-white mb-2">No positions yet</h3>
+                  <p className="text-slate-400 text-sm mb-4">
+                    Track your investment portfolio
+                  </p>
+                  <Button
+                    onClick={() => setAddHoldingOpen(true)}
+                    className="bg-emerald-500 hover:bg-emerald-600"
                   >
-                    <Card className="p-4 rounded-xl">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add First Position
+                  </Button>
+                </motion.div>
+              ) : (
+                holdings.map((holding, index) => {
+                  const currentPrice = holding.currentPrice ?? holding.avgCost;
+                  const value = currentPrice * holding.shares;
+                  const cost = holding.avgCost * holding.shares;
+                  const gain = value - cost;
+                  const gainPercent = cost > 0 ? (gain / cost) * 100 : 0;
+                  const isUp = gain >= 0;
+
+                  return (
+                    <motion.div
+                      key={holding.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ delay: index * 0.03 }}
+                      className={cn(
+                        "p-4 rounded-2xl border transition-all",
+                        isUp
+                          ? "bg-gradient-to-br from-emerald-500/10 to-green-500/5 border-emerald-500/20"
+                          : "bg-gradient-to-br from-red-500/10 to-rose-500/5 border-red-500/20"
+                      )}
+                    >
                       <div className="flex items-start justify-between">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-lg">
+                            <span className="font-bold text-lg text-white">
                               {holding.symbol}
                             </span>
                             <button
                               onClick={() => handleResearch(holding.symbol)}
-                              className="text-muted-foreground hover:text-primary"
+                              className="text-slate-500 hover:text-emerald-400 transition-colors"
                               title="Research"
                             >
                               <Search className="w-4 h-4" />
                             </button>
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-slate-400">
                             {holding.shares} shares @ {formatCurrency(holding.avgCost)}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold">{formatCurrency(value)}</p>
+                          <p className="font-semibold text-white">{formatCurrency(value)}</p>
                           <p
-                            className={`text-sm flex items-center justify-end gap-1 ${
-                              isUp ? "text-green-500" : "text-red-500"
-                            }`}
+                            className={cn(
+                              "text-sm flex items-center justify-end gap-1",
+                              isUp ? "text-emerald-400" : "text-red-400"
+                            )}
                           >
                             {isUp ? (
                               <TrendingUp className="w-3 h-3" />
@@ -356,145 +394,134 @@ export function FinanceClient({
                         </div>
                       </div>
                       <div className="flex justify-end mt-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <button
                           onClick={() => handleDeleteHolding(holding.id)}
-                          className="text-destructive hover:text-destructive"
+                          className="text-slate-500 hover:text-red-400 transition-colors"
+                          disabled={isPending}
                         >
                           <Trash2 className="w-4 h-4" />
-                        </Button>
+                        </button>
                       </div>
-                    </Card>
-                  </motion.div>
-                );
-              })
-            )}
-          </AnimatePresence>
-        </TabsContent>
-
-        {/* Watchlist Tab */}
-        <TabsContent value="watchlist" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">Watchlist ({watchlist.length})</h3>
-            <Button
-              size="sm"
-              onClick={() => setAddWatchlistOpen(true)}
-              className="gap-1"
-            >
-              <Plus className="w-4 h-4" />
-              Add Stock
-            </Button>
-          </div>
-
+                    </motion.div>
+                  );
+                })
+              )}
+            </AnimatePresence>
+          </>
+        ) : (
+          /* Watchlist Tab */
           <AnimatePresence mode="popLayout">
             {watchlist.length === 0 ? (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-12 text-center"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-16"
               >
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                  <Eye className="w-8 h-8 text-muted-foreground" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                  <Eye className="w-8 h-8 text-yellow-400" />
                 </div>
-                <p className="text-muted-foreground">Your watchlist is empty</p>
+                <h3 className="text-lg font-medium text-white mb-2">Your watchlist is empty</h3>
+                <p className="text-slate-400 text-sm mb-4">
+                  Add stocks to track
+                </p>
                 <Button
-                  variant="link"
                   onClick={() => setAddWatchlistOpen(true)}
-                  className="mt-2"
+                  className="bg-emerald-500 hover:bg-emerald-600"
                 >
-                  Add a stock to watch
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Stock
                 </Button>
               </motion.div>
             ) : (
-              watchlist.map((item) => (
+              watchlist.map((item, index) => (
                 <motion.div
                   key={item.id}
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: index * 0.03 }}
+                  className="p-4 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-amber-500/5 border border-yellow-500/20"
                 >
-                  <Card className="p-4 rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Star className="w-5 h-5 text-yellow-500" />
-                        <span className="font-bold text-lg">{item.symbol}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleResearch(item.symbol)}
-                          className="gap-1"
-                        >
-                          <Search className="w-4 h-4" />
-                          Research
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteWatchlistItem(item.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Star className="w-5 h-5 text-yellow-500" />
+                      <span className="font-bold text-lg text-white">{item.symbol}</span>
                     </div>
-                    {item.notes && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {item.notes}
-                      </p>
-                    )}
-                  </Card>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleResearch(item.symbol)}
+                        className="border-white/10 text-slate-400 hover:text-white gap-1"
+                      >
+                        <Search className="w-4 h-4" />
+                        Research
+                      </Button>
+                      <button
+                        onClick={() => handleDeleteWatchlistItem(item.id)}
+                        className="text-slate-500 hover:text-red-400 transition-colors"
+                        disabled={isPending}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  {item.notes && (
+                    <p className="text-sm text-slate-400 mt-2">
+                      {item.notes}
+                    </p>
+                  )}
                 </motion.div>
               ))
             )}
           </AnimatePresence>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
 
       {/* Add Holding Sheet */}
       <Sheet open={addHoldingOpen} onOpenChange={setAddHoldingOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
           <SheetHeader className="pb-4">
-            <SheetTitle>Add Position</SheetTitle>
+            <SheetTitle className="text-white">Add Position</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddHolding} className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-1 block">Symbol</label>
+              <label className="text-sm font-medium mb-1 block text-slate-400">Symbol</label>
               <Input
                 placeholder="e.g., AAPL"
                 value={newSymbol}
                 onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-                className="uppercase"
+                className="uppercase bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
                 autoFocus
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-1 block">Shares</label>
+                <label className="text-sm font-medium mb-1 block text-slate-400">Shares</label>
                 <Input
                   type="number"
                   step="any"
                   placeholder="100"
                   value={newShares}
                   onChange={(e) => setNewShares(e.target.value)}
+                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Avg Cost</label>
+                <label className="text-sm font-medium mb-1 block text-slate-400">Avg Cost</label>
                 <Input
                   type="number"
                   step="any"
                   placeholder="150.00"
                   value={newAvgCost}
                   onChange={(e) => setNewAvgCost(e.target.value)}
+                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
                 />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">
+              <label className="text-sm font-medium mb-1 block text-slate-400">
                 Current Price (optional)
               </label>
               <Input
@@ -503,11 +530,12 @@ export function FinanceClient({
                 placeholder="155.00"
                 value={newCurrentPrice}
                 onChange={(e) => setNewCurrentPrice(e.target.value)}
+                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
               />
             </div>
             <Button
               type="submit"
-              className="w-full h-12"
+              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold"
               disabled={isPending || !newSymbol || !newShares || !newAvgCost}
             >
               {isPending ? "Adding..." : "Add Position"}
@@ -518,24 +546,24 @@ export function FinanceClient({
 
       {/* Add Watchlist Sheet */}
       <Sheet open={addWatchlistOpen} onOpenChange={setAddWatchlistOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
           <SheetHeader className="pb-4">
-            <SheetTitle>Add to Watchlist</SheetTitle>
+            <SheetTitle className="text-white">Add to Watchlist</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddWatchlistItem} className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-1 block">Symbol</label>
+              <label className="text-sm font-medium mb-1 block text-slate-400">Symbol</label>
               <Input
                 placeholder="e.g., TSLA"
                 value={watchlistSymbol}
                 onChange={(e) => setWatchlistSymbol(e.target.value.toUpperCase())}
-                className="uppercase"
+                className="uppercase bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
                 autoFocus
               />
             </div>
             <Button
               type="submit"
-              className="w-full h-12"
+              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold"
               disabled={isPending || !watchlistSymbol}
             >
               {isPending ? "Adding..." : "Add to Watchlist"}
@@ -546,43 +574,44 @@ export function FinanceClient({
 
       {/* Research Sheet */}
       <Sheet open={researchOpen} onOpenChange={setResearchOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10">
           <SheetHeader className="pb-4">
-            <SheetTitle className="flex items-center gap-2">
-              <Search className="w-5 h-5" />
+            <SheetTitle className="flex items-center gap-2 text-white">
+              <Search className="w-5 h-5 text-emerald-400" />
               Research: {researchSymbol}
             </SheetTitle>
           </SheetHeader>
 
           {researchLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
-              <p className="text-muted-foreground">Analyzing {researchSymbol}...</p>
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-4" />
+              <p className="text-slate-400">Analyzing {researchSymbol}...</p>
             </div>
           ) : researchData ? (
             <div className="space-y-6 pb-8">
               {/* Summary */}
               <div>
-                <h4 className="font-semibold mb-2">Summary</h4>
-                <p className="text-sm text-muted-foreground">{researchData.summary}</p>
+                <h4 className="font-semibold mb-2 text-white">Summary</h4>
+                <p className="text-sm text-slate-400">{researchData.summary}</p>
               </div>
 
               {/* Sentiment */}
               <div>
-                <h4 className="font-semibold mb-2">Sentiment</h4>
+                <h4 className="font-semibold mb-2 text-white">Sentiment</h4>
                 <div className="flex items-center gap-4">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    className={cn(
+                      "px-3 py-1 rounded-full text-sm font-medium",
                       researchData.sentiment.overall === "bullish"
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-emerald-500/20 text-emerald-400"
                         : researchData.sentiment.overall === "bearish"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-slate-500/20 text-slate-400"
+                    )}
                   >
                     {researchData.sentiment.overall.toUpperCase()}
                   </span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-slate-400">
                     {researchData.sentiment.socialMedia}
                   </span>
                 </div>
@@ -590,14 +619,14 @@ export function FinanceClient({
 
               {/* Financials */}
               <div>
-                <h4 className="font-semibold mb-2">Key Financials</h4>
+                <h4 className="font-semibold mb-2 text-white">Key Financials</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {Object.entries(researchData.financials).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-1 border-b">
-                      <span className="text-muted-foreground capitalize">
+                    <div key={key} className="flex justify-between py-2 px-3 bg-slate-800/50 rounded-lg">
+                      <span className="text-slate-400 capitalize">
                         {key.replace(/([A-Z])/g, " $1").trim()}
                       </span>
-                      <span className="font-medium">{value}</span>
+                      <span className="font-medium text-white">{value}</span>
                     </div>
                   ))}
                 </div>
@@ -605,32 +634,32 @@ export function FinanceClient({
 
               {/* Price Targets */}
               <div>
-                <h4 className="font-semibold mb-2">Price Targets</h4>
-                <div className="flex gap-4 text-sm">
-                  <div className="flex-1 text-center p-2 bg-muted rounded-lg">
-                    <p className="text-muted-foreground">Low</p>
-                    <p className="font-semibold">{researchData.priceTargets.low}</p>
+                <h4 className="font-semibold mb-2 text-white">Price Targets</h4>
+                <div className="flex gap-3 text-sm">
+                  <div className="flex-1 text-center p-3 bg-slate-800/50 rounded-xl">
+                    <p className="text-slate-400 text-xs">Low</p>
+                    <p className="font-semibold text-red-400">{researchData.priceTargets.low}</p>
                   </div>
-                  <div className="flex-1 text-center p-2 bg-primary/10 rounded-lg">
-                    <p className="text-muted-foreground">Average</p>
-                    <p className="font-semibold text-primary">
+                  <div className="flex-1 text-center p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                    <p className="text-slate-400 text-xs">Average</p>
+                    <p className="font-semibold text-emerald-400">
                       {researchData.priceTargets.average}
                     </p>
                   </div>
-                  <div className="flex-1 text-center p-2 bg-muted rounded-lg">
-                    <p className="text-muted-foreground">High</p>
-                    <p className="font-semibold">{researchData.priceTargets.high}</p>
+                  <div className="flex-1 text-center p-3 bg-slate-800/50 rounded-xl">
+                    <p className="text-slate-400 text-xs">High</p>
+                    <p className="font-semibold text-emerald-400">{researchData.priceTargets.high}</p>
                   </div>
                 </div>
               </div>
 
               {/* Catalysts */}
               <div>
-                <h4 className="font-semibold mb-2">Catalysts</h4>
-                <ul className="space-y-1">
+                <h4 className="font-semibold mb-2 text-white">Catalysts</h4>
+                <ul className="space-y-2">
                   {researchData.catalysts.map((c, i) => (
-                    <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <TrendingUp className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                    <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
+                      <TrendingUp className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                       {c}
                     </li>
                   ))}
@@ -639,11 +668,11 @@ export function FinanceClient({
 
               {/* Risks */}
               <div>
-                <h4 className="font-semibold mb-2">Risks</h4>
-                <ul className="space-y-1">
+                <h4 className="font-semibold mb-2 text-white">Risks</h4>
+                <ul className="space-y-2">
                   {researchData.risks.map((r, i) => (
-                    <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <TrendingDown className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                    <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
+                      <TrendingDown className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                       {r}
                     </li>
                   ))}
@@ -652,24 +681,24 @@ export function FinanceClient({
 
               {/* Recent News */}
               <div>
-                <h4 className="font-semibold mb-2">Recent News</h4>
+                <h4 className="font-semibold mb-2 text-white">Recent News</h4>
                 <ul className="space-y-2">
                   {researchData.recentNews.map((n, i) => (
-                    <li key={i} className="text-sm text-muted-foreground">
-                      • {n}
+                    <li key={i} className="text-sm text-slate-400 bg-slate-800/30 p-2 rounded-lg">
+                      {n}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <p className="text-xs text-muted-foreground text-center pt-4 border-t">
+              <p className="text-xs text-slate-500 text-center pt-4 border-t border-white/5">
                 Generated: {new Date(researchData.generatedAt).toLocaleString()}
                 <br />
                 For live data, integrate with a financial API
               </p>
             </div>
           ) : (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="text-slate-400 text-center py-8">
               No research data available
             </p>
           )}

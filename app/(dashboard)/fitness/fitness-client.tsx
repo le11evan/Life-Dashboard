@@ -6,11 +6,10 @@ import {
   Dumbbell,
   Plus,
   Trash2,
-  Calendar,
+  Edit2,
   ChevronDown,
   ChevronUp,
-  TrendingUp,
-  X,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,564 +19,582 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Card } from "@/components/ui/card";
 import {
-  createWorkout,
-  deleteWorkout,
-  getLastPerformance,
+  createWorkoutTemplate,
+  updateWorkoutTemplate,
+  deleteWorkoutTemplate,
+  addExercise,
+  updateExercise,
+  deleteExercise,
+  logExercise,
 } from "@/lib/actions/fitness";
-import {
-  COMMON_EXERCISES,
-  WORKOUT_NAMES,
-  type SetInput,
-  type ExerciseInput,
-} from "@/lib/validations/fitness";
-import type { Workout, WorkoutExercise } from "@prisma/client";
+import type { WorkoutTemplate, TemplateExercise, ExerciseLog } from "@prisma/client";
 
-type WorkoutWithExercises = Workout & { exercises: WorkoutExercise[] };
+type TemplateWithExercises = WorkoutTemplate & {
+  exercises: (TemplateExercise & { logs: ExerciseLog[] })[];
+};
 
 interface FitnessClientProps {
-  initialWorkouts: WorkoutWithExercises[];
-  workoutsThisWeek: number;
-  recentExercises: string[];
+  templates: TemplateWithExercises[];
   openAdd?: boolean;
+  selectedTemplateId?: string;
 }
 
 export function FitnessClient({
-  initialWorkouts,
-  workoutsThisWeek,
-  recentExercises,
+  templates: initialTemplates,
   openAdd = false,
+  selectedTemplateId,
 }: FitnessClientProps) {
   const [isPending, startTransition] = useTransition();
-  const [workouts, setWorkouts] = useState(initialWorkouts);
-  const [addOpen, setAddOpen] = useState(openAdd);
-  const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
+  const [templates, setTemplates] = useState(initialTemplates);
+  const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(
+    new Set(selectedTemplateId ? [selectedTemplateId] : initialTemplates.map((t) => t.id))
+  );
 
-  // New workout state
-  const [workoutName, setWorkoutName] = useState("");
-  const [workoutNotes, setWorkoutNotes] = useState("");
-  const [exercises, setExercises] = useState<ExerciseInput[]>([]);
-  const [currentExercise, setCurrentExercise] = useState("");
-  const [currentSets, setCurrentSets] = useState<SetInput[]>([
-    { weight: 0, reps: 0 },
-  ]);
-  const [exerciseNotes, setExerciseNotes] = useState("");
-  const [lastPerformance, setLastPerformance] = useState<{
-    date: Date;
-    sets: SetInput[];
-  } | null>(null);
-  const [showExerciseSuggestions, setShowExerciseSuggestions] = useState(false);
+  // Template sheet state
+  const [templateSheetOpen, setTemplateSheetOpen] = useState(openAdd);
+  const [editingTemplate, setEditingTemplate] = useState<WorkoutTemplate | null>(null);
+  const [templateName, setTemplateName] = useState("");
 
-  // Combined exercise list: recent first, then common
-  const allExercises = [
-    ...recentExercises,
-    ...COMMON_EXERCISES.filter((e) => !recentExercises.includes(e)),
-  ];
+  // Exercise sheet state
+  const [exerciseSheetOpen, setExerciseSheetOpen] = useState(false);
+  const [editingExercise, setEditingExercise] = useState<TemplateExercise | null>(null);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string | null>(null);
+  const [exerciseForm, setExerciseForm] = useState({
+    name: "",
+    sets: "2 Working Sets",
+    repRange: "8-12",
+    notes: "",
+  });
 
-  const filteredExercises = currentExercise
-    ? allExercises.filter((e) =>
-        e.toLowerCase().includes(currentExercise.toLowerCase())
-      )
-    : allExercises;
+  // Log sheet state
+  const [logSheetOpen, setLogSheetOpen] = useState(false);
+  const [loggingExercise, setLoggingExercise] = useState<(TemplateExercise & { logs: ExerciseLog[] }) | null>(null);
+  const [logForm, setLogForm] = useState({
+    weight: "",
+    reps: "",
+    reps2: "", // For second set
+  });
 
-  async function handleExerciseSelect(name: string) {
-    setCurrentExercise(name);
-    setShowExerciseSuggestions(false);
-
-    // Fetch last performance for progressive overload
-    const last = await getLastPerformance(name);
-    setLastPerformance(last);
-
-    // Pre-fill with last performance
-    if (last && last.sets.length > 0) {
-      setCurrentSets(last.sets.map((s) => ({ ...s })));
+  function toggleTemplate(id: string) {
+    const newExpanded = new Set(expandedTemplates);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
     }
+    setExpandedTemplates(newExpanded);
   }
 
-  function addSet() {
-    const lastSet = currentSets[currentSets.length - 1];
-    setCurrentSets([...currentSets, { weight: lastSet?.weight || 0, reps: lastSet?.reps || 0 }]);
+  // ============ TEMPLATE HANDLERS ============
+
+  function openNewTemplate() {
+    setEditingTemplate(null);
+    setTemplateName("");
+    setTemplateSheetOpen(true);
   }
 
-  function removeSet(index: number) {
-    if (currentSets.length > 1) {
-      setCurrentSets(currentSets.filter((_, i) => i !== index));
-    }
+  function openEditTemplate(template: WorkoutTemplate) {
+    setEditingTemplate(template);
+    setTemplateName(template.name);
+    setTemplateSheetOpen(true);
   }
 
-  function updateSet(index: number, field: "weight" | "reps", value: number) {
-    setCurrentSets(
-      currentSets.map((set, i) =>
-        i === index ? { ...set, [field]: value } : set
-      )
-    );
-  }
-
-  function addExercise() {
-    if (!currentExercise.trim() || currentSets.every((s) => s.reps === 0)) return;
-
-    setExercises([
-      ...exercises,
-      {
-        exerciseName: currentExercise.trim(),
-        sets: currentSets.filter((s) => s.reps > 0),
-        notes: exerciseNotes || null,
-      },
-    ]);
-
-    // Reset for next exercise
-    setCurrentExercise("");
-    setCurrentSets([{ weight: 0, reps: 0 }]);
-    setExerciseNotes("");
-    setLastPerformance(null);
-  }
-
-  function removeExercise(index: number) {
-    setExercises(exercises.filter((_, i) => i !== index));
-  }
-
-  async function handleSaveWorkout() {
-    if (exercises.length === 0) return;
+  async function handleSaveTemplate() {
+    if (!templateName.trim()) return;
 
     startTransition(async () => {
-      const workout = await createWorkout({
-        name: workoutName || null,
-        notes: workoutNotes || null,
-        exercises,
-      });
-      setWorkouts([{ ...workout, exercises: workout.exercises } as WorkoutWithExercises, ...workouts]);
-      resetForm();
-      setAddOpen(false);
-    });
-  }
-
-  function resetForm() {
-    setWorkoutName("");
-    setWorkoutNotes("");
-    setExercises([]);
-    setCurrentExercise("");
-    setCurrentSets([{ weight: 0, reps: 0 }]);
-    setExerciseNotes("");
-    setLastPerformance(null);
-  }
-
-  async function handleDelete(id: string) {
-    setWorkouts(workouts.filter((w) => w.id !== id));
-    startTransition(async () => {
-      await deleteWorkout(id);
-    });
-  }
-
-  function formatDate(date: Date) {
-    const d = new Date(date);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (d.toDateString() === today.toDateString()) return "Today";
-    if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-
-    return d.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
-  }
-
-  function formatSets(sets: SetInput[]) {
-    if (sets.length === 0) return "";
-    // Group same weight/reps
-    const summary = sets.map((s) => `${s.weight}×${s.reps}`).join(", ");
-    return summary;
-  }
-
-  function getTotalVolume(exercises: WorkoutExercise[]) {
-    let total = 0;
-    for (const ex of exercises) {
-      const sets = ex.sets as SetInput[];
-      for (const set of sets) {
-        total += set.weight * set.reps;
+      if (editingTemplate) {
+        const updated = await updateWorkoutTemplate(editingTemplate.id, templateName);
+        setTemplates(
+          templates.map((t) =>
+            t.id === updated.id ? { ...t, name: updated.name } : t
+          )
+        );
+      } else {
+        const created = await createWorkoutTemplate(templateName);
+        setTemplates([...templates, { ...created, exercises: [] }]);
+        setExpandedTemplates(new Set([...expandedTemplates, created.id]));
       }
+      setTemplateSheetOpen(false);
+      setTemplateName("");
+      setEditingTemplate(null);
+    });
+  }
+
+  async function handleDeleteTemplate(id: string) {
+    if (!confirm("Delete this workout template? All exercises and logs will be lost.")) return;
+
+    setTemplates(templates.filter((t) => t.id !== id));
+    startTransition(async () => {
+      await deleteWorkoutTemplate(id);
+    });
+  }
+
+  // ============ EXERCISE HANDLERS ============
+
+  function openNewExercise(templateId: string) {
+    setEditingExercise(null);
+    setCurrentTemplateId(templateId);
+    setExerciseForm({
+      name: "",
+      sets: "2 Working Sets",
+      repRange: "8-12",
+      notes: "",
+    });
+    setExerciseSheetOpen(true);
+  }
+
+  function openEditExercise(exercise: TemplateExercise) {
+    setEditingExercise(exercise);
+    setCurrentTemplateId(exercise.templateId);
+    setExerciseForm({
+      name: exercise.name,
+      sets: exercise.sets,
+      repRange: exercise.repRange,
+      notes: exercise.notes || "",
+    });
+    setExerciseSheetOpen(true);
+  }
+
+  async function handleSaveExercise() {
+    if (!exerciseForm.name.trim() || !currentTemplateId) return;
+
+    startTransition(async () => {
+      if (editingExercise) {
+        const updated = await updateExercise(editingExercise.id, exerciseForm);
+        setTemplates(
+          templates.map((t) => ({
+            ...t,
+            exercises: t.exercises.map((e) =>
+              e.id === updated.id ? { ...e, ...updated } : e
+            ),
+          }))
+        );
+      } else {
+        const created = await addExercise(currentTemplateId, exerciseForm);
+        setTemplates(
+          templates.map((t) =>
+            t.id === currentTemplateId
+              ? { ...t, exercises: [...t.exercises, { ...created, logs: [] }] }
+              : t
+          )
+        );
+      }
+      setExerciseSheetOpen(false);
+      setExerciseForm({ name: "", sets: "2 Working Sets", repRange: "8-12", notes: "" });
+      setEditingExercise(null);
+      setCurrentTemplateId(null);
+    });
+  }
+
+  async function handleDeleteExercise(id: string) {
+    if (!confirm("Delete this exercise? All logs will be lost.")) return;
+
+    setTemplates(
+      templates.map((t) => ({
+        ...t,
+        exercises: t.exercises.filter((e) => e.id !== id),
+      }))
+    );
+    startTransition(async () => {
+      await deleteExercise(id);
+    });
+    setExerciseSheetOpen(false);
+  }
+
+  // ============ LOG HANDLERS ============
+
+  function openLogExercise(exercise: TemplateExercise & { logs: ExerciseLog[] }) {
+    setLoggingExercise(exercise);
+    setLogForm({ weight: "", reps: "", reps2: "" });
+    setLogSheetOpen(true);
+  }
+
+  async function handleSaveLog() {
+    if (!loggingExercise || !logForm.weight || !logForm.reps) return;
+
+    const entries = [{ weight: Number(logForm.weight), reps: Number(logForm.reps) }];
+    if (logForm.reps2) {
+      entries.push({ weight: Number(logForm.weight), reps: Number(logForm.reps2) });
     }
-    return total;
+
+    startTransition(async () => {
+      const log = await logExercise(loggingExercise.id, new Date(), entries);
+      setTemplates(
+        templates.map((t) => ({
+          ...t,
+          exercises: t.exercises.map((e) =>
+            e.id === loggingExercise.id
+              ? { ...e, logs: [log, ...e.logs.filter((l) => l.id !== log.id)] }
+              : e
+          ),
+        }))
+      );
+      setLogSheetOpen(false);
+      setLogForm({ weight: "", reps: "", reps2: "" });
+      setLoggingExercise(null);
+    });
+  }
+
+  // ============ FORMAT HELPERS ============
+
+  function formatLogEntry(log: ExerciseLog) {
+    const entries = log.entries as { weight: number; reps: number }[];
+    const date = new Date(log.date).toLocaleDateString("en-US", { month: "numeric", day: "numeric" });
+    const reps = entries.map((e) => `x${e.reps}`).join(",");
+    return `${date}: ${entries[0]?.weight}lbs - ${reps}`;
+  }
+
+  function formatLogsForCell(logs: ExerciseLog[]) {
+    if (logs.length === 0) return "No logs yet";
+    return logs
+      .slice(0, 5)
+      .map(formatLogEntry)
+      .join(" | ");
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-6"
-      >
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Dumbbell className="w-6 h-6" />
-            Fitness
-          </h1>
-          <p className="text-muted-foreground">
-            {workoutsThisWeek} workout{workoutsThisWeek !== 1 ? "s" : ""} this week
-          </p>
-        </div>
-        <Button onClick={() => setAddOpen(true)} size="sm" className="gap-1">
-          <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">Log Workout</span>
-        </Button>
-      </motion.div>
-
-      {/* Workouts List */}
-      <div className="space-y-4">
-        <AnimatePresence mode="popLayout">
-          {workouts.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-12 text-center"
-            >
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Dumbbell className="w-8 h-8 text-muted-foreground" />
+      <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20">
+                <Dumbbell className="w-6 h-6 text-red-400" />
               </div>
-              <p className="text-muted-foreground">No workouts logged yet</p>
-              <Button
-                variant="link"
-                onClick={() => setAddOpen(true)}
-                className="mt-2"
-              >
-                Log your first workout
-              </Button>
-            </motion.div>
-          ) : (
-            workouts.map((workout) => {
-              const isExpanded = expandedWorkout === workout.id;
-              const volume = getTotalVolume(workout.exercises);
+              <div>
+                <h1 className="text-xl font-bold text-white">Fitness</h1>
+                <p className="text-xs text-slate-400">
+                  {templates.length} workout{templates.length !== 1 ? "s" : ""} •{" "}
+                  {templates.reduce((acc, t) => acc + t.exercises.length, 0)} exercises
+                </p>
+              </div>
+            </div>
 
-              return (
-                <motion.div
-                  key={workout.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                >
-                  <Card className="rounded-xl overflow-hidden">
-                    <button
-                      onClick={() =>
-                        setExpandedWorkout(isExpanded ? null : workout.id)
-                      }
-                      className="w-full p-4 text-left"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold">
-                              {workout.name || "Workout"}
-                            </span>
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {formatDate(workout.date)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {workout.exercises.length} exercise
-                            {workout.exercises.length !== 1 ? "s" : ""}
-                            {volume > 0 && (
-                              <span className="ml-2">
-                                • {volume.toLocaleString()} lbs volume
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                        {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                        )}
-                      </div>
-                    </button>
-
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="border-t"
-                        >
-                          <div className="p-4 space-y-3">
-                            {workout.exercises.map((ex) => {
-                              const sets = ex.sets as SetInput[];
-                              return (
-                                <div
-                                  key={ex.id}
-                                  className="bg-muted/50 rounded-lg p-3"
-                                >
-                                  <div className="font-medium text-sm">
-                                    {ex.exerciseName}
-                                  </div>
-                                  <div className="text-sm text-muted-foreground mt-1">
-                                    {sets.map((s, i) => (
-                                      <span key={i}>
-                                        {i > 0 && " → "}
-                                        {s.weight}lbs × {s.reps}
-                                      </span>
-                                    ))}
-                                  </div>
-                                  {ex.notes && (
-                                    <p className="text-xs text-muted-foreground mt-1 italic">
-                                      {ex.notes}
-                                    </p>
-                                  )}
-                                </div>
-                              );
-                            })}
-
-                            {workout.notes && (
-                              <p className="text-sm text-muted-foreground italic border-t pt-3">
-                                {workout.notes}
-                              </p>
-                            )}
-
-                            <div className="flex justify-end pt-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDelete(workout.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="w-4 h-4 mr-1" />
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </Card>
-                </motion.div>
-              );
-            })
-          )}
-        </AnimatePresence>
+            <Button
+              onClick={openNewTemplate}
+              size="sm"
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              New Workout
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Log Workout Sheet */}
-      <Sheet open={addOpen} onOpenChange={(open) => {
-        setAddOpen(open);
-        if (!open) resetForm();
-      }}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[90vh] overflow-y-auto">
+      {/* Templates */}
+      <div className="px-4 py-4 space-y-4">
+        {templates.length === 0 ? (
+          <div className="text-center py-12">
+            <Dumbbell className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">No Workouts Yet</h3>
+            <p className="text-slate-400 mb-4">Create your first workout template to get started.</p>
+            <Button onClick={openNewTemplate} className="bg-red-500 hover:bg-red-600">
+              <Plus className="w-4 h-4 mr-1" />
+              Create Workout
+            </Button>
+          </div>
+        ) : (
+          templates.map((template) => (
+            <motion.div
+              key={template.id}
+              layout
+              className="rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-800/30 border border-white/10 overflow-hidden"
+            >
+              {/* Template Header */}
+              <div
+                className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors"
+                onClick={() => toggleTemplate(template.id)}
+              >
+                <div className="flex items-center gap-3">
+                  <button className="text-slate-400">
+                    {expandedTemplates.has(template.id) ? (
+                      <ChevronUp className="w-5 h-5" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5" />
+                    )}
+                  </button>
+                  <div>
+                    <h2 className="font-bold text-white text-lg">{template.name}</h2>
+                    <p className="text-xs text-slate-400">
+                      {template.exercises.length} exercise{template.exercises.length !== 1 ? "s" : ""} •{" "}
+                      {template.exercises.reduce((acc, e) => {
+                        const match = e.sets.match(/\d+/);
+                        return acc + (match ? parseInt(match[0]) : 0);
+                      }, 0)} total sets
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => openEditTemplate(template)}
+                    className="p-2 text-slate-400 hover:text-white transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTemplate(template.id)}
+                    className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Exercises Table */}
+              <AnimatePresence>
+                {expandedTemplates.has(template.id) && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="border-t border-white/10">
+                      {/* Table Header */}
+                      <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-800/50 text-xs font-medium text-slate-400 uppercase">
+                        <div className="col-span-3">Exercise</div>
+                        <div className="col-span-2">Sets</div>
+                        <div className="col-span-1">Reps</div>
+                        <div className="col-span-5">Log</div>
+                        <div className="col-span-1"></div>
+                      </div>
+
+                      {/* Table Body */}
+                      <div className="divide-y divide-white/5">
+                        {template.exercises.map((exercise) => (
+                          <div
+                            key={exercise.id}
+                            className="grid grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-white/5 transition-colors"
+                          >
+                            <div className="col-span-3">
+                              <p className="text-sm text-white font-medium truncate">{exercise.name}</p>
+                              {exercise.notes && (
+                                <p className="text-xs text-slate-500 truncate">{exercise.notes}</p>
+                              )}
+                            </div>
+                            <div className="col-span-2 text-sm text-slate-300">{exercise.sets}</div>
+                            <div className="col-span-1 text-sm text-slate-300">{exercise.repRange}</div>
+                            <div className="col-span-5">
+                              <p className="text-xs text-slate-400 line-clamp-2">
+                                {formatLogsForCell(exercise.logs)}
+                              </p>
+                            </div>
+                            <div className="col-span-1 flex justify-end gap-1">
+                              <button
+                                onClick={() => openLogExercise(exercise)}
+                                className="p-1.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors"
+                                title="Log workout"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => openEditExercise(exercise)}
+                                className="p-1.5 text-slate-400 hover:text-white transition-colors"
+                                title="Edit exercise"
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+
+                        {template.exercises.length === 0 && (
+                          <div className="px-4 py-6 text-center text-slate-400 text-sm">
+                            No exercises yet. Add your first one.
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Add Exercise Button */}
+                      <div className="p-3 border-t border-white/5">
+                        <button
+                          onClick={() => openNewExercise(template.id)}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Exercise
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))
+        )}
+      </div>
+
+      {/* Template Sheet */}
+      <Sheet open={templateSheetOpen} onOpenChange={setTemplateSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10">
           <SheetHeader className="pb-4">
-            <SheetTitle>Log Workout</SheetTitle>
+            <SheetTitle className="text-white">
+              {editingTemplate ? "Edit Workout" : "New Workout"}
+            </SheetTitle>
           </SheetHeader>
 
-          <div className="space-y-6 pb-8">
-            {/* Workout Name */}
+          <div className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-2 block">
-                Workout Name (optional)
-              </label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {WORKOUT_NAMES.map((name) => (
-                  <Button
-                    key={name}
-                    type="button"
-                    variant={workoutName === name ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setWorkoutName(workoutName === name ? "" : name)}
-                  >
-                    {name}
-                  </Button>
-                ))}
-              </div>
+              <label className="text-sm font-medium mb-2 block text-slate-400">Workout Name</label>
               <Input
-                placeholder="Or type custom name..."
-                value={workoutName}
-                onChange={(e) => setWorkoutName(e.target.value)}
+                placeholder="e.g. PUSH DAY, PULL DAY, LEGS"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500 uppercase"
               />
             </div>
 
-            {/* Added Exercises */}
-            {exercises.length > 0 && (
+            <Button
+              className="w-full h-12 bg-red-500 hover:bg-red-600 text-white font-semibold"
+              onClick={handleSaveTemplate}
+              disabled={isPending || !templateName.trim()}
+            >
+              {isPending ? "Saving..." : editingTemplate ? "Update Workout" : "Create Workout"}
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Exercise Sheet */}
+      <Sheet open={exerciseSheetOpen} onOpenChange={setExerciseSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl h-[70vh] overflow-y-auto bg-slate-900 border-white/10">
+          <SheetHeader className="pb-4">
+            <SheetTitle className="text-white">
+              {editingExercise ? "Edit Exercise" : "Add Exercise"}
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="space-y-4 pb-8">
+            <div>
+              <label className="text-sm font-medium mb-2 block text-slate-400">Exercise Name</label>
+              <Input
+                placeholder="e.g. Smith Incline Chest Press (24hr)"
+                value={exerciseForm.name}
+                onChange={(e) => setExerciseForm({ ...exerciseForm, name: e.target.value })}
+                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Exercises ({exercises.length})
-                </label>
-                <div className="space-y-2">
-                  {exercises.map((ex, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between bg-muted/50 rounded-lg p-3"
-                    >
-                      <div>
-                        <div className="font-medium text-sm">{ex.exerciseName}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {ex.sets.length} sets • {formatSets(ex.sets)}
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeExercise(i)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <label className="text-sm font-medium mb-2 block text-slate-400">Sets</label>
+                <Input
+                  placeholder="e.g. 2 Working Sets"
+                  value={exerciseForm.sets}
+                  onChange={(e) => setExerciseForm({ ...exerciseForm, sets: e.target.value })}
+                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block text-slate-400">Rep Range</label>
+                <Input
+                  placeholder="e.g. 8-12"
+                  value={exerciseForm.repRange}
+                  onChange={(e) => setExerciseForm({ ...exerciseForm, repRange: e.target.value })}
+                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block text-slate-400">Notes (optional)</label>
+              <Input
+                placeholder="e.g. Equipment, tips, etc."
+                value={exerciseForm.notes}
+                onChange={(e) => setExerciseForm({ ...exerciseForm, notes: e.target.value })}
+                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white font-semibold"
+                onClick={handleSaveExercise}
+                disabled={isPending || !exerciseForm.name.trim()}
+              >
+                {isPending ? "Saving..." : editingExercise ? "Update" : "Add Exercise"}
+              </Button>
+              {editingExercise && (
+                <Button
+                  variant="outline"
+                  className="h-12 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                  onClick={() => handleDeleteExercise(editingExercise.id)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Log Sheet */}
+      <Sheet open={logSheetOpen} onOpenChange={setLogSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10">
+          <SheetHeader className="pb-4">
+            <SheetTitle className="text-white">
+              Log: {loggingExercise?.name}
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="space-y-4 pb-8">
+            <p className="text-sm text-slate-400">
+              Target: {loggingExercise?.sets} @ {loggingExercise?.repRange} reps
+            </p>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block text-slate-400">Weight (lbs)</label>
+              <Input
+                type="number"
+                placeholder="e.g. 135"
+                value={logForm.weight}
+                onChange={(e) => setLogForm({ ...logForm, weight: e.target.value })}
+                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium mb-2 block text-slate-400">Set 1 Reps</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 8"
+                  value={logForm.reps}
+                  onChange={(e) => setLogForm({ ...logForm, reps: e.target.value })}
+                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block text-slate-400">Set 2 Reps (optional)</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 6"
+                  value={logForm.reps2}
+                  onChange={(e) => setLogForm({ ...logForm, reps2: e.target.value })}
+                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                />
+              </div>
+            </div>
+
+            {loggingExercise && loggingExercise.logs.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-3">
+                <p className="text-xs font-medium text-slate-400 mb-2">Recent logs:</p>
+                <p className="text-sm text-slate-300">
+                  {loggingExercise.logs.slice(0, 3).map(formatLogEntry).join(" | ")}
+                </p>
               </div>
             )}
 
-            {/* Add Exercise */}
-            <div className="border rounded-xl p-4 space-y-4">
-              <label className="text-sm font-medium block">Add Exercise</label>
-
-              {/* Exercise Name */}
-              <div className="relative">
-                <Input
-                  placeholder="Exercise name..."
-                  value={currentExercise}
-                  onChange={(e) => {
-                    setCurrentExercise(e.target.value);
-                    setShowExerciseSuggestions(true);
-                  }}
-                  onFocus={() => setShowExerciseSuggestions(true)}
-                />
-                {showExerciseSuggestions && filteredExercises.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    {filteredExercises.slice(0, 10).map((name) => (
-                      <button
-                        key={name}
-                        className="w-full px-3 py-2 text-left text-sm hover:bg-muted"
-                        onClick={() => handleExerciseSelect(name)}
-                      >
-                        {name}
-                        {recentExercises.includes(name) && (
-                          <span className="text-xs text-muted-foreground ml-2">
-                            (recent)
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Last Performance */}
-              {lastPerformance && (
-                <div className="bg-primary/10 rounded-lg p-3 text-sm">
-                  <div className="flex items-center gap-2 text-primary font-medium mb-1">
-                    <TrendingUp className="w-4 h-4" />
-                    Last time ({formatDate(lastPerformance.date)}):
-                  </div>
-                  <div className="text-muted-foreground">
-                    {lastPerformance.sets.map((s, i) => (
-                      <span key={i}>
-                        {i > 0 && " → "}
-                        {s.weight}lbs × {s.reps}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sets */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Sets</span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addSet}
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    Add Set
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {currentSets.map((set, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground w-6">
-                        {i + 1}.
-                      </span>
-                      <div className="flex-1 flex items-center gap-2">
-                        <Input
-                          type="number"
-                          placeholder="lbs"
-                          value={set.weight || ""}
-                          onChange={(e) =>
-                            updateSet(i, "weight", Number(e.target.value))
-                          }
-                          className="w-20 text-center"
-                        />
-                        <span className="text-muted-foreground">×</span>
-                        <Input
-                          type="number"
-                          placeholder="reps"
-                          value={set.reps || ""}
-                          onChange={(e) =>
-                            updateSet(i, "reps", Number(e.target.value))
-                          }
-                          className="w-20 text-center"
-                        />
-                      </div>
-                      {currentSets.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeSet(i)}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Exercise Notes */}
-              <Input
-                placeholder="Notes for this exercise (optional)"
-                value={exerciseNotes}
-                onChange={(e) => setExerciseNotes(e.target.value)}
-              />
-
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full"
-                onClick={addExercise}
-                disabled={!currentExercise.trim() || currentSets.every((s) => s.reps === 0)}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Exercise
-              </Button>
-            </div>
-
-            {/* Workout Notes */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">
-                Workout Notes (optional)
-              </label>
-              <textarea
-                placeholder="How did it go? Any PRs?"
-                value={workoutNotes}
-                onChange={(e) => setWorkoutNotes(e.target.value)}
-                className="w-full min-h-[80px] resize-none border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            {/* Save Button */}
             <Button
-              className="w-full h-12"
-              onClick={handleSaveWorkout}
-              disabled={isPending || exercises.length === 0}
+              className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-semibold"
+              onClick={handleSaveLog}
+              disabled={isPending || !logForm.weight || !logForm.reps}
             >
-              {isPending ? "Saving..." : `Save Workout (${exercises.length} exercises)`}
+              {isPending ? "Saving..." : "Log Workout"}
             </Button>
           </div>
         </SheetContent>

@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 const SESSION_COOKIE_NAME = "life-dashboard-session";
 const SESSION_TOKEN = "authenticated";
 
-const PUBLIC_PATHS = ["/login", "/api/logout"];
+const PUBLIC_PATHS = ["/login", "/api/login", "/api/logout"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

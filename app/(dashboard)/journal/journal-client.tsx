@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,6 +12,7 @@ import {
   Tag,
   Flame,
   X,
+  PenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,12 +22,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   createJournalEntry,
   deleteJournalEntry,
 } from "@/lib/actions/journal";
 import { MOOD_OPTIONS } from "@/lib/validations/journal";
+import { getQuoteForCategory, type Quote } from "@/lib/quotes";
 import type { JournalEntry } from "@prisma/client";
 
 interface JournalClientProps {
@@ -51,6 +53,11 @@ export function JournalClient({
   const [newMood, setNewMood] = useState<string | null>(null);
   const [newTags, setNewTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [quote, setQuote] = useState<Quote | null>(null);
+
+  useEffect(() => {
+    setQuote(getQuoteForCategory("journal"));
+  }, []);
 
   function handleSearch(value: string) {
     setSearch(value);
@@ -99,7 +106,6 @@ export function JournalClient({
       weekday: "short",
       month: "short",
       day: "numeric",
-      year: "numeric",
     });
   }
 
@@ -111,72 +117,94 @@ export function JournalClient({
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-6"
-      >
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <BookOpen className="w-6 h-6" />
-            Journal
-          </h1>
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <span>{entries.length} entries</span>
-            {streak > 0 && (
-              <span className="flex items-center gap-1 text-orange-500">
-                <Flame className="w-4 h-4" />
-                {streak} day streak
-              </span>
-            )}
+      <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+                <BookOpen className="w-6 h-6 text-amber-400" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Journal</h1>
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <span>{entries.length} entries</span>
+                  {streak > 0 && (
+                    <span className="flex items-center gap-1 text-orange-400">
+                      <Flame className="w-3 h-3" />
+                      {streak} day streak
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setAddOpen(true)}
+              size="sm"
+              className="bg-amber-500 hover:bg-amber-600 text-black"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Write
+            </Button>
+          </div>
+
+          {/* Quote */}
+          {quote && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20"
+            >
+              <p className="text-sm text-amber-200 italic">&ldquo;{quote.text}&rdquo;</p>
+              <p className="text-xs text-amber-400 mt-1">- {quote.author}</p>
+            </motion.div>
+          )}
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <Input
+              placeholder="Search entries..."
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-9 bg-slate-800/50 border-white/10 text-white placeholder:text-slate-500"
+            />
           </div>
         </div>
-        <Button onClick={() => setAddOpen(true)} size="sm" className="gap-1">
-          <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">New Entry</span>
-        </Button>
-      </motion.div>
-
-      {/* Search */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Search entries..."
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
-          className="pl-9"
-        />
       </div>
 
       {/* Entries List */}
-      <div className="space-y-4">
+      <div className="px-4 py-4 space-y-4">
         <AnimatePresence mode="popLayout">
           {entries.length === 0 ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-12 text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-16"
             >
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <BookOpen className="w-8 h-8 text-muted-foreground" />
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/10 flex items-center justify-center">
+                <PenLine className="w-8 h-8 text-amber-400" />
               </div>
-              <p className="text-muted-foreground">
+              <h3 className="text-lg font-medium text-white mb-2">
                 {search ? "No entries found" : "Start your journal"}
+              </h3>
+              <p className="text-slate-400 text-sm mb-4">
+                {search ? "Try a different search term" : "Capture your thoughts and reflections"}
               </p>
               {!search && (
                 <Button
-                  variant="link"
                   onClick={() => setAddOpen(true)}
-                  className="mt-2"
+                  className="bg-amber-500 hover:bg-amber-600 text-black"
                 >
-                  Write your first entry
+                  <Plus className="w-4 h-4 mr-2" />
+                  Write First Entry
                 </Button>
               )}
             </motion.div>
           ) : (
-            entries.map((entry) => {
+            entries.map((entry, index) => {
               const mood = MOOD_OPTIONS.find((m) => m.value === entry.mood);
               return (
                 <motion.div
@@ -185,44 +213,45 @@ export function JournalClient({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  transition={{ delay: index * 0.03 }}
+                  className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20"
                 >
-                  <Card className="p-4 rounded-xl">
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDate(entry.createdAt)}</span>
-                        <span>·</span>
-                        <span>{formatTime(entry.createdAt)}</span>
-                        {mood && <span>{mood.emoji}</span>}
-                      </div>
-                      <button
-                        onClick={() => handleDelete(entry.id)}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
-                        disabled={isPending}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{formatDate(entry.createdAt)}</span>
+                      <span className="text-slate-600">·</span>
+                      <span>{formatTime(entry.createdAt)}</span>
+                      {mood && (
+                        <span className="ml-1 text-base">{mood.emoji}</span>
+                      )}
                     </div>
+                    <button
+                      onClick={() => handleDelete(entry.id)}
+                      className="text-slate-500 hover:text-red-400 transition-colors"
+                      disabled={isPending}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
 
-                    <p className="text-foreground whitespace-pre-wrap">
-                      {entry.content}
-                    </p>
+                  <p className="text-white/90 whitespace-pre-wrap leading-relaxed">
+                    {entry.content}
+                  </p>
 
-                    {entry.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {entry.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted rounded-full text-xs text-muted-foreground"
-                          >
-                            <Tag className="w-3 h-3" />
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </Card>
+                  {entry.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      {entry.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-xs text-amber-300"
+                        >
+                          <Tag className="w-2.5 h-2.5" />
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               );
             })
@@ -232,60 +261,62 @@ export function JournalClient({
 
       {/* Add Entry Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh]">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 h-[85vh]">
           <SheetHeader className="pb-4">
-            <SheetTitle>New Journal Entry</SheetTitle>
+            <SheetTitle className="text-white">New Journal Entry</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddEntry} className="flex flex-col h-full pb-8">
             <textarea
               placeholder="What's on your mind?"
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              className="flex-1 min-h-[200px] w-full resize-none border rounded-xl p-4 text-base focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 min-h-[200px] w-full resize-none bg-slate-800 border border-white/10 rounded-xl p-4 text-white placeholder:text-slate-500 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               autoFocus
             />
 
             <div className="space-y-4 mt-4">
               {/* Mood */}
               <div>
-                <span className="text-sm text-muted-foreground mb-2 block">
+                <span className="text-sm text-slate-400 mb-2 block">
                   How are you feeling?
                 </span>
                 <div className="flex gap-2">
                   {MOOD_OPTIONS.map((mood) => (
-                    <Button
+                    <button
                       key={mood.value}
                       type="button"
-                      variant={newMood === mood.value ? "default" : "outline"}
-                      size="sm"
-                      onClick={() =>
-                        setNewMood(newMood === mood.value ? null : mood.value)
-                      }
+                      onClick={() => setNewMood(newMood === mood.value ? null : mood.value)}
+                      className={cn(
+                        "px-3 py-2 rounded-xl text-sm font-medium transition-all border",
+                        newMood === mood.value
+                          ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
+                          : "bg-slate-800 border-white/10 text-slate-400"
+                      )}
                     >
                       {mood.emoji} {mood.label}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
 
               {/* Tags */}
               <div>
-                <span className="text-sm text-muted-foreground mb-2 block">
-                  Tags
-                </span>
-                <div className="flex gap-2 mb-2 flex-wrap">
-                  {newTags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-primary text-primary-foreground rounded-full text-sm"
-                    >
-                      {tag}
-                      <button type="button" onClick={() => removeTag(tag)}>
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
+                <span className="text-sm text-slate-400 mb-2 block">Tags</span>
+                {newTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {newTags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-sm text-amber-300"
+                      >
+                        {tag}
+                        <button type="button" onClick={() => removeTag(tag)}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <Input
                     placeholder="Add a tag"
@@ -297,9 +328,14 @@ export function JournalClient({
                         addTag();
                       }
                     }}
-                    className="flex-1"
+                    className="flex-1 bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
                   />
-                  <Button type="button" variant="outline" onClick={addTag}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addTag}
+                    className="border-white/10 text-slate-400"
+                  >
                     Add
                   </Button>
                 </div>
@@ -307,7 +343,7 @@ export function JournalClient({
 
               <Button
                 type="submit"
-                className="w-full h-12"
+                className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-black font-semibold"
                 disabled={isPending || !newContent.trim()}
               >
                 {isPending ? "Saving..." : "Save Entry"}

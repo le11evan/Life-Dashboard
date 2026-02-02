@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { getStartOfDayLA } from "@/lib/utils";
 import {
   createTaskSchema,
   updateTaskSchema,
@@ -10,8 +11,7 @@ import {
 } from "@/lib/validations/task";
 
 export async function getTasks(filter?: "all" | "today" | "completed") {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getStartOfDayLA();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -43,8 +43,7 @@ export async function getTasks(filter?: "all" | "today" | "completed") {
 }
 
 export async function getTodayTasksCount() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getStartOfDayLA();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 

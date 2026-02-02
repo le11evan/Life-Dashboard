@@ -56,34 +56,46 @@ model DailyQuote {
   createdAt DateTime @default(now())
 }
 
-// Milestone 4: Fitness - Workouts
-model Workout {
-  id        String            @id @default(cuid())
-  date      DateTime          @default(now())
-  name      String?           // e.g., "Push Day", "Leg Day"
-  notes     String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  exercises WorkoutExercise[]
-
-  @@index([date])
+// Milestone 4: Fitness - Workout Templates (Push Day, Pull Day, etc.)
+model WorkoutTemplate {
+  id        String             @id @default(cuid())
+  name      String             // e.g., "PUSH DAY", "PULL DAY"
+  order     Int                @default(0)
+  exercises TemplateExercise[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 }
 
-// Milestone 4: Fitness - Exercises within a workout
-model WorkoutExercise {
-  id           String   @id @default(cuid())
-  workoutId    String
-  exerciseName String
-  // JSON array: [{weight: number, reps: number, notes?: string}]
-  sets         Json     @default("[]")
-  notes        String?
-  order        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  workout      Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+// Milestone 4: Fitness - Exercises within a template
+model TemplateExercise {
+  id         String          @id @default(cuid())
+  templateId String
+  name       String          // e.g., "Smith Incline Chest Press (24hr)"
+  sets       String          // e.g., "2 Working Sets"
+  repRange   String          // e.g., "6-8", "8-12", "2 Sets Til Failure"
+  notes      String?
+  order      Int             @default(0)
+  template   WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  logs       ExerciseLog[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
 
-  @@index([workoutId])
-  @@index([exerciseName])
+  @@index([templateId])
+}
+
+// Milestone 4: Fitness - Log entries for each exercise
+model ExerciseLog {
+  id         String           @id @default(cuid())
+  exerciseId String
+  date       DateTime         @db.Date
+  // JSON: [{weight: number, reps: number}] - weight and reps for each set
+  entries    Json             @default("[]")
+  exercise   TemplateExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime         @default(now())
+
+  @@unique([exerciseId, date])
+  @@index([exerciseId])
+  @@index([date])
 }
 
 // Milestone 5: Finance - Portfolio Holdings
@@ -120,4 +132,99 @@ model StockResearch {
   generatedAt DateTime @default(now())
 
   @@index([symbol])
+}
+
+// Milestone 6: Goals
+model Goal {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  type        String    @default("short") // short, long
+  status      String    @default("active") // active, completed, paused
+  progress    Int       @default(0) // 0-100
+  targetDate  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+// Milestone 6: Daily News Cache
+model DailyNews {
+  id          String   @id @default(cuid())
+  date        DateTime @unique @db.Date
+  // JSON: [{category, title, summary, source, url}]
+  articles    Json
+  generatedAt DateTime @default(now())
+}
+
+// Milestone 6: Creative Ideas
+model CreativeIdea {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  category  String?  // music, writing, design, etc.
+  tags      String[] @default([])
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPinned])
+}
+
+// Milestone 7: Fitness Enhanced - Diet/Nutrition Log
+model DietLog {
+  id        String   @id @default(cuid())
+  date      DateTime @unique @db.Date
+  calories  Int      @default(0)
+  protein   Int      @default(0)  // grams
+  carbs     Int      @default(0)  // grams
+  fat       Int      @default(0)  // grams
+  fiber     Int      @default(0)  // grams
+  water     Float    @default(0)  // oz
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+}
+
+// Milestone 7: Fitness Enhanced - Diet Goals
+model DietGoals {
+  id        String   @id @default(cuid())
+  calories  Int      @default(2000)
+  protein   Int      @default(150)  // grams
+  carbs     Int      @default(200)  // grams
+  fat       Int      @default(65)   // grams
+  fiber     Int      @default(30)   // grams
+  water     Float    @default(100)  // oz (about 3 liters)
+  updatedAt DateTime @updatedAt
+}
+
+// Milestone 7: Fitness Enhanced - Supplements
+model Supplement {
+  id        String   @id @default(cuid())
+  name      String
+  dosage    String?  // e.g., "500mg", "1 scoop"
+  frequency String   @default("daily") // daily, twice-daily, as-needed, etc.
+  timeOfDay String?  // morning, evening, with-meals, pre-workout, etc.
+  notes     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+// Milestone 7: Fitness Enhanced - Body Weight Log
+model WeightLog {
+  id        String   @id @default(cuid())
+  date      DateTime @unique @db.Date
+  weight    Float    // lbs or kg based on user preference
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([date])
 }

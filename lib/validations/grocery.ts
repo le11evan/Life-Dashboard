@@ -17,13 +17,19 @@ export type UpdateGroceryItemInput = z.infer<typeof updateGroceryItemSchema>;
 
 export const GROCERY_CATEGORIES = [
   "Produce",
+  "Protein",
   "Dairy",
-  "Meat",
+  "Grains",
   "Bakery",
   "Frozen",
   "Pantry",
   "Beverages",
   "Snacks",
+  "Fruits",
+  "Vegetables",
   "Household",
+  "Personal Care",
+  "Pet",
+  "Health",
   "Other",
 ] as const;

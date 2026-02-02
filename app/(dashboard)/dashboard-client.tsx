@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Focus } from "lucide-react";
+import { Focus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DashboardClientProps {
@@ -48,14 +48,21 @@ export function DashboardClient({
         className="flex items-start justify-between mb-6"
       >
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{greeting}, Evan</h1>
-          <p className="text-muted-foreground">{today}</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+            {greeting}, Evan
+            <Sparkles className="w-6 h-6 text-violet-400" />
+          </h1>
+          <p className="text-slate-400">{today}</p>
         </div>
         <Button
           variant={todayMode ? "default" : "outline"}
           size="sm"
           onClick={() => setTodayMode(!todayMode)}
-          className="gap-2"
+          className={`gap-2 ${
+            todayMode
+              ? "bg-violet-500 hover:bg-violet-600 text-white"
+              : "border-white/10 text-slate-400 hover:text-white hover:bg-slate-800/50"
+          }`}
         >
           <Focus className="w-4 h-4" />
           <span className="hidden sm:inline">Today Mode</span>
@@ -69,9 +76,9 @@ export function DashboardClient({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-4 p-3 bg-primary/10 rounded-xl text-center"
+            className="mb-4 p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl text-center"
           >
-            <p className="text-sm text-primary font-medium">
+            <p className="text-sm text-violet-400 font-medium">
               Focus Mode: Showing only today&apos;s essentials
             </p>
           </motion.div>

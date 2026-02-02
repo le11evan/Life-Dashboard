@@ -70,13 +70,20 @@ Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping 
 ```
 
 ## Current Milestone
-**Milestone 5 - Finance (Portfolio, Watchlist, Research)**
+**All Core Milestones Complete!**
 
 ## Completed
 - Milestone 1: Foundation (app shell, auth, nav)
 - Milestone 2: Tasks + Groceries (CRUD, filters, dashboard widgets)
 - Milestone 3: Journal + Daily Quote + Today Mode
 - Milestone 4: Fitness (Workout logging with progressive overload)
+- Milestone 5: Finance (Portfolio, Watchlist, Research)
+- Milestone 6: Goals, News, Creative, Dashboard Revamp
+  - Short-term and long-term goals with progress tracking
+  - Daily news feed with category filters (Politics, Tech, Finance, Health, etc.)
+  - Creative ideas board with pinning and tags
+  - Revamped dashboard with all module widgets and gradient styling
+  - Contextual quotes on every page (lib/quotes.ts)
 
 ## Commands
 - `/plan` - Output milestone plan, no coding

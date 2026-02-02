@@ -7,10 +7,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 
 const quickActions = [
-  { id: "task", label: "Add Task", icon: CheckSquare, href: "/tasks?add=true" },
-  { id: "grocery", label: "Add Grocery", icon: ShoppingCart, href: "/groceries?add=true" },
-  { id: "journal", label: "Journal Entry", icon: BookOpen, href: "/journal?add=true" },
-  { id: "workout", label: "Log Workout", icon: Dumbbell, href: "/fitness?add=true" },
+  { id: "task", label: "Add Task", icon: CheckSquare, href: "/tasks?add=true", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20 hover:bg-blue-500/20" },
+  { id: "grocery", label: "Add Grocery", icon: ShoppingCart, href: "/groceries?add=true", color: "text-green-400", bg: "bg-green-500/10 border-green-500/20 hover:bg-green-500/20" },
+  { id: "journal", label: "Journal Entry", icon: BookOpen, href: "/journal?add=true", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20" },
+  { id: "workout", label: "Log Workout", icon: Dumbbell, href: "/fitness?add=true", color: "text-red-400", bg: "bg-red-500/10 border-red-500/20 hover:bg-red-500/20" },
 ];
 
 export function FAB() {
@@ -21,7 +21,7 @@ export function FAB() {
       {/* FAB Button */}
       <motion.button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 z-50 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center md:hidden"
+        className="fixed bottom-20 right-4 z-50 w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-600 text-white rounded-full shadow-lg shadow-violet-500/30 flex items-center justify-center md:hidden"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -52,9 +52,9 @@ export function FAB() {
 
       {/* Quick Add Sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
           <SheetHeader className="pb-4">
-            <SheetTitle>Quick Add</SheetTitle>
+            <SheetTitle className="text-white">Quick Add</SheetTitle>
           </SheetHeader>
           <div className="grid grid-cols-2 gap-3 pb-8">
             {quickActions.map((action, index) => {
@@ -68,14 +68,14 @@ export function FAB() {
                 >
                   <Button
                     variant="outline"
-                    className="w-full h-auto py-6 flex flex-col gap-2 rounded-2xl"
+                    className={`w-full h-auto py-6 flex flex-col gap-2 rounded-2xl border ${action.bg} transition-all`}
                     onClick={() => {
                       setOpen(false);
                       window.location.href = action.href;
                     }}
                   >
-                    <Icon className="w-6 h-6" />
-                    <span className="text-sm font-medium">{action.label}</span>
+                    <Icon className={`w-6 h-6 ${action.color}`} />
+                    <span className="text-sm font-medium text-white">{action.label}</span>
                   </Button>
                 </motion.div>
               );

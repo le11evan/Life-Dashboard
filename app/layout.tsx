@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Life Dashboard",
   description: "Personal dashboard for daily life management",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Life Dashboard",
+  },
 };
 
 export const viewport: Viewport = {
