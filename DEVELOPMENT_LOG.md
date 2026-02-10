@@ -912,3 +912,167 @@ To convert to a multi-user SaaS app:
 - New Prisma models: WorkoutTemplate, TemplateExercise, ExerciseLog
 - Old Workout/WorkoutExercise models replaced
 - Database was reset for schema changes
+
+---
+
+## Session Summary: February 9, 2026
+
+### Deployment Complete ✅
+
+**Live URL:** Deployed on Vercel (life-dashboard-ecru.vercel.app or custom)
+
+**Database:** Neon PostgreSQL (free tier)
+
+**Environment Variables (Vercel):**
+```
+DATABASE_URL=postgresql://...neon-connection-string...
+APP_PASSWORD=your-login-password
+```
+
+### Features Added This Session
+
+1. **LA Timezone Support** - All dates use America/Los_Angeles
+   - `lib/utils.ts` - Added timezone utilities
+   - Updated tasks, diet, fitness actions to use LA time
+
+2. **PWA Support** - Installable on mobile
+   - `public/manifest.json` - App manifest
+   - Apple web app meta tags
+   - Can add to home screen
+
+3. **Data Backup/Export** - Settings page
+   - `lib/actions/backup.ts` - Export all data as JSON
+   - Shows stats for all data types
+   - Downloads `life-dashboard-backup-YYYY-MM-DD.json`
+
+4. **Settings Page Enhanced**
+   - Data stats grid
+   - Export button with loading state
+   - Logout functionality
+   - Version and timezone info
+
+5. **Mobile Navigation** - Settings added to "More" menu
+
+6. **README.md** - Complete documentation with:
+   - Feature overview
+   - Tech stack badges
+   - Installation instructions
+   - Deployment guide
+   - Project structure
+
+7. **Sheet Padding Fix** - Added `px-6` to all bottom sheets across:
+   - Tasks
+   - Fitness
+   - Diet
+   - Finance
+   - Journal
+   - Groceries
+
+### Known Issues (To Fix Later)
+
+| Issue | Description | Status |
+|-------|-------------|--------|
+| **iOS Status Bar** | White bar shows at top of PWA on iPhone. Tried multiple fixes (black-translucent, viewport-fit:cover, safe-area padding) but iOS PWA has limitations. | Won't fix for now |
+| **Sheet Padding** | Some sheets may still appear tight on certain devices | Low priority |
+
+### Attempted Fixes for iOS Status Bar
+
+1. ❌ `statusBarStyle: "black-translucent"` - Didn't work
+2. ❌ `statusBarStyle: "black"` - Didn't work
+3. ❌ `viewport-fit: cover` - Didn't work
+4. ❌ `safe-area-inset` padding on body - Didn't work
+5. ❌ Direct meta tags in `<head>` - Didn't work
+6. ❌ Background color on html element - Didn't work
+
+**Conclusion:** iOS PWA status bar color is controlled by iOS, not the web app. This is a platform limitation.
+
+### Research: User Pain Points in Similar Apps
+
+Based on research from habit trackers, Notion dashboards, and fitness apps:
+
+**Common Complaints:**
+- Too many apps for different purposes
+- Overwhelming complexity
+- Streak anxiety (missing one day = quit)
+- Apps track but don't help execute
+- Notification fatigue
+- Paywalls everywhere
+- Notion is slow on mobile
+- No offline support
+- Data locked in proprietary formats
+
+**Our Advantages:**
+- All-in-one app
+- Fast (Next.js)
+- Simple UI
+- Free / self-hosted
+- Data export (JSON)
+- PWA on home screen
+
+### Future Features (Prioritized)
+
+**High Impact:**
+- [ ] Quick Add from Dashboard
+- [ ] Today Focus View
+- [ ] Forgiving Streaks ("5 of 7 days" not "0 day streak")
+- [ ] Offline Support
+- [ ] Recurring Tasks
+
+**Quality of Life:**
+- [ ] Keyboard shortcuts (desktop)
+- [ ] Weekly Summary auto-generated
+- [ ] Smart Defaults (remember common entries)
+- [ ] Flexible Goals ("3x per week")
+
+**Finance:**
+- [ ] Stock Research via Perplexity API
+- [ ] Auto-refresh prices
+- [ ] News feed for holdings
+
+### Commands Reference
+
+```bash
+# Local development
+npm run dev
+
+# Production build
+npm run build
+
+# Database
+npx prisma studio      # GUI
+npx prisma db push     # Push schema
+npx prisma generate    # Regenerate client
+
+# Deploy (auto on push)
+git add . && git commit -m "message" && git push origin main
+```
+
+### Files Modified This Session
+
+- `app/layout.tsx` - Meta tags, viewport, PWA config
+- `app/globals.css` - Background colors, safe areas
+- `components/ui/sheet.tsx` - Padding improvements
+- `lib/utils.ts` - Timezone utilities
+- `lib/actions/backup.ts` - NEW: Data export
+- `lib/actions/tasks.ts` - LA timezone
+- `lib/actions/diet.ts` - LA timezone
+- `lib/actions/fitness.ts` - LA timezone
+- `app/(dashboard)/settings/page.tsx` - Backup UI
+- `components/layout/bottom-nav.tsx` - Added settings
+- All client files - Added `px-6` to sheets
+- `README.md` - Complete rewrite
+- `.env.example` - NEW: Template file
+
+---
+
+## Next Session TODO
+
+1. Test app for a week and note friction points
+2. Implement Quick Add from Dashboard
+3. Add Today Focus View
+4. Consider Perplexity API for stock research
+5. Address any bugs found during testing
+
+---
+
+*Last updated: February 9, 2026*
