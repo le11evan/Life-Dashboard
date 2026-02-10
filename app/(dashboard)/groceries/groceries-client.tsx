@@ -292,7 +292,7 @@ export function GroceriesClient({
 
       {/* Add Item Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Add Item</SheetTitle>
           </SheetHeader>

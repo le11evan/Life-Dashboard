@@ -617,7 +617,7 @@ export function DietClient({
 
       {/* Goals Sheet */}
       <Sheet open={goalsSheetOpen} onOpenChange={setGoalsSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Edit Daily Goals</SheetTitle>
           </SheetHeader>
@@ -699,7 +699,7 @@ export function DietClient({
         setSupplementSheetOpen(open);
         if (!open) resetSupplementForm();
       }}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               {editingSupplement ? "Edit Supplement" : "Add Supplement"}
@@ -795,7 +795,7 @@ export function DietClient({
 
       {/* Weight Log Sheet */}
       <Sheet open={weightSheetOpen} onOpenChange={setWeightSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[50vh] overflow-y-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[50vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Log Weight</SheetTitle>
           </SheetHeader>

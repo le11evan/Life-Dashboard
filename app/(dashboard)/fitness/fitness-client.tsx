@@ -430,7 +430,7 @@ export function FitnessClient({
 
       {/* Template Sheet */}
       <Sheet open={templateSheetOpen} onOpenChange={setTemplateSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               {editingTemplate ? "Edit Workout" : "New Workout"}
@@ -461,7 +461,7 @@ export function FitnessClient({
 
       {/* Exercise Sheet */}
       <Sheet open={exerciseSheetOpen} onOpenChange={setExerciseSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[70vh] overflow-y-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[70vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               {editingExercise ? "Edit Exercise" : "Add Exercise"}
@@ -534,7 +534,7 @@ export function FitnessClient({
 
       {/* Log Sheet */}
       <Sheet open={logSheetOpen} onOpenChange={setLogSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               Log: {loggingExercise?.name}

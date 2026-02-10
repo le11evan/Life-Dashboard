@@ -468,11 +468,11 @@ export function TasksClient({
 
       {/* Add Task Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Add Task</SheetTitle>
           </SheetHeader>
-          <form onSubmit={handleAddTask} className="space-y-4 pb-8">
+          <form onSubmit={handleAddTask} className="space-y-4 pb-8 px-1">
             <Input
               placeholder="What needs to be done?"
               value={newTitle}

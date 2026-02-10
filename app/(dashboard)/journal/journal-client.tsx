@@ -261,7 +261,7 @@ export function JournalClient({
 
       {/* Add Entry Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 h-[85vh]">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 h-[85vh] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">New Journal Entry</SheetTitle>
           </SheetHeader>

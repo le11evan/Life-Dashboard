@@ -481,7 +481,7 @@ export function FinanceClient({
 
       {/* Add Holding Sheet */}
       <Sheet open={addHoldingOpen} onOpenChange={setAddHoldingOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Add Position</SheetTitle>
           </SheetHeader>
@@ -546,7 +546,7 @@ export function FinanceClient({
 
       {/* Add Watchlist Sheet */}
       <Sheet open={addWatchlistOpen} onOpenChange={setAddWatchlistOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Add to Watchlist</SheetTitle>
           </SheetHeader>
@@ -574,7 +574,7 @@ export function FinanceClient({
 
       {/* Research Sheet */}
       <Sheet open={researchOpen} onOpenChange={setResearchOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="flex items-center gap-2 text-white">
               <Search className="w-5 h-5 text-emerald-400" />
