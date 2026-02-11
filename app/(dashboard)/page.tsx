@@ -34,11 +34,14 @@ export const dynamic = "force-dynamic";
 
 async function TasksWidget() {
   const [tasks, counts] = await Promise.all([
-    getTasks("today"),
+    getTasks("all"),
     getTodayTasksCount(),
   ]);
 
-  const recentTasks = tasks.slice(0, 5);
+  // Show pending tasks first, sorted by priority and due date
+  const pendingTasks = tasks
+    .filter((t) => t.status === "pending")
+    .slice(0, 5);
 
   return (
     <div className="rounded-2xl p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-blue-500/20 hover:border-blue-500/30 transition-colors">
@@ -47,7 +50,7 @@ async function TasksWidget() {
           <div className="p-1.5 rounded-lg bg-blue-500/20">
             <CheckSquare className="w-4 h-4 text-blue-400" />
           </div>
-          Today&apos;s Tasks
+          Tasks
         </span>
         <Link
           href="/tasks"
@@ -58,9 +61,9 @@ async function TasksWidget() {
         </Link>
       </div>
       <div>
-        {recentTasks.length === 0 ? (
+        {pendingTasks.length === 0 ? (
           <div className="py-4 text-center">
-            <p className="text-sm text-slate-400">No tasks for today</p>
+            <p className="text-sm text-slate-400">No pending tasks</p>
             <Link
               href="/tasks?add=true"
               className="text-sm text-blue-400 hover:underline"
@@ -70,7 +73,7 @@ async function TasksWidget() {
           </div>
         ) : (
           <ul className="space-y-2">
-            {recentTasks.map((task) => (
+            {pendingTasks.map((task) => (
               <li key={task.id} className="flex items-center gap-2 text-sm text-slate-300">
                 <Circle className="w-3 h-3 text-blue-400 flex-shrink-0" />
                 <span className="truncate">{task.title}</span>
@@ -79,12 +82,12 @@ async function TasksWidget() {
           </ul>
         )}
         <div className="flex items-center justify-between pt-3 mt-3 border-t border-white/5 text-sm">
-          <span className="text-slate-500">Pending</span>
-          <span className="font-medium text-blue-400">{counts.pending}</span>
+          <span className="text-slate-500">Total pending</span>
+          <span className="font-medium text-blue-400">{tasks.filter((t) => t.status === "pending").length}</span>
         </div>
         <div className="flex items-center justify-between pt-1 text-sm">
-          <span className="text-slate-500">Completed today</span>
-          <span className="font-medium text-green-400">{counts.completed}</span>
+          <span className="text-slate-500">Completed</span>
+          <span className="font-medium text-green-400">{tasks.filter((t) => t.status === "completed").length}</span>
         </div>
       </div>
     </div>

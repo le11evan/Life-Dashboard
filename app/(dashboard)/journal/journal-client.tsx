@@ -13,6 +13,7 @@ import {
   Flame,
   X,
   PenLine,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   createJournalEntry,
+  updateJournalEntry,
   deleteJournalEntry,
 } from "@/lib/actions/journal";
 import { MOOD_OPTIONS } from "@/lib/validations/journal";
@@ -54,6 +56,14 @@ export function JournalClient({
   const [newTags, setNewTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [quote, setQuote] = useState<Quote | null>(null);
+
+  // Edit state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
+  const [editContent, setEditContent] = useState("");
+  const [editMood, setEditMood] = useState<string | null>(null);
+  const [editTags, setEditTags] = useState<string[]>([]);
+  const [editTagInput, setEditTagInput] = useState("");
 
   useEffect(() => {
     setQuote(getQuoteForCategory("journal"));
@@ -98,6 +108,53 @@ export function JournalClient({
     setEntries((prev) => prev.filter((e) => e.id !== id));
     startTransition(async () => {
       await deleteJournalEntry(id);
+    });
+  }
+
+  function openEditSheet(entry: JournalEntry) {
+    setEditingEntry(entry);
+    setEditContent(entry.content);
+    setEditMood(entry.mood);
+    setEditTags(entry.tags);
+    setEditTagInput("");
+    setEditOpen(true);
+  }
+
+  function addEditTag() {
+    const tag = editTagInput.trim().toLowerCase();
+    if (tag && !editTags.includes(tag) && editTags.length < 10) {
+      setEditTags([...editTags, tag]);
+      setEditTagInput("");
+    }
+  }
+
+  function removeEditTag(tag: string) {
+    setEditTags(editTags.filter((t) => t !== tag));
+  }
+
+  async function handleEditEntry(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingEntry || !editContent.trim()) return;
+
+    const updatedEntry = {
+      ...editingEntry,
+      content: editContent.trim(),
+      mood: editMood,
+      tags: editTags,
+    };
+
+    setEntries((prev) =>
+      prev.map((entry) => (entry.id === editingEntry.id ? updatedEntry : entry))
+    );
+    setEditOpen(false);
+
+    startTransition(async () => {
+      await updateJournalEntry({
+        id: editingEntry.id,
+        content: editContent.trim(),
+        mood: editMood,
+        tags: editTags,
+      });
     });
   }
 
@@ -226,13 +283,22 @@ export function JournalClient({
                         <span className="ml-1 text-base">{mood.emoji}</span>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleDelete(entry.id)}
-                      className="text-slate-500 hover:text-red-400 transition-colors"
-                      disabled={isPending}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEditSheet(entry)}
+                        className="text-slate-500 hover:text-amber-400 transition-colors"
+                        disabled={isPending}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(entry.id)}
+                        className="text-slate-500 hover:text-red-400 transition-colors"
+                        disabled={isPending}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-white/90 whitespace-pre-wrap leading-relaxed">
@@ -347,6 +413,100 @@ export function JournalClient({
                 disabled={isPending || !newContent.trim()}
               >
                 {isPending ? "Saving..." : "Save Entry"}
+              </Button>
+            </div>
+          </form>
+        </SheetContent>
+      </Sheet>
+
+      {/* Edit Entry Sheet */}
+      <Sheet open={editOpen} onOpenChange={setEditOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 h-[85vh] px-6">
+          <SheetHeader className="pb-4">
+            <SheetTitle className="text-white">Edit Journal Entry</SheetTitle>
+          </SheetHeader>
+          <form onSubmit={handleEditEntry} className="flex flex-col h-full pb-8">
+            <textarea
+              placeholder="What's on your mind?"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="flex-1 min-h-[200px] w-full resize-none bg-slate-800 border border-white/10 rounded-xl p-4 text-white placeholder:text-slate-500 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              autoFocus
+            />
+
+            <div className="space-y-4 mt-4">
+              {/* Mood */}
+              <div>
+                <span className="text-sm text-slate-400 mb-2 block">
+                  How are you feeling?
+                </span>
+                <div className="flex gap-2">
+                  {MOOD_OPTIONS.map((mood) => (
+                    <button
+                      key={mood.value}
+                      type="button"
+                      onClick={() => setEditMood(editMood === mood.value ? null : mood.value)}
+                      className={cn(
+                        "px-3 py-2 rounded-xl text-sm font-medium transition-all border",
+                        editMood === mood.value
+                          ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
+                          : "bg-slate-800 border-white/10 text-slate-400"
+                      )}
+                    >
+                      {mood.emoji} {mood.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <span className="text-sm text-slate-400 mb-2 block">Tags</span>
+                {editTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {editTags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-sm text-amber-300"
+                      >
+                        {tag}
+                        <button type="button" onClick={() => removeEditTag(tag)}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add a tag"
+                    value={editTagInput}
+                    onChange={(e) => setEditTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addEditTag();
+                      }
+                    }}
+                    className="flex-1 bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addEditTag}
+                    className="border-white/10 text-slate-400"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-black font-semibold"
+                disabled={isPending || !editContent.trim()}
+              >
+                {isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </form>

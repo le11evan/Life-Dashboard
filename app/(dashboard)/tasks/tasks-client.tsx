@@ -16,6 +16,7 @@ import {
   AlertCircle,
   CalendarDays,
   X,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   createTask,
+  updateTask,
   toggleTaskStatus,
   deleteTask,
 } from "@/lib/actions/tasks";
@@ -146,6 +148,14 @@ export function TasksClient({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [quote, setQuote] = useState<Quote | null>(null);
 
+  // Edit state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editPriority, setEditPriority] = useState(0);
+  const [editDueDate, setEditDueDate] = useState<string | null>(null);
+  const [editShowDatePicker, setEditShowDatePicker] = useState(false);
+
   useEffect(() => {
     setQuote(getQuoteForCategory("tasks"));
   }, []);
@@ -223,6 +233,73 @@ export function TasksClient({
     setTasks((prev) => prev.filter((t) => t.id !== id));
     startTransition(async () => {
       await deleteTask(id);
+    });
+  }
+
+  function openEditSheet(task: Task) {
+    setEditingTask(task);
+    setEditTitle(task.title);
+    setEditPriority(task.priority);
+    setEditDueDate(task.dueDate ? task.dueDate.toISOString() : null);
+    setEditShowDatePicker(false);
+    setEditOpen(true);
+  }
+
+  function handleEditQuickDate(type: "today" | "tomorrow" | "next-week" | "clear") {
+    if (type === "clear") {
+      setEditDueDate(null);
+      setEditShowDatePicker(false);
+      return;
+    }
+
+    let date: Date;
+    switch (type) {
+      case "today":
+        date = getToday();
+        break;
+      case "tomorrow":
+        date = getTomorrow();
+        break;
+      case "next-week":
+        date = getNextWeek();
+        break;
+    }
+    setEditDueDate(date.toISOString());
+    setEditShowDatePicker(false);
+  }
+
+  function handleEditCustomDate(dateString: string) {
+    if (dateString) {
+      const date = new Date(dateString);
+      date.setHours(12, 0, 0, 0);
+      setEditDueDate(date.toISOString());
+    }
+    setEditShowDatePicker(false);
+  }
+
+  async function handleEditTask(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingTask || !editTitle.trim()) return;
+
+    const updatedTask = {
+      ...editingTask,
+      title: editTitle.trim(),
+      priority: editPriority,
+      dueDate: editDueDate ? new Date(editDueDate) : null,
+    };
+
+    setTasks((prev) =>
+      prev.map((t) => (t.id === editingTask.id ? updatedTask : t))
+    );
+    setEditOpen(false);
+
+    startTransition(async () => {
+      await updateTask({
+        id: editingTask.id,
+        title: editTitle.trim(),
+        priority: editPriority,
+        dueDate: editDueDate,
+      });
     });
   }
 
@@ -451,13 +528,22 @@ export function TasksClient({
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleDelete(task.id)}
-                      className="text-slate-500 hover:text-red-400 transition-colors"
-                      disabled={isPending}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEditSheet(task)}
+                        className="text-slate-500 hover:text-blue-400 transition-colors"
+                        disabled={isPending}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="text-slate-500 hover:text-red-400 transition-colors"
+                        disabled={isPending}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -607,6 +693,152 @@ export function TasksClient({
               disabled={isPending || !newTitle.trim()}
             >
               {isPending ? "Adding..." : "Add Task"}
+            </Button>
+          </form>
+        </SheetContent>
+      </Sheet>
+
+      {/* Edit Task Sheet */}
+      <Sheet open={editOpen} onOpenChange={setEditOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 px-6">
+          <SheetHeader className="pb-4">
+            <SheetTitle className="text-white">Edit Task</SheetTitle>
+          </SheetHeader>
+          <form onSubmit={handleEditTask} className="space-y-4 pb-8 px-1">
+            <Input
+              placeholder="What needs to be done?"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              className="h-12 bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+              autoFocus
+            />
+
+            {/* Due Date */}
+            <div>
+              <span className="text-sm text-slate-400 mb-2 block">Due Date</span>
+
+              {editDueDate ? (
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                    <CalendarDays className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-blue-400">
+                      {new Date(editDueDate).toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleEditQuickDate("clear")}
+                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : null}
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleEditQuickDate("today")}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
+                    editDueDate && new Date(editDueDate).toDateString() === getToday().toDateString()
+                      ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
+                      : "bg-slate-800 border-white/10 text-slate-400 hover:border-blue-500/30 hover:text-blue-400"
+                  )}
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleEditQuickDate("tomorrow")}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
+                    editDueDate && new Date(editDueDate).toDateString() === getTomorrow().toDateString()
+                      ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
+                      : "bg-slate-800 border-white/10 text-slate-400 hover:border-amber-500/30 hover:text-amber-400"
+                  )}
+                >
+                  Tomorrow
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleEditQuickDate("next-week")}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
+                    editDueDate && new Date(editDueDate).toDateString() === getNextWeek().toDateString()
+                      ? "bg-green-500/20 border-green-500/50 text-green-400"
+                      : "bg-slate-800 border-white/10 text-slate-400 hover:border-green-500/30 hover:text-green-400"
+                  )}
+                >
+                  Next Week
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditShowDatePicker(!editShowDatePicker)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border flex items-center gap-1",
+                    editShowDatePicker
+                      ? "bg-violet-500/20 border-violet-500/50 text-violet-400"
+                      : "bg-slate-800 border-white/10 text-slate-400 hover:border-violet-500/30 hover:text-violet-400"
+                  )}
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  Pick Date
+                </button>
+              </div>
+
+              {/* Custom Date Picker */}
+              <AnimatePresence>
+                {editShowDatePicker && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-3 overflow-hidden"
+                  >
+                    <input
+                      type="date"
+                      min={formatDateForInput(getToday())}
+                      onChange={(e) => handleEditCustomDate(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-800 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Priority */}
+            <div>
+              <span className="text-sm text-slate-400 mb-2 block">Priority</span>
+              <div className="grid grid-cols-4 gap-2">
+                {([0, 1, 2, 3] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setEditPriority(p)}
+                    className={cn(
+                      "py-2 px-3 rounded-xl text-sm font-medium transition-all border",
+                      editPriority === p
+                        ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
+                        : "bg-slate-800 border-white/10 text-slate-400"
+                    )}
+                  >
+                    {priorityLabels[p]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-12 bg-blue-500 hover:bg-blue-600"
+              disabled={isPending || !editTitle.trim()}
+            >
+              {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         </SheetContent>
