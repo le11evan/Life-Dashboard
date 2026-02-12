@@ -354,50 +354,46 @@ export function FitnessClient({
                     transition={{ duration: 0.2 }}
                   >
                     <div className="border-t border-white/10">
-                      {/* Table Header */}
-                      <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-800/50 text-xs font-medium text-slate-400 uppercase">
-                        <div className="col-span-3">Exercise</div>
-                        <div className="col-span-2">Sets</div>
-                        <div className="col-span-1">Reps</div>
-                        <div className="col-span-5">Log</div>
-                        <div className="col-span-1"></div>
-                      </div>
-
-                      {/* Table Body */}
+                      {/* Exercise Cards */}
                       <div className="divide-y divide-white/5">
                         {template.exercises.map((exercise) => (
                           <div
                             key={exercise.id}
-                            className="grid grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-white/5 transition-colors"
+                            className="px-4 py-3 hover:bg-white/5 transition-colors"
                           >
-                            <div className="col-span-3">
-                              <p className="text-sm text-white font-medium truncate">{exercise.name}</p>
-                              {exercise.notes && (
-                                <p className="text-xs text-slate-500 truncate">{exercise.notes}</p>
+                            {/* Exercise Header Row */}
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-white font-medium">{exercise.name}</p>
+                                <p className="text-xs text-slate-400 mt-0.5">
+                                  {exercise.sets} • {exercise.repRange} reps
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <button
+                                  onClick={() => openLogExercise(exercise)}
+                                  className="p-2 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors"
+                                  title="Log workout"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => openEditExercise(exercise)}
+                                  className="p-2 text-slate-400 hover:text-white transition-colors"
+                                  title="Edit exercise"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Recent Log */}
+                            <div className="text-xs text-slate-500 bg-slate-800/30 rounded-lg px-2 py-1.5">
+                              {exercise.logs.length > 0 ? (
+                                formatLogEntry(exercise.logs[0])
+                              ) : (
+                                "No logs yet"
                               )}
-                            </div>
-                            <div className="col-span-2 text-sm text-slate-300">{exercise.sets}</div>
-                            <div className="col-span-1 text-sm text-slate-300">{exercise.repRange}</div>
-                            <div className="col-span-5">
-                              <p className="text-xs text-slate-400 line-clamp-2">
-                                {formatLogsForCell(exercise.logs)}
-                              </p>
-                            </div>
-                            <div className="col-span-1 flex justify-end gap-1">
-                              <button
-                                onClick={() => openLogExercise(exercise)}
-                                className="p-1.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors"
-                                title="Log workout"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => openEditExercise(exercise)}
-                                className="p-1.5 text-slate-400 hover:text-white transition-colors"
-                                title="Edit exercise"
-                              >
-                                <MoreVertical className="w-4 h-4" />
-                              </button>
                             </div>
                           </div>
                         ))}
