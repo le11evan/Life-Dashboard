@@ -2,7 +2,7 @@
 
 **Project:** Personal Dashboard / Life OS for Evan
 **Started:** January 2026
-**Last Updated:** January 26, 2026
+**Last Updated:** February 11, 2026
 
 ---
 
@@ -1065,6 +1065,59 @@ git add . && git commit -m "message" && git push origin main
 
 ---
 
+## Session Summary: February 11, 2026
+
+### Edit Functionality ✅
+
+Added the ability to edit items throughout the app for better usability.
+
+**Tasks Edit:**
+- Added pencil icon button next to delete on each task
+- Edit sheet with title, due date, priority fields
+- Optimistic updates for smooth UX
+- Files: `app/(dashboard)/tasks/tasks-client.tsx`
+
+**Journal Edit:**
+- Added pencil icon button next to delete on each entry
+- Edit sheet with content, mood, tags fields
+- Same experience as creating new entry
+- Files: `app/(dashboard)/journal/journal-client.tsx`
+
+### Dashboard Tasks Widget ✅
+
+Changed from "Today's Tasks" to show ALL tasks:
+- Now shows all pending tasks (up to 5)
+- Renamed widget from "Today's Tasks" to "Tasks"
+- Shows total pending and total completed counts
+- Files: `app/(dashboard)/page.tsx`
+
+### Fitness Mobile Layout Fix ✅
+
+Fixed cramped table layout on mobile that showed truncated exercise names.
+
+**Before:**
+- Cramped 12-column table grid
+- Exercise names truncated ("Hamstrin...", "Leg Exten...")
+- Sets/reps/log columns overlapping
+
+**After:**
+- Mobile-friendly card layout
+- Full exercise names displayed
+- Sets • Reps combined on one line
+- Recent log shown in separate row below
+- Action buttons properly spaced
+
+Files: `app/(dashboard)/fitness/fitness-client.tsx`
+
+### Files Modified This Session
+
+- `app/(dashboard)/tasks/tasks-client.tsx` - Edit functionality
+- `app/(dashboard)/journal/journal-client.tsx` - Edit functionality
+- `app/(dashboard)/page.tsx` - Dashboard shows all tasks
+- `app/(dashboard)/fitness/fitness-client.tsx` - Mobile-friendly layout
+
+---
+
 ## Next Session TODO
 
 1. Test app for a week and note friction points
@@ -1075,4 +1128,4 @@ git add . && git commit -m "message" && git push origin main
 
 ---
 
-*Last updated: February 9, 2026*
+*Last updated: February 11, 2026*

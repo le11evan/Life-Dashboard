@@ -13,17 +13,18 @@ A personal life management dashboard built with Next.js. Track your tasks, fitne
 
 | Module | Description |
 |--------|-------------|
-| **Tasks** | Daily task management with priorities and due dates |
+| **Tasks** | Daily task management with priorities, due dates, and editing |
 | **Fitness** | Workout templates with exercise tracking and logging |
 | **Diet** | Macro tracking, water intake (oz), supplements, weight logs |
 | **Finance** | Portfolio holdings and watchlist tracking |
-| **Journal** | Daily entries with mood tracking and tags |
+| **Journal** | Daily entries with mood tracking, tags, and editing |
 | **Groceries** | Shopping lists with categories (food, household, pet, etc.) |
 | **Goals** | Short-term and long-term goal tracking with progress |
 | **Creative** | Ideas board for projects and inspiration |
 
 ### Additional Features
 
+- **Edit Anywhere** — Edit tasks and journal entries after creating them
 - **Data Backup** — Export all your data as JSON from Settings
 - **PWA Support** — Install as an app on mobile/desktop
 - **LA Timezone** — All dates use America/Los_Angeles
