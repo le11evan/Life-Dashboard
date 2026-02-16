@@ -40,8 +40,7 @@ async function TasksWidget() {
 
   // Show pending tasks first, sorted by priority and due date
   const pendingTasks = tasks
-    .filter((t) => t.status === "pending")
-    .slice(0, 5);
+    .filter((t) => t.status === "pending");
 
   return (
     <div className="rounded-2xl p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-blue-500/20 hover:border-blue-500/30 transition-colors">
@@ -100,7 +99,7 @@ async function GroceriesWidget() {
     getGroceryItemsCount(),
   ]);
 
-  const uncheckedItems = items.filter((i) => !i.isChecked).slice(0, 5);
+  const uncheckedItems = items.filter((i) => !i.isChecked);
 
   return (
     <div className="rounded-2xl p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20 hover:border-green-500/30 transition-colors">
@@ -593,6 +592,10 @@ export default function DashboardPage() {
       </Suspense>
 
       <Suspense fallback={<WidgetSkeleton />}>
+        <GroceriesWidget />
+      </Suspense>
+
+      <Suspense fallback={<WidgetSkeleton />}>
         <DietWidget />
       </Suspense>
 
@@ -607,10 +610,6 @@ export default function DashboardPage() {
       {/* Secondary widgets */}
       <Suspense fallback={<WidgetSkeleton />}>
         <GoalsWidget />
-      </Suspense>
-
-      <Suspense fallback={<WidgetSkeleton />}>
-        <GroceriesWidget />
       </Suspense>
 
       <Suspense fallback={<WidgetSkeleton />}>

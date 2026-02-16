@@ -31,7 +31,7 @@ export function DashboardClient({
   // Convert children to array and filter based on today mode
   const childArray = Array.isArray(children) ? children : [children];
 
-  // In Today Mode, only show first 3 widgets (Tasks, Groceries, Quote)
+  // In Today Mode, only show first 3 widgets (Tasks, Fitness, Groceries)
   const visibleChildren = todayMode ? childArray.slice(0, 3) : childArray;
 
   return (
