@@ -26,10 +26,12 @@ Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping 
 
 ### UI Patterns
 - Mobile-first (390px base)
-- Bottom tab nav: Dashboard, Tasks, Fitness, Finance, Journal
+- Bottom tab nav: Dashboard, Tasks, Fitness, Diet, More
 - Top-right menu for: Goals, Learn, Creative, Settings
 - FAB for quick-add actions
 - Components: Card, ListRow, BottomSheet, Modal, Tabs, FAB, StatChip
+- Dashboard widget order: Tasks, Fitness, Groceries, Diet, Finance, Journal, Goals, Quote, News, Creative
+- Tasks & Groceries show ALL items on dashboard (no preview limit)
 
 ### Animation Guidelines
 - Page transitions: subtle fade/slide

@@ -2,7 +2,7 @@
 
 **Project:** Personal Dashboard / Life OS for Evan
 **Started:** January 2026
-**Last Updated:** February 11, 2026
+**Last Updated:** February 15, 2026
 
 ---
 
@@ -1118,14 +1118,55 @@ Files: `app/(dashboard)/fitness/fitness-client.tsx`
 
 ---
 
-## Next Session TODO
+## Session Summary: February 15, 2026
 
-1. Test app for a week and note friction points
-2. Implement Quick Add from Dashboard
-3. Add Today Focus View
-4. Consider Perplexity API for stock research
-5. Address any bugs found during testing
+### Dashboard Widget Reorder & Full Lists ✅
+
+Reordered dashboard widgets and removed preview limits so the dashboard acts as a true daily reminder.
+
+**Widget Order (New):**
+1. Tasks
+2. Fitness
+3. Groceries (moved up from 7th)
+4. Diet
+5. Finance
+6. Journal
+7. Goals
+8. Daily Inspiration
+9. Daily News
+10. Creative Ideas
+
+**Tasks Widget - Show All:**
+- Removed `.slice(0, 5)` limit on pending tasks
+- All pending tasks now display on the dashboard every time
+- Acts as a persistent reminder of everything to do
+
+**Groceries Widget - Show All:**
+- Removed `.slice(0, 5)` limit on unchecked items
+- Full shopping list visible right from the dashboard
+
+**Today Mode Updated:**
+- Now shows Tasks, Fitness, Groceries (top 3 widgets)
+- Previously showed Tasks, Fitness, Diet
+
+### Fitness Mobile Layout ✅
+
+Confirmed the "scrunched" workout tab issue was already fixed in previous session (commit `7ec2d53`). Layout is properly spaced with card-based exercise display.
+
+### Files Modified This Session
+
+- `app/(dashboard)/page.tsx` - Widget reorder, removed preview limits
+- `app/(dashboard)/dashboard-client.tsx` - Updated Today Mode comment
 
 ---
 
-*Last updated: February 11, 2026*
+## Next Session TODO
+
+1. Continue testing app daily and note friction points
+2. Implement Quick Add from Dashboard
+3. Consider Perplexity API for stock research
+4. Address any bugs found during testing
+
+---
+
+*Last updated: February 15, 2026*
