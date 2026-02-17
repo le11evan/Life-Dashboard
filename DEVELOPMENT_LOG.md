@@ -2,7 +2,7 @@
 
 **Project:** Personal Dashboard / Life OS for Evan
 **Started:** January 2026
-**Last Updated:** February 15, 2026
+**Last Updated:** February 16, 2026
 
 ---
 
@@ -14,7 +14,7 @@ A comprehensive personal life management dashboard built as a mobile-first Progr
 
 ## Tech Stack
 
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
 - **Styling:** TailwindCSS with custom dark theme
 - **UI Components:** shadcn/ui (customized)
@@ -1160,6 +1160,42 @@ Confirmed the "scrunched" workout tab issue was already fixed in previous sessio
 
 ---
 
+## Session Summary: February 16, 2026
+
+### Dashboard Tasks Bug Fix ✅
+
+Investigated and resolved a bug where tasks were not displaying on the homepage dashboard widget, even though they appeared on the /tasks page.
+
+### README Overhaul for Resume Showcase ✅
+
+Enhanced the README to properly showcase the project for portfolio/resume use.
+
+**Screenshots Added:**
+- `public/screenshots/dashboard-top.jpeg` — Dashboard home with greeting, tasks, fitness, diet
+- `public/screenshots/dashboard-bottom.jpeg` — Groceries, daily inspiration, news widgets
+- `public/screenshots/fitness-tracker.jpeg` — Workout template with exercise logging
+- Screenshots displayed side-by-side at the top of the README with captions
+
+**README Enhancements:**
+- Added React 19 and Vercel deployment badges
+- Expanded feature table to cover all 10 modules with detailed descriptions
+- Added architecture section (streaming Suspense, server components, Zod validation)
+- Included project stats (~10K LOC, 63 source files, 17 Prisma models)
+- Cleaned up tech stack table and deployment instructions
+
+### Documentation Updates ✅
+
+- Fixed stale tech stack in CLAUDE.md and DEVELOPMENT_LOG.md (Next.js 14 → 16)
+
+### Files Modified This Session
+
+- `README.md` — Enhanced with screenshots and resume-ready content
+- `public/screenshots/` — NEW: 3 app screenshots with clean filenames
+- `CLAUDE.md` — Fixed Next.js version
+- `DEVELOPMENT_LOG.md` — Added session summary, fixed Next.js version
+
+---
+
 ## Next Session TODO
 
 1. Continue testing app daily and note friction points
@@ -1169,4 +1205,4 @@ Confirmed the "scrunched" workout tab issue was already fixed in previous sessio
 
 ---
 
-*Last updated: February 15, 2026*
+*Last updated: February 16, 2026*

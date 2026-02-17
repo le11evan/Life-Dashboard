@@ -4,7 +4,7 @@
 Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping priority.
 
 ## Tech Stack
-- **Framework**: Next.js 14 (App Router) + TypeScript
+- **Framework**: Next.js 16 (App Router) + TypeScript
 - **Styling**: TailwindCSS + shadcn/ui
 - **Animation**: Framer Motion (respect prefers-reduced-motion)
 - **Database**: Prisma + Vercel Postgres
