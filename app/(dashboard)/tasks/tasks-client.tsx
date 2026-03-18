@@ -190,8 +190,9 @@ export function TasksClient({
 
   function handleCustomDate(dateString: string) {
     if (dateString) {
-      const date = new Date(dateString);
-      date.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+      // Parse YYYY-MM-DD parts to avoid UTC midnight interpretation
+      const [year, month, day] = dateString.split("-").map(Number);
+      const date = new Date(year, month - 1, day, 12, 0, 0, 0);
       setNewDueDate(date.toISOString());
     }
     setShowDatePicker(false);

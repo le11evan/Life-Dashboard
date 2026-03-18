@@ -48,7 +48,7 @@ export function FitnessClient({
   const [isPending, startTransition] = useTransition();
   const [templates, setTemplates] = useState(initialTemplates);
   const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(
-    new Set(selectedTemplateId ? [selectedTemplateId] : initialTemplates.map((t) => t.id))
+    new Set(selectedTemplateId ? [selectedTemplateId] : [])
   );
 
   // Template sheet state
