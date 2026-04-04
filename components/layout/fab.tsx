@@ -21,7 +21,7 @@ export function FAB() {
       {/* FAB Button */}
       <motion.button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 z-50 w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-600 text-white rounded-full shadow-lg shadow-violet-500/30 flex items-center justify-center md:hidden"
+        className="fixed bottom-20 right-4 z-50 w-14 h-14 bg-gradient-to-br from-[#FF2D78] to-[#9D4EDD] text-white rounded-full shadow-lg shadow-[#FF2D78]/30 flex items-center justify-center md:hidden"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -52,7 +52,7 @@ export function FAB() {
 
       {/* Quick Add Sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08]">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Quick Add</SheetTitle>
           </SheetHeader>

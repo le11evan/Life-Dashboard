@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { Mark47 } from "@/components/ui/mark-47";
 import {
   LayoutDashboard,
   CheckSquare,
@@ -19,29 +20,26 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, color: "violet" },
-  { href: "/tasks", label: "Tasks", icon: CheckSquare, color: "blue" },
-  { href: "/fitness", label: "Fitness", icon: Dumbbell, color: "red" },
-  { href: "/diet", label: "Diet", icon: Apple, color: "lime" },
-  { href: "/finance", label: "Finance", icon: Wallet, color: "emerald" },
-  { href: "/journal", label: "Journal", icon: BookOpen, color: "amber" },
-  { href: "/groceries", label: "Groceries", icon: ShoppingCart, color: "green" },
-  { href: "/goals", label: "Goals", icon: Target, color: "purple" },
-  { href: "/learn", label: "Learn", icon: GraduationCap, color: "indigo" },
-  { href: "/creative", label: "Creative", icon: Lightbulb, color: "pink" },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, color: "pink" },
+  { href: "/tasks", label: "Tasks", icon: CheckSquare, color: "cyan" },
+  { href: "/fitness", label: "Fitness", icon: Dumbbell, color: "orange" },
+  { href: "/diet", label: "Diet", icon: Apple, color: "green" },
+  { href: "/finance", label: "Finance", icon: Wallet, color: "purple" },
+  { href: "/journal", label: "Journal", icon: BookOpen, color: "yellow" },
+  { href: "/groceries", label: "Groceries", icon: ShoppingCart, color: "teal" },
+  { href: "/goals", label: "Goals", icon: Target, color: "pink" },
+  { href: "/learn", label: "Learn", icon: GraduationCap, color: "cyan" },
+  { href: "/creative", label: "Creative", icon: Lightbulb, color: "purple" },
 ];
 
 const colorClasses: Record<string, { active: string; icon: string }> = {
-  violet: { active: "bg-violet-500/20 border-violet-500/30", icon: "text-violet-400" },
-  blue: { active: "bg-blue-500/20 border-blue-500/30", icon: "text-blue-400" },
-  green: { active: "bg-green-500/20 border-green-500/30", icon: "text-green-400" },
-  red: { active: "bg-red-500/20 border-red-500/30", icon: "text-red-400" },
-  lime: { active: "bg-lime-500/20 border-lime-500/30", icon: "text-lime-400" },
-  emerald: { active: "bg-emerald-500/20 border-emerald-500/30", icon: "text-emerald-400" },
-  amber: { active: "bg-amber-500/20 border-amber-500/30", icon: "text-amber-400" },
-  purple: { active: "bg-purple-500/20 border-purple-500/30", icon: "text-purple-400" },
-  indigo: { active: "bg-indigo-500/20 border-indigo-500/30", icon: "text-indigo-400" },
-  pink: { active: "bg-pink-500/20 border-pink-500/30", icon: "text-pink-400" },
+  pink: { active: "bg-[#FF2D78]/15 border-[#FF2D78]/30", icon: "text-[#FF2D78]" },
+  cyan: { active: "bg-[#00E5FF]/15 border-[#00E5FF]/30", icon: "text-[#00E5FF]" },
+  orange: { active: "bg-[#FF6B35]/15 border-[#FF6B35]/30", icon: "text-[#FF6B35]" },
+  green: { active: "bg-[#39FF14]/15 border-[#39FF14]/30", icon: "text-[#39FF14]" },
+  purple: { active: "bg-[#9D4EDD]/15 border-[#9D4EDD]/30", icon: "text-[#9D4EDD]" },
+  yellow: { active: "bg-[#FFD600]/15 border-[#FFD600]/30", icon: "text-[#FFD600]" },
+  teal: { active: "bg-teal-500/15 border-teal-500/30", icon: "text-teal-400" },
 };
 
 export function Sidebar() {
@@ -59,7 +57,7 @@ export function Sidebar() {
         className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all border ${
           isActive
             ? `${colors.active} text-white`
-            : "text-slate-400 hover:bg-slate-800/50 hover:text-white border-transparent"
+            : "text-[#8888a0] hover:bg-white/[0.03] hover:text-white border-transparent"
         }`}
       >
         <Icon className={`w-5 h-5 ${isActive ? colors.icon : ""}`} />
@@ -76,24 +74,25 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen bg-slate-950/50 backdrop-blur-xl border-r border-white/5 p-4">
+    <aside className="hidden md:flex flex-col w-64 h-screen bg-[#0e0e1a]/80 backdrop-blur-xl border-r border-white/[0.06] p-4">
       <div className="flex items-center gap-3 px-3 py-4 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-          <span className="text-lg text-white font-bold">L</span>
+        <Mark47 size={36} gradient />
+        <div>
+          <span className="text-lg font-semibold text-white">elevan</span>
+          <span className="text-lg font-semibold text-[#FF2D78]">.life</span>
         </div>
-        <span className="text-lg font-semibold text-white">Life Dashboard</span>
       </div>
 
-      <nav className="flex-1 space-y-1">
+      <nav className="flex-1 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <NavItem key={item.href} item={item} />
         ))}
       </nav>
 
-      <div className="border-t border-white/5 pt-4 space-y-1">
+      <div className="border-t border-white/[0.06] pt-4 space-y-1">
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#8888a0] hover:bg-white/[0.03] hover:text-white transition-colors"
         >
           <Settings className="w-5 h-5" />
           <span className="font-medium">Settings</span>
@@ -104,11 +103,16 @@ export function Sidebar() {
               window.location.href = "/login";
             });
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#8888a0] hover:bg-red-500/10 hover:text-red-400 transition-colors"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Logout</span>
         </button>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-3 pt-3 border-t border-white/[0.04]">
+        <p className="text-[10px] text-[#8888a0]/40 text-center">elevan.life v2.0</p>
       </div>
     </aside>
   );

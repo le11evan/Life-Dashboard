@@ -20,39 +20,25 @@ import {
 } from "lucide-react";
 
 const primaryNavItems = [
-  { href: "/", label: "Home", icon: LayoutDashboard, color: "violet" },
-  { href: "/tasks", label: "Tasks", icon: CheckSquare, color: "blue" },
-  { href: "/fitness", label: "Fitness", icon: Dumbbell, color: "red" },
-  { href: "/diet", label: "Diet", icon: Apple, color: "lime" },
+  { href: "/", label: "Home", icon: LayoutDashboard, activeColor: "text-[#FF2D78]", dotColor: "bg-[#FF2D78]" },
+  { href: "/tasks", label: "Tasks", icon: CheckSquare, activeColor: "text-[#00E5FF]", dotColor: "bg-[#00E5FF]" },
+  { href: "/fitness", label: "Fitness", icon: Dumbbell, activeColor: "text-[#FF6B35]", dotColor: "bg-[#FF6B35]" },
+  { href: "/diet", label: "Diet", icon: Apple, activeColor: "text-[#39FF14]", dotColor: "bg-[#39FF14]" },
 ];
 
 const moreNavItems = [
-  { href: "/finance", label: "Finance", icon: Wallet, color: "emerald" },
-  { href: "/journal", label: "Journal", icon: BookOpen, color: "amber" },
-  { href: "/groceries", label: "Groceries", icon: ShoppingCart, color: "green" },
-  { href: "/goals", label: "Goals", icon: Target, color: "purple" },
-  { href: "/creative", label: "Creative", icon: Lightbulb, color: "pink" },
-  { href: "/settings", label: "Settings", icon: Settings, color: "slate" },
+  { href: "/finance", label: "Finance", icon: Wallet, activeColor: "text-[#9D4EDD]", activeBg: "bg-[#9D4EDD]/15" },
+  { href: "/journal", label: "Journal", icon: BookOpen, activeColor: "text-[#FFD600]", activeBg: "bg-[#FFD600]/15" },
+  { href: "/groceries", label: "Groceries", icon: ShoppingCart, activeColor: "text-teal-400", activeBg: "bg-teal-500/15" },
+  { href: "/goals", label: "Goals", icon: Target, activeColor: "text-[#FF2D78]", activeBg: "bg-[#FF2D78]/15" },
+  { href: "/creative", label: "Creative", icon: Lightbulb, activeColor: "text-[#9D4EDD]", activeBg: "bg-[#9D4EDD]/15" },
+  { href: "/settings", label: "Settings", icon: Settings, activeColor: "text-[#8888a0]", activeBg: "bg-white/[0.05]" },
 ];
-
-const colorClasses: Record<string, { text: string; bg: string }> = {
-  violet: { text: "text-violet-400", bg: "bg-violet-400" },
-  blue: { text: "text-blue-400", bg: "bg-blue-400" },
-  red: { text: "text-red-400", bg: "bg-red-400" },
-  lime: { text: "text-lime-400", bg: "bg-lime-400" },
-  slate: { text: "text-slate-400", bg: "bg-slate-400" },
-  emerald: { text: "text-emerald-400", bg: "bg-emerald-400" },
-  amber: { text: "text-amber-400", bg: "bg-amber-400" },
-  green: { text: "text-green-400", bg: "bg-green-400" },
-  purple: { text: "text-purple-400", bg: "bg-purple-400" },
-  pink: { text: "text-pink-400", bg: "bg-pink-400" },
-};
 
 export function BottomNav() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
 
-  // Check if current page is in the "more" section
   const isMoreActive = moreNavItems.some(
     (item) => pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
   );
@@ -66,21 +52,21 @@ export function BottomNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-40 bg-[#0a0a14]/80 backdrop-blur-sm md:hidden"
             onClick={() => setMoreOpen(false)}
           >
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="absolute bottom-20 left-4 right-4 bg-slate-900 rounded-2xl border border-white/10 p-4"
+              className="absolute bottom-20 left-4 right-4 bg-[#12121e] rounded-2xl border border-white/[0.08] p-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium text-white">More</span>
                 <button
                   onClick={() => setMoreOpen(false)}
-                  className="p-1 text-slate-400 hover:text-white"
+                  className="p-1 text-[#8888a0] hover:text-white"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -91,7 +77,6 @@ export function BottomNav() {
                     pathname === item.href ||
                     (item.href !== "/" && pathname.startsWith(item.href));
                   const Icon = item.icon;
-                  const colors = colorClasses[item.color];
 
                   return (
                     <Link
@@ -100,8 +85,8 @@ export function BottomNav() {
                       onClick={() => setMoreOpen(false)}
                       className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-colors ${
                         isActive
-                          ? `bg-${item.color}-500/20 ${colors.text}`
-                          : "text-slate-400 hover:bg-slate-800"
+                          ? `${item.activeBg} ${item.activeColor}`
+                          : "text-[#8888a0] hover:bg-white/[0.03]"
                       }`}
                     >
                       <Icon className="w-6 h-6" />
@@ -116,14 +101,13 @@ export function BottomNav() {
       </AnimatePresence>
 
       {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-xl border-t border-white/5 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a14]/90 backdrop-blur-xl border-t border-white/[0.06] md:hidden">
         <div className="flex items-center justify-around h-16 px-2">
           {primaryNavItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== "/" && pathname.startsWith(item.href));
             const Icon = item.icon;
-            const colors = colorClasses[item.color];
 
             return (
               <Link
@@ -134,7 +118,7 @@ export function BottomNav() {
                 <motion.div
                   whileTap={{ scale: 0.9 }}
                   className={`flex flex-col items-center gap-1 ${
-                    isActive ? colors.text : "text-slate-500"
+                    isActive ? item.activeColor : "text-[#8888a0]/60"
                   }`}
                 >
                   <div className="relative">
@@ -142,7 +126,7 @@ export function BottomNav() {
                     {isActive && (
                       <motion.div
                         layoutId="bottomNavIndicator"
-                        className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${colors.bg}`}
+                        className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${item.dotColor}`}
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                       />
                     )}
@@ -161,7 +145,7 @@ export function BottomNav() {
             <motion.div
               whileTap={{ scale: 0.9 }}
               className={`flex flex-col items-center gap-1 ${
-                isMoreActive || moreOpen ? "text-white" : "text-slate-500"
+                isMoreActive || moreOpen ? "text-white" : "text-[#8888a0]/60"
               }`}
             >
               <div className="relative">

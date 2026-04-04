@@ -1,26 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Exo_2, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const exo2 = Exo_2({
+  variable: "--font-exo2",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Life Dashboard",
-  description: "Personal dashboard for daily life management",
+  title: "elevan.life",
+  description: "Personal life dashboard by elevan — tasks, fitness, diet, finance, journal, goals, and more.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black",
-    title: "Life Dashboard",
+    statusBarStyle: "black-translucent",
+    title: "elevan.life",
   },
 };
 
@@ -29,7 +31,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#020617",
+  themeColor: "#0a0a14",
   viewportFit: "cover",
 };
 
@@ -39,14 +41,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="theme-color" content="#020617" />
+        <meta name="theme-color" content="#0a0a14" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#020617]`}
+        className={`${exo2.variable} ${jetbrainsMono.variable} antialiased bg-[#0a0a14]`}
       >
         {children}
         <Toaster />

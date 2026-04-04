@@ -10,6 +10,7 @@ import {
   CheckCircle,
   Loader2,
 } from "lucide-react";
+import { Mark47 } from "@/components/ui/mark-47";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { exportAllData, getBackupStats } from "@/lib/actions/backup";
@@ -48,7 +49,7 @@ export default function SettingsPage() {
       const a = document.createElement("a");
       const date = new Date().toISOString().split("T")[0];
       a.href = url;
-      a.download = `life-dashboard-backup-${date}.json`;
+      a.download = `elevan-life-backup-${date}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -66,10 +67,10 @@ export default function SettingsPage() {
         className="mb-6"
       >
         <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-          <Settings className="w-6 h-6" />
+          <Settings className="w-6 h-6 text-[#FF2D78]" />
           Settings
         </h1>
-        <p className="text-slate-400">App preferences and data management</p>
+        <p className="text-[#8888a0]">App preferences and data management</p>
       </motion.div>
 
       <motion.div
@@ -79,15 +80,15 @@ export default function SettingsPage() {
         className="space-y-4"
       >
         {/* Data Backup Card */}
-        <Card className="rounded-2xl bg-slate-800/50 border-white/10">
+        <Card className="rounded-2xl bg-[#12121e] border-white/[0.08]">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2 text-white">
-              <Database className="w-5 h-5 text-violet-400" />
+              <Database className="w-5 h-5 text-[#00E5FF]" />
               Data Backup
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[#8888a0]">
               Export all your data as a JSON file for backup or migration.
             </p>
 
@@ -111,7 +112,7 @@ export default function SettingsPage() {
             <Button
               onClick={handleExport}
               disabled={isPending}
-              className="w-full sm:w-auto bg-violet-500 hover:bg-violet-600 text-white"
+              className="w-full sm:w-auto bg-[#FF2D78] hover:bg-[#FF1565] text-white"
             >
               {isPending ? (
                 <>
@@ -134,7 +135,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Account Card */}
-        <Card className="rounded-2xl bg-slate-800/50 border-white/10">
+        <Card className="rounded-2xl bg-[#12121e] border-white/[0.08]">
           <CardHeader>
             <CardTitle className="text-base text-white">Account</CardTitle>
           </CardHeader>
@@ -155,18 +156,23 @@ export default function SettingsPage() {
         </Card>
 
         {/* About Card */}
-        <Card className="rounded-2xl bg-slate-800/50 border-white/10">
+        <Card className="rounded-2xl bg-[#12121e] border-white/[0.08]">
           <CardHeader>
             <CardTitle className="text-base text-white">About</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-400">
-              Life Dashboard v1.0.0
-            </p>
-            <p className="text-sm text-slate-400">
-              Personal dashboard for daily life management.
-            </p>
-            <p className="text-sm text-slate-500 mt-2">
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Mark47 size={32} gradient />
+              <div>
+                <p className="text-sm font-semibold text-white">
+                  elevan<span className="text-[#FF2D78]">.life</span> v2.0
+                </p>
+                <p className="text-xs text-[#8888a0]">
+                  Personal dashboard by elevan
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-[#8888a0]/60">
               Timezone: Los Angeles (Pacific)
             </p>
           </CardContent>
@@ -189,18 +195,18 @@ function StatBadge({
     <div
       className={`px-3 py-2 rounded-lg text-center ${
         highlight
-          ? "bg-violet-500/20 border border-violet-500/30"
-          : "bg-slate-700/50"
+          ? "bg-[#FF2D78]/15 border border-[#FF2D78]/30"
+          : "bg-white/[0.03] border border-white/[0.04]"
       }`}
     >
       <p
         className={`text-lg font-bold ${
-          highlight ? "text-violet-400" : "text-white"
+          highlight ? "text-[#FF2D78]" : "text-white"
         }`}
       >
         {value}
       </p>
-      <p className="text-xs text-slate-400">{label}</p>
+      <p className="text-xs text-[#8888a0]">{label}</p>
     </div>
   );
 }

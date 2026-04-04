@@ -255,9 +255,9 @@ export function FitnessClient({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -266,7 +266,7 @@ export function FitnessClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Fitness</h1>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#8888a0]">
                   {templates.length} workout{templates.length !== 1 ? "s" : ""} •{" "}
                   {templates.reduce((acc, t) => acc + t.exercises.length, 0)} exercises
                 </p>
@@ -289,9 +289,9 @@ export function FitnessClient({
       <div className="px-4 py-4 space-y-4">
         {templates.length === 0 ? (
           <div className="text-center py-12">
-            <Dumbbell className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+            <Dumbbell className="w-12 h-12 text-[#8888a0]/40 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">No Workouts Yet</h3>
-            <p className="text-slate-400 mb-4">Create your first workout template to get started.</p>
+            <p className="text-[#8888a0] mb-4">Create your first workout template to get started.</p>
             <Button onClick={openNewTemplate} className="bg-red-500 hover:bg-red-600">
               <Plus className="w-4 h-4 mr-1" />
               Create Workout
@@ -302,7 +302,7 @@ export function FitnessClient({
             <motion.div
               key={template.id}
               layout
-              className="rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-800/30 border border-white/10 overflow-hidden"
+              className="rounded-2xl bg-gradient-to-br from-white/[0.04] to-white/[0.03] border border-white/[0.08] overflow-hidden"
             >
               {/* Template Header */}
               <div
@@ -310,7 +310,7 @@ export function FitnessClient({
                 onClick={() => toggleTemplate(template.id)}
               >
                 <div className="flex items-center gap-3">
-                  <button className="text-slate-400">
+                  <button className="text-[#8888a0]">
                     {expandedTemplates.has(template.id) ? (
                       <ChevronUp className="w-5 h-5" />
                     ) : (
@@ -319,7 +319,7 @@ export function FitnessClient({
                   </button>
                   <div>
                     <h2 className="font-bold text-white text-lg">{template.name}</h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[#8888a0]">
                       {template.exercises.length} exercise{template.exercises.length !== 1 ? "s" : ""} •{" "}
                       {template.exercises.reduce((acc, e) => {
                         const match = e.sets.match(/\d+/);
@@ -331,13 +331,13 @@ export function FitnessClient({
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => openEditTemplate(template)}
-                    className="p-2 text-slate-400 hover:text-white transition-colors"
+                    className="p-2 text-[#8888a0] hover:text-white transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteTemplate(template.id)}
-                    className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                    className="p-2 text-[#8888a0] hover:text-red-400 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -353,9 +353,9 @@ export function FitnessClient({
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <div className="border-t border-white/10">
+                    <div className="border-t border-white/[0.08]">
                       {/* Exercise Cards */}
-                      <div className="divide-y divide-white/5">
+                      <div className="divide-y divide-white/[0.06]">
                         {template.exercises.map((exercise) => (
                           <div
                             key={exercise.id}
@@ -365,7 +365,7 @@ export function FitnessClient({
                             <div className="flex items-start justify-between gap-2 mb-2">
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-white font-medium">{exercise.name}</p>
-                                <p className="text-xs text-slate-400 mt-0.5">
+                                <p className="text-xs text-[#8888a0] mt-0.5">
                                   {exercise.sets} • {exercise.repRange} reps
                                 </p>
                               </div>
@@ -379,7 +379,7 @@ export function FitnessClient({
                                 </button>
                                 <button
                                   onClick={() => openEditExercise(exercise)}
-                                  className="p-2 text-slate-400 hover:text-white transition-colors"
+                                  className="p-2 text-[#8888a0] hover:text-white transition-colors"
                                   title="Edit exercise"
                                 >
                                   <MoreVertical className="w-4 h-4" />
@@ -388,7 +388,7 @@ export function FitnessClient({
                             </div>
 
                             {/* Recent Log */}
-                            <div className="text-xs text-slate-500 bg-slate-800/30 rounded-lg px-2 py-1.5">
+                            <div className="text-xs text-[#8888a0]/60 bg-white/[0.03] rounded-lg px-2 py-1.5">
                               {exercise.logs.length > 0 ? (
                                 formatLogEntry(exercise.logs[0])
                               ) : (
@@ -399,17 +399,17 @@ export function FitnessClient({
                         ))}
 
                         {template.exercises.length === 0 && (
-                          <div className="px-4 py-6 text-center text-slate-400 text-sm">
+                          <div className="px-4 py-6 text-center text-[#8888a0] text-sm">
                             No exercises yet. Add your first one.
                           </div>
                         )}
                       </div>
 
                       {/* Add Exercise Button */}
-                      <div className="p-3 border-t border-white/5">
+                      <div className="p-3 border-t border-white/[0.06]">
                         <button
                           onClick={() => openNewExercise(template.id)}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#8888a0] hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                         >
                           <Plus className="w-4 h-4" />
                           Add Exercise
@@ -426,7 +426,7 @@ export function FitnessClient({
 
       {/* Template Sheet */}
       <Sheet open={templateSheetOpen} onOpenChange={setTemplateSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               {editingTemplate ? "Edit Workout" : "New Workout"}
@@ -435,12 +435,12 @@ export function FitnessClient({
 
           <div className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Workout Name</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Workout Name</label>
               <Input
                 placeholder="e.g. PUSH DAY, PULL DAY, LEGS"
                 value={templateName}
                 onChange={(e) => setTemplateName(e.target.value)}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500 uppercase"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60 uppercase"
               />
             </div>
 
@@ -457,7 +457,7 @@ export function FitnessClient({
 
       {/* Exercise Sheet */}
       <Sheet open={exerciseSheetOpen} onOpenChange={setExerciseSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[70vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[70vh] overflow-y-auto bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               {editingExercise ? "Edit Exercise" : "Add Exercise"}
@@ -466,43 +466,43 @@ export function FitnessClient({
 
           <div className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Exercise Name</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Exercise Name</label>
               <Input
                 placeholder="e.g. Smith Incline Chest Press (24hr)"
                 value={exerciseForm.name}
                 onChange={(e) => setExerciseForm({ ...exerciseForm, name: e.target.value })}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Sets</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Sets</label>
                 <Input
                   placeholder="e.g. 2 Working Sets"
                   value={exerciseForm.sets}
                   onChange={(e) => setExerciseForm({ ...exerciseForm, sets: e.target.value })}
-                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                  className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Rep Range</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Rep Range</label>
                 <Input
                   placeholder="e.g. 8-12"
                   value={exerciseForm.repRange}
                   onChange={(e) => setExerciseForm({ ...exerciseForm, repRange: e.target.value })}
-                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                  className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Notes (optional)</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Notes (optional)</label>
               <Input
                 placeholder="e.g. Equipment, tips, etc."
                 value={exerciseForm.notes}
                 onChange={(e) => setExerciseForm({ ...exerciseForm, notes: e.target.value })}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               />
             </div>
 
@@ -530,7 +530,7 @@ export function FitnessClient({
 
       {/* Log Sheet */}
       <Sheet open={logSheetOpen} onOpenChange={setLogSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-auto bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               Log: {loggingExercise?.name}
@@ -538,48 +538,48 @@ export function FitnessClient({
           </SheetHeader>
 
           <div className="space-y-4 pb-8">
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[#8888a0]">
               Target: {loggingExercise?.sets} @ {loggingExercise?.repRange} reps
             </p>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Weight (lbs)</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Weight (lbs)</label>
               <Input
                 type="number"
                 placeholder="e.g. 135"
                 value={logForm.weight}
                 onChange={(e) => setLogForm({ ...logForm, weight: e.target.value })}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Set 1 Reps</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Set 1 Reps</label>
                 <Input
                   type="number"
                   placeholder="e.g. 8"
                   value={logForm.reps}
                   onChange={(e) => setLogForm({ ...logForm, reps: e.target.value })}
-                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                  className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Set 2 Reps (optional)</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Set 2 Reps (optional)</label>
                 <Input
                   type="number"
                   placeholder="e.g. 6"
                   value={logForm.reps2}
                   onChange={(e) => setLogForm({ ...logForm, reps2: e.target.value })}
-                  className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                  className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
                 />
               </div>
             </div>
 
             {loggingExercise && loggingExercise.logs.length > 0 && (
-              <div className="bg-slate-800/50 rounded-xl p-3">
-                <p className="text-xs font-medium text-slate-400 mb-2">Recent logs:</p>
-                <p className="text-sm text-slate-300">
+              <div className="bg-white/[0.03] rounded-xl p-3">
+                <p className="text-xs font-medium text-[#8888a0] mb-2">Recent logs:</p>
+                <p className="text-sm text-white/80">
                   {loggingExercise.logs.slice(0, 3).map(formatLogEntry).join(" | ")}
                 </p>
               </div>

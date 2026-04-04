@@ -224,9 +224,9 @@ export function DietClient({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ export function DietClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Diet & Nutrition</h1>
-                <div className="flex items-center gap-2 text-xs text-slate-400">
+                <div className="flex items-center gap-2 text-xs text-[#8888a0]">
                   <span>{activeSupplementCount} active supplements</span>
                   {latestWeight && (
                     <span className="flex items-center gap-1 text-lime-400">
@@ -283,7 +283,7 @@ export function DietClient({
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 bg-slate-800/50 rounded-xl p-1">
+          <div className="flex gap-1 bg-white/[0.03] rounded-xl p-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -291,8 +291,8 @@ export function DietClient({
                 className={cn(
                   "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all",
                   activeTab === tab.id
-                    ? "bg-slate-700 text-white"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-white/[0.06] text-white"
+                    : "text-[#8888a0] hover:text-white"
                 )}
               >
                 {tab.icon}
@@ -328,14 +328,14 @@ export function DietClient({
               </div>
 
               {/* Calories - Featured */}
-              <div className="bg-slate-800/50 rounded-xl p-4 mb-4">
+              <div className="bg-white/[0.03] rounded-xl p-4 mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-orange-500/20">
                       <Flame className="w-6 h-6 text-orange-400" />
                     </div>
                     <div>
-                      <div className="text-sm text-slate-400">Daily Calories</div>
+                      <div className="text-sm text-[#8888a0]">Daily Calories</div>
                       <div className="text-2xl font-bold text-white">{dietGoals.calories}</div>
                     </div>
                   </div>
@@ -344,36 +344,36 @@ export function DietClient({
 
               {/* Macros Grid */}
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="bg-slate-800/50 rounded-xl p-3 text-center">
+                <div className="bg-white/[0.03] rounded-xl p-3 text-center">
                   <Beef className="w-5 h-5 text-red-400 mx-auto mb-1" />
                   <div className="text-xl font-bold text-white">{dietGoals.protein}g</div>
-                  <div className="text-xs text-slate-400">Protein</div>
+                  <div className="text-xs text-[#8888a0]">Protein</div>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-3 text-center">
+                <div className="bg-white/[0.03] rounded-xl p-3 text-center">
                   <Wheat className="w-5 h-5 text-amber-400 mx-auto mb-1" />
                   <div className="text-xl font-bold text-white">{dietGoals.carbs}g</div>
-                  <div className="text-xs text-slate-400">Carbs</div>
+                  <div className="text-xs text-[#8888a0]">Carbs</div>
                 </div>
-                <div className="bg-slate-800/50 rounded-xl p-3 text-center">
+                <div className="bg-white/[0.03] rounded-xl p-3 text-center">
                   <Droplet className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
                   <div className="text-xl font-bold text-white">{dietGoals.fat}g</div>
-                  <div className="text-xs text-slate-400">Fat</div>
+                  <div className="text-xs text-[#8888a0]">Fat</div>
                 </div>
               </div>
 
               {/* Water & Fiber */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center justify-between bg-slate-800/50 rounded-xl p-3">
+                <div className="flex items-center justify-between bg-white/[0.03] rounded-xl p-3">
                   <div className="flex items-center gap-2">
                     <Droplets className="w-5 h-5 text-blue-400" />
-                    <span className="text-slate-400">Water</span>
+                    <span className="text-[#8888a0]">Water</span>
                   </div>
                   <span className="text-white font-semibold">{dietGoals.water}oz</span>
                 </div>
-                <div className="flex items-center justify-between bg-slate-800/50 rounded-xl p-3">
+                <div className="flex items-center justify-between bg-white/[0.03] rounded-xl p-3">
                   <div className="flex items-center gap-2">
                     <Wheat className="w-5 h-5 text-green-400" />
-                    <span className="text-slate-400">Fiber</span>
+                    <span className="text-[#8888a0]">Fiber</span>
                   </div>
                   <span className="text-white font-semibold">{dietGoals.fiber}g</span>
                 </div>
@@ -385,12 +385,12 @@ export function DietClient({
               <div className="rounded-xl p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/5 border border-purple-500/20">
                 <Pill className="w-5 h-5 text-purple-400 mb-2" />
                 <div className="text-2xl font-bold text-white">{activeSupplementCount}</div>
-                <div className="text-sm text-slate-400">Active Supplements</div>
+                <div className="text-sm text-[#8888a0]">Active Supplements</div>
               </div>
               <div className="rounded-xl p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-blue-500/20">
                 <Scale className="w-5 h-5 text-blue-400 mb-2" />
                 <div className="text-2xl font-bold text-white">{latestWeight?.weight || "---"}</div>
-                <div className="text-sm text-slate-400">Current Weight (lbs)</div>
+                <div className="text-sm text-[#8888a0]">Current Weight (lbs)</div>
               </div>
             </div>
           </div>
@@ -401,7 +401,7 @@ export function DietClient({
           <div className="space-y-4">
             {/* Active Supplements */}
             <div>
-              <h3 className="text-sm font-medium text-slate-400 mb-3">Active Supplements ({activeSupplementCount})</h3>
+              <h3 className="text-sm font-medium text-[#8888a0] mb-3">Active Supplements ({activeSupplementCount})</h3>
               <div className="space-y-2">
                 {supplements
                   .filter((s) => s.isActive)
@@ -423,7 +423,7 @@ export function DietClient({
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-slate-400 mt-1">
+                          <div className="text-sm text-[#8888a0] mt-1">
                             {FREQUENCY_OPTIONS.find((f) => f.value === supplement.frequency)?.label}
                             {supplement.timeOfDay && (
                               <span className="ml-2">
@@ -432,13 +432,13 @@ export function DietClient({
                             )}
                           </div>
                           {supplement.notes && (
-                            <p className="text-xs text-slate-500 mt-1 italic">{supplement.notes}</p>
+                            <p className="text-xs text-[#8888a0]/60 mt-1 italic">{supplement.notes}</p>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => editSupplement(supplement)}
-                            className="p-2 text-slate-400 hover:text-white transition-colors"
+                            className="p-2 text-[#8888a0] hover:text-white transition-colors"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -453,7 +453,7 @@ export function DietClient({
                     </motion.div>
                   ))}
                 {supplements.filter((s) => s.isActive).length === 0 && (
-                  <div className="text-center py-8 text-slate-400 text-sm">
+                  <div className="text-center py-8 text-[#8888a0] text-sm">
                     No active supplements. Add one to track your stack.
                   </div>
                 )}
@@ -463,7 +463,7 @@ export function DietClient({
             {/* Inactive Supplements */}
             {supplements.filter((s) => !s.isActive).length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-slate-400 mb-3">Inactive</h3>
+                <h3 className="text-sm font-medium text-[#8888a0] mb-3">Inactive</h3>
                 <div className="space-y-2">
                   {supplements
                     .filter((s) => !s.isActive)
@@ -471,25 +471,25 @@ export function DietClient({
                       <motion.div
                         key={supplement.id}
                         layout
-                        className="rounded-xl p-4 bg-slate-800/30 border border-white/5 opacity-60"
+                        className="rounded-xl p-4 bg-white/[0.03] border border-white/[0.06] opacity-60"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <span className="font-medium text-slate-400">{supplement.name}</span>
+                            <span className="font-medium text-[#8888a0]">{supplement.name}</span>
                             {supplement.dosage && (
-                              <span className="text-xs text-slate-500 ml-2">{supplement.dosage}</span>
+                              <span className="text-xs text-[#8888a0]/60 ml-2">{supplement.dosage}</span>
                             )}
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleToggleSupplement(supplement.id)}
-                              className="p-2 text-slate-500 hover:text-purple-400 transition-colors"
+                              className="p-2 text-[#8888a0]/60 hover:text-purple-400 transition-colors"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteSupplement(supplement.id)}
-                              className="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                              className="p-2 text-[#8888a0]/60 hover:text-red-400 transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -518,12 +518,12 @@ export function DietClient({
               <div className="flex items-end gap-4">
                 <div className="text-4xl font-bold text-white">
                   {latestWeight?.weight || "---"}
-                  <span className="text-lg text-slate-400 ml-1">lbs</span>
+                  <span className="text-lg text-[#8888a0] ml-1">lbs</span>
                 </div>
                 {weightChange !== null && (
                   <div className={cn(
                     "flex items-center gap-1 text-sm pb-1",
-                    weightChange > 0 ? "text-red-400" : weightChange < 0 ? "text-green-400" : "text-slate-400"
+                    weightChange > 0 ? "text-red-400" : weightChange < 0 ? "text-green-400" : "text-[#8888a0]"
                   )}>
                     {weightChange > 0 ? (
                       <TrendingUp className="w-4 h-4" />
@@ -537,7 +537,7 @@ export function DietClient({
             </div>
 
             {/* Weight Chart */}
-            <div className="rounded-2xl p-4 bg-gradient-to-br from-slate-800/50 to-slate-800/30 border border-white/10">
+            <div className="rounded-2xl p-4 bg-gradient-to-br from-white/[0.04] to-white/[0.03] border border-white/[0.08]">
               <h3 className="font-semibold text-white mb-4">Progress (Last 30 Days)</h3>
               {weightLogs.length > 1 ? (
                 <div className="h-48">
@@ -554,16 +554,16 @@ export function DietClient({
                           <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                      <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
-                      <YAxis stroke="#64748b" fontSize={12} domain={["dataMin - 5", "dataMax + 5"]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                      <XAxis dataKey="date" stroke="#8888a0" fontSize={12} />
+                      <YAxis stroke="#8888a0" fontSize={12} domain={["dataMin - 5", "dataMax + 5"]} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "#1e293b",
-                          border: "1px solid #334155",
+                          backgroundColor: "#12121e",
+                          border: "1px solid rgba(255,255,255,0.08)",
                           borderRadius: "8px",
                         }}
-                        labelStyle={{ color: "#f1f5f9" }}
+                        labelStyle={{ color: "#ffffff" }}
                       />
                       <Area
                         type="monotone"
@@ -576,7 +576,7 @@ export function DietClient({
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="text-center py-8 text-slate-400 text-sm">
+                <div className="text-center py-8 text-[#8888a0] text-sm">
                   Log more weights to see your progress chart
                 </div>
               )}
@@ -584,28 +584,28 @@ export function DietClient({
 
             {/* Weight History */}
             <div>
-              <h3 className="text-sm font-medium text-slate-400 mb-3">History</h3>
+              <h3 className="text-sm font-medium text-[#8888a0] mb-3">History</h3>
               <div className="space-y-2">
                 {[...weightLogs].reverse().slice(0, 10).map((log) => (
                   <div
                     key={log.id}
-                    className="flex items-center justify-between bg-slate-800/50 rounded-xl p-3"
+                    className="flex items-center justify-between bg-white/[0.03] rounded-xl p-3"
                   >
                     <div>
                       <div className="text-sm font-medium text-white">
                         {formatDate(log.date)}
                       </div>
                       {log.notes && (
-                        <div className="text-xs text-slate-500">{log.notes}</div>
+                        <div className="text-xs text-[#8888a0]/60">{log.notes}</div>
                       )}
                     </div>
                     <div className="text-lg font-semibold text-white">
-                      {log.weight} <span className="text-sm text-slate-400">lbs</span>
+                      {log.weight} <span className="text-sm text-[#8888a0]">lbs</span>
                     </div>
                   </div>
                 ))}
                 {weightLogs.length === 0 && (
-                  <div className="text-center py-8 text-slate-400 text-sm">
+                  <div className="text-center py-8 text-[#8888a0] text-sm">
                     No weight logs yet. Start tracking your progress.
                   </div>
                 )}
@@ -617,69 +617,69 @@ export function DietClient({
 
       {/* Goals Sheet */}
       <Sheet open={goalsSheetOpen} onOpenChange={setGoalsSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Edit Daily Goals</SheetTitle>
           </SheetHeader>
 
           <div className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Calorie Goal</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Calorie Goal</label>
               <Input
                 type="number"
                 value={goalsForm.calories}
                 onChange={(e) => setGoalsForm({ ...goalsForm, calories: Number(e.target.value) })}
-                className="bg-slate-800 border-white/10 text-white"
+                className="bg-white/[0.04] border-white/[0.08] text-white"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Protein (g)</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Protein (g)</label>
                 <Input
                   type="number"
                   value={goalsForm.protein}
                   onChange={(e) => setGoalsForm({ ...goalsForm, protein: Number(e.target.value) })}
-                  className="bg-slate-800 border-white/10 text-white"
+                  className="bg-white/[0.04] border-white/[0.08] text-white"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Carbs (g)</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Carbs (g)</label>
                 <Input
                   type="number"
                   value={goalsForm.carbs}
                   onChange={(e) => setGoalsForm({ ...goalsForm, carbs: Number(e.target.value) })}
-                  className="bg-slate-800 border-white/10 text-white"
+                  className="bg-white/[0.04] border-white/[0.08] text-white"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Fat (g)</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Fat (g)</label>
                 <Input
                   type="number"
                   value={goalsForm.fat}
                   onChange={(e) => setGoalsForm({ ...goalsForm, fat: Number(e.target.value) })}
-                  className="bg-slate-800 border-white/10 text-white"
+                  className="bg-white/[0.04] border-white/[0.08] text-white"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-slate-400">Fiber (g)</label>
+                <label className="text-sm font-medium mb-2 block text-[#8888a0]">Fiber (g)</label>
                 <Input
                   type="number"
                   value={goalsForm.fiber}
                   onChange={(e) => setGoalsForm({ ...goalsForm, fiber: Number(e.target.value) })}
-                  className="bg-slate-800 border-white/10 text-white"
+                  className="bg-white/[0.04] border-white/[0.08] text-white"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Water Goal (oz)</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Water Goal (oz)</label>
               <Input
                 type="number"
                 step="0.1"
                 value={goalsForm.water}
                 onChange={(e) => setGoalsForm({ ...goalsForm, water: Number(e.target.value) })}
-                className="bg-slate-800 border-white/10 text-white"
+                className="bg-white/[0.04] border-white/[0.08] text-white"
               />
             </div>
 
@@ -699,7 +699,7 @@ export function DietClient({
         setSupplementSheetOpen(open);
         if (!open) resetSupplementForm();
       }}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">
               {editingSupplement ? "Edit Supplement" : "Add Supplement"}
@@ -708,27 +708,27 @@ export function DietClient({
 
           <div className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Name *</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Name *</label>
               <Input
                 placeholder="e.g. Creatine Monohydrate"
                 value={supplementForm.name}
                 onChange={(e) => setSupplementForm({ ...supplementForm, name: e.target.value })}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Dosage</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Dosage</label>
               <Input
                 placeholder="e.g. 5g, 1000mg, 2 capsules"
                 value={supplementForm.dosage}
                 onChange={(e) => setSupplementForm({ ...supplementForm, dosage: e.target.value })}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Frequency</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Frequency</label>
               <div className="flex flex-wrap gap-2">
                 {FREQUENCY_OPTIONS.map((opt) => (
                   <button
@@ -739,7 +739,7 @@ export function DietClient({
                       "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                       supplementForm.frequency === opt.value
                         ? "bg-purple-500/20 border-purple-500/50 text-purple-400"
-                        : "bg-slate-800 border-white/10 text-slate-400"
+                        : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
                     )}
                   >
                     {opt.label}
@@ -749,7 +749,7 @@ export function DietClient({
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Time of Day</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Time of Day</label>
               <div className="flex flex-wrap gap-2">
                 {TIME_OF_DAY_OPTIONS.map((opt) => (
                   <button
@@ -763,7 +763,7 @@ export function DietClient({
                       "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                       supplementForm.timeOfDay === opt.value
                         ? "bg-purple-500/20 border-purple-500/50 text-purple-400"
-                        : "bg-slate-800 border-white/10 text-slate-400"
+                        : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
                     )}
                   >
                     {opt.label}
@@ -773,12 +773,12 @@ export function DietClient({
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Notes</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Notes</label>
               <textarea
                 placeholder="Any additional notes..."
                 value={supplementForm.notes}
                 onChange={(e) => setSupplementForm({ ...supplementForm, notes: e.target.value })}
-                className="w-full min-h-[80px] resize-none border border-white/10 rounded-xl p-3 text-sm bg-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full min-h-[80px] resize-none border border-white/[0.08] rounded-xl p-3 text-sm bg-white/[0.04] text-white placeholder:text-[#8888a0]/60 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               />
             </div>
 
@@ -795,31 +795,31 @@ export function DietClient({
 
       {/* Weight Log Sheet */}
       <Sheet open={weightSheetOpen} onOpenChange={setWeightSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[50vh] overflow-y-auto bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[50vh] overflow-y-auto bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Log Weight</SheetTitle>
           </SheetHeader>
 
           <div className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Weight (lbs)</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Weight (lbs)</label>
               <Input
                 type="number"
                 step="0.1"
                 placeholder="Enter your weight"
                 value={weightForm.weight || ""}
                 onChange={(e) => setWeightForm({ ...weightForm, weight: Number(e.target.value) })}
-                className="bg-slate-800 border-white/10 text-white text-lg"
+                className="bg-white/[0.04] border-white/[0.08] text-white text-lg"
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block text-slate-400">Notes (optional)</label>
+              <label className="text-sm font-medium mb-2 block text-[#8888a0]">Notes (optional)</label>
               <Input
                 placeholder="e.g. Morning weigh-in, post-workout"
                 value={weightForm.notes}
                 onChange={(e) => setWeightForm({ ...weightForm, notes: e.target.value })}
-                className="bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               />
             </div>
 

@@ -49,10 +49,10 @@ export function DashboardClient({
       >
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
-            {greeting}, Evan
-            <Sparkles className="w-6 h-6 text-violet-400" />
+            {greeting}
+            <Sparkles className="w-6 h-6 text-[#FF2D78]" />
           </h1>
-          <p className="text-slate-400">{today}</p>
+          <p className="text-[#8888a0]">{today}</p>
         </div>
         <Button
           variant={todayMode ? "default" : "outline"}
@@ -61,7 +61,7 @@ export function DashboardClient({
           className={`gap-2 ${
             todayMode
               ? "bg-violet-500 hover:bg-violet-600 text-white"
-              : "border-white/10 text-slate-400 hover:text-white hover:bg-slate-800/50"
+              : "border-white/[0.08] text-[#8888a0] hover:text-white hover:bg-white/[0.03]"
           }`}
         >
           <Focus className="w-4 h-4" />

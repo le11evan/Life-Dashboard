@@ -42,11 +42,11 @@ const categoryColors: Record<string, string> = {
   Snacks: "from-pink-500/20 to-rose-500/10 border-pink-500/30",
   Fruits: "from-orange-500/20 to-yellow-500/10 border-orange-500/30",
   Vegetables: "from-lime-500/20 to-green-500/10 border-lime-500/30",
-  Household: "from-slate-500/20 to-gray-500/10 border-slate-500/30",
+  Household: "from-zinc-500/20 to-gray-500/10 border-zinc-500/30",
   "Personal Care": "from-violet-500/20 to-purple-500/10 border-violet-500/30",
   Pet: "from-amber-500/20 to-orange-500/10 border-amber-500/30",
   Health: "from-teal-500/20 to-emerald-500/10 border-teal-500/30",
-  Other: "from-slate-500/20 to-gray-500/10 border-slate-500/30",
+  Other: "from-zinc-500/20 to-gray-500/10 border-zinc-500/30",
 };
 
 interface GroceriesClientProps {
@@ -123,9 +123,9 @@ export function GroceriesClient({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -134,7 +134,7 @@ export function GroceriesClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Groceries</h1>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#8888a0]">
                   {uncheckedItems.length} items to get
                 </p>
               </div>
@@ -176,7 +176,7 @@ export function GroceriesClient({
               <ShoppingBag className="w-8 h-8 text-green-400" />
             </div>
             <h3 className="text-lg font-medium text-white mb-2">List is empty</h3>
-            <p className="text-slate-400 text-sm mb-4">
+            <p className="text-[#8888a0] text-sm mb-4">
               Add items to your shopping list
             </p>
             <Button
@@ -192,7 +192,7 @@ export function GroceriesClient({
             {/* Grouped by category */}
             {Object.entries(groupedItems).map(([category, categoryItems]) => (
               <div key={category}>
-                <h3 className="text-sm font-medium text-slate-400 mb-3 px-1">
+                <h3 className="text-sm font-medium text-[#8888a0] mb-3 px-1">
                   {category} ({categoryItems.length})
                 </h3>
                 <div className="space-y-2">
@@ -225,7 +225,7 @@ export function GroceriesClient({
                           </span>
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className="text-slate-500 hover:text-red-400 transition-colors"
+                            className="text-[#8888a0]/60 hover:text-red-400 transition-colors"
                             disabled={isPending}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -242,14 +242,14 @@ export function GroceriesClient({
             {checkedItems.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <h3 className="text-sm font-medium text-slate-400">
+                  <h3 className="text-sm font-medium text-[#8888a0]">
                     Checked ({checkedItems.length})
                   </h3>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleClearChecked}
-                    className="h-7 text-xs text-slate-500 hover:text-red-400"
+                    className="h-7 text-xs text-[#8888a0]/60 hover:text-red-400"
                   >
                     <X className="w-3 h-3 mr-1" />
                     Clear
@@ -264,7 +264,7 @@ export function GroceriesClient({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="p-3 rounded-xl bg-slate-800/30 border border-white/5"
+                        className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]"
                       >
                         <div className="flex items-center gap-3">
                           <button
@@ -276,7 +276,7 @@ export function GroceriesClient({
                               <CheckSquare className="w-5 h-5 text-green-500" />
                             </motion.div>
                           </button>
-                          <span className="flex-1 line-through text-slate-500">
+                          <span className="flex-1 line-through text-[#8888a0]/60">
                             {item.name}
                           </span>
                         </div>
@@ -292,7 +292,7 @@ export function GroceriesClient({
 
       {/* Add Item Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-slate-900 border-white/10 px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="text-white">Add Item</SheetTitle>
           </SheetHeader>
@@ -301,12 +301,12 @@ export function GroceriesClient({
               placeholder="What do you need?"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="h-12 bg-slate-800 border-white/10 text-white placeholder:text-slate-500"
+              className="h-12 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
               autoFocus
             />
 
             <div>
-              <span className="text-sm text-slate-400 mb-2 block">Category</span>
+              <span className="text-sm text-[#8888a0] mb-2 block">Category</span>
               <div className="flex flex-wrap gap-2">
                 {GROCERY_CATEGORIES.map((cat) => (
                   <button
@@ -317,7 +317,7 @@ export function GroceriesClient({
                       "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                       newCategory === cat
                         ? "bg-green-500/20 border-green-500/50 text-green-400"
-                        : "bg-slate-800 border-white/10 text-slate-400"
+                        : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
                     )}
                   >
                     {cat}
