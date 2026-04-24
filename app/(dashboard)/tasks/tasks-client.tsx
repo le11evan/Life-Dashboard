@@ -26,6 +26,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Check } from "@/components/ui/check";
 import { cn } from "@/lib/utils";
 import {
   createTask,
@@ -340,79 +341,114 @@ export function TasksClient({
   const completedCount = tasks.filter((t) => t.status === "completed").length;
   const overdueCount = tasks.filter((t) => t.status === "pending" && getDueDateStatus(t.dueDate) === "overdue").length;
 
+  const totalToday = pendingCount + completedCount;
+  const donePct = totalToday > 0 ? completedCount / totalToday : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
+    <div className="pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
-                <CheckSquare className="w-6 h-6 text-blue-400" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Tasks</h1>
-                <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
-                  <span>{pendingCount} pending, {completedCount} done</span>
-                  {overdueCount > 0 && (
-                    <span className="flex items-center gap-1 text-red-400">
-                      <AlertCircle className="w-3 h-3" />
-                      {overdueCount} overdue
-                    </span>
-                  )}
-                </div>
-              </div>
+      <div className="px-5 pt-16 pb-4">
+        <div className="t-kicker mb-2">03 · tasks</div>
+        <div className="flex items-end justify-between">
+          <h1 className="t-display text-[44px] text-[var(--fg)]">Tasks</h1>
+          <span className="t-mono text-[var(--fg-mute)] text-[12px]">
+            {pendingCount} open
+          </span>
+        </div>
+      </div>
+
+      {/* Feature tile */}
+      <div className="px-4 pb-3">
+        <div className="tile tile--elev edge-cyan p-5">
+          <div className="t-kicker mb-2">today</div>
+          <div className="flex items-end justify-between">
+            <span
+              className="t-display glow-cyan"
+              style={{ fontSize: 50, color: "var(--cyan)" }}
+            >
+              {pendingCount}
+              <span className="t-mono text-[16px] text-[var(--fg-mute)]">
+                /{totalToday}
+              </span>
+            </span>
+            <div className="flex flex-col items-end gap-[2px]">
+              <span className="t-caps">{completedCount} done</span>
+              {overdueCount > 0 && (
+                <span className="t-mono text-[10px]" style={{ color: "var(--pink)" }}>
+                  {overdueCount} overdue
+                </span>
+              )}
             </div>
-
-            <Button
-              onClick={() => setAddOpen(true)}
-              size="sm"
-              className="bg-blue-500 hover:bg-blue-600 text-white"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Task
-            </Button>
           </div>
-
-          {/* Quote */}
-          {quote && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20"
-            >
-              <p className="text-sm text-blue-200 italic">&ldquo;{quote.text}&rdquo;</p>
-              <p className="text-xs text-blue-400 mt-1">- {quote.author}</p>
-            </motion.div>
-          )}
-
-          {/* Filters */}
-          <div className="flex gap-2">
-            {[
-              { key: "all", label: "All", icon: ListTodo },
-              { key: "today", label: "Today", icon: Clock },
-              { key: "completed", label: "Done", icon: CheckCircle2 },
-            ].map(({ key, label, icon: Icon }) => (
-              <button
-                key={key}
-                onClick={() => handleFilterChange(key as typeof filter)}
-                className={cn(
-                  "flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2",
-                  filter === key
-                    ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                    : "bg-white/[0.03] text-[color:var(--fg-mute)]"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </button>
-            ))}
+          <div className="bar mt-4">
+            <div
+              className="bar__fill"
+              style={{
+                width: `${Math.round(donePct * 100)}%`,
+                background: "var(--cyan)",
+                boxShadow: "0 0 6px var(--cyan)",
+              }}
+            />
           </div>
         </div>
       </div>
 
+      {/* Quote */}
+      {quote && (
+        <div className="px-4 pb-3 text-center">
+          <p
+            className="t-display italic"
+            style={{ fontWeight: 500, fontSize: 15, lineHeight: 1.35, color: "var(--fg-dim)" }}
+          >
+            &ldquo;{quote.text}&rdquo;
+          </p>
+          <p
+            className="t-mono mt-2"
+            style={{ fontSize: 9, color: "var(--fg-mute)", letterSpacing: "0.14em", textTransform: "uppercase" }}
+          >
+            — {quote.author}
+          </p>
+        </div>
+      )}
+
+      {/* Seg + Add */}
+      <div className="px-4 pb-3 flex items-center gap-2">
+        <div className="seg flex-1 justify-between">
+          {[
+            { key: "all", label: "all" },
+            { key: "today", label: "today" },
+            { key: "completed", label: "done" },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => handleFilterChange(key as typeof filter)}
+              className={`seg__b flex-1 ${filter === key ? "active" : ""}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setAddOpen(true)}
+          aria-label="Add task"
+          className="flex items-center justify-center"
+          style={{
+            width: 36,
+            height: 32,
+            borderRadius: 99,
+            background: "linear-gradient(135deg, var(--cyan), var(--purple))",
+            color: "#0a0a14",
+            border: "none",
+            boxShadow: "0 8px 24px -12px rgba(0,229,255,0.5)",
+          }}
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+
       {/* Task List */}
-      <div className="px-4 py-4 space-y-3">
+      <div className="px-4 pt-1 space-y-2">
         <AnimatePresence mode="popLayout">
           {sortedTasks.length === 0 ? (
             <motion.div
@@ -420,18 +456,27 @@ export function TasksClient({
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-16"
             >
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <CheckSquare className="w-8 h-8 text-blue-400" />
+              <div
+                className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{
+                  background: "rgba(0,229,255,0.08)",
+                  border: "1px solid rgba(0,229,255,0.2)",
+                }}
+              >
+                <CheckSquare className="w-7 h-7" style={{ color: "var(--cyan)" }} />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">No tasks here</h3>
-              <p className="text-[color:var(--fg-mute)] text-sm mb-4">
-                {filter === "completed"
-                  ? "Nothing completed yet"
-                  : "Add a task to get started"}
+              <div className="t-display text-[22px]" style={{ color: "var(--fg-dim)" }}>
+                No tasks here
+              </div>
+              <p className="t-mono mt-2 mb-4" style={{ fontSize: 11, color: "var(--fg-mute)" }}>
+                {filter === "completed" ? "nothing completed yet" : "add one to get started"}
               </p>
               <Button
                 onClick={() => setAddOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600"
+                style={{
+                  background: "linear-gradient(135deg, var(--cyan), var(--purple))",
+                  color: "#0a0a14",
+                }}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Task
@@ -441,6 +486,20 @@ export function TasksClient({
             sortedTasks.map((task, index) => {
               const dueDateStatus = getDueDateStatus(task.dueDate);
               const formattedDueDate = formatDueDate(task.dueDate);
+              const priorityColorVar =
+                task.priority === 3
+                  ? "var(--pink)"
+                  : task.priority === 2
+                  ? "var(--yellow)"
+                  : task.priority === 1
+                  ? "var(--cyan)"
+                  : "var(--fg-mute)";
+              const checkColor =
+                task.status === "completed"
+                  ? "lime"
+                  : dueDateStatus === "overdue"
+                  ? undefined
+                  : "cyan";
 
               return (
                 <motion.div
@@ -450,67 +509,56 @@ export function TasksClient({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ delay: index * 0.03 }}
-                  className={cn(
-                    "p-4 rounded-2xl border transition-all",
-                    task.status === "completed"
-                      ? "bg-white/[0.03] border-[color:var(--line-soft)]"
-                      : dueDateStatus === "overdue"
-                      ? "bg-gradient-to-br from-red-500/15 to-red-500/5 border-red-500/30"
-                      : `bg-gradient-to-br ${priorityBg[task.priority as keyof typeof priorityBg]}`
-                  )}
+                  className="tile p-4"
                 >
                   <div className="flex items-start gap-3">
-                    <button
-                      onClick={() => handleToggle(task.id)}
-                      className="mt-0.5 flex-shrink-0"
-                      disabled={isPending}
-                    >
-                      <motion.div whileTap={{ scale: 0.8 }}>
-                        {task.status === "completed" ? (
-                          <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        ) : (
-                          <Circle
-                            className={cn(
-                              "w-5 h-5 transition-colors",
-                              dueDateStatus === "overdue"
-                                ? "text-red-400"
-                                : priorityColors[task.priority as keyof typeof priorityColors]
-                            )}
-                          />
-                        )}
-                      </motion.div>
-                    </button>
+                    <div className="mt-0.5 flex-shrink-0">
+                      <Check
+                        done={task.status === "completed"}
+                        color={checkColor}
+                        onChange={() => handleToggle(task.id)}
+                      />
+                    </div>
 
                     <div className="flex-1 min-w-0">
                       <p
-                        className={cn(
-                          "font-medium",
-                          task.status === "completed"
-                            ? "line-through text-[color:var(--fg-mute)]/60"
-                            : "text-[color:var(--fg)]"
-                        )}
+                        className="font-medium"
+                        style={{
+                          fontSize: 14,
+                          color:
+                            task.status === "completed" ? "var(--fg-mute)" : "var(--fg)",
+                          textDecoration:
+                            task.status === "completed" ? "line-through" : "none",
+                        }}
                       >
                         {task.title}
                       </p>
-                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                         {task.priority > 0 && task.status !== "completed" && (
                           <span
-                            className={cn(
-                              "text-xs flex items-center gap-1 px-2 py-0.5 rounded-full",
-                              priorityColors[task.priority as keyof typeof priorityColors],
-                              "bg-white/5"
-                            )}
+                            className="t-mono"
+                            style={{
+                              fontSize: 9,
+                              letterSpacing: "0.14em",
+                              textTransform: "uppercase",
+                              color: priorityColorVar,
+                            }}
                           >
-                            <Flag className="w-3 h-3" />
                             {priorityLabels[task.priority as keyof typeof priorityLabels]}
                           </span>
                         )}
                         {formattedDueDate && task.status !== "completed" && (
                           <span
-                            className={cn(
-                              "text-xs flex items-center gap-1 px-2 py-0.5 rounded-full",
-                              dueDateStatus && dueDateStyles[dueDateStatus]
-                            )}
+                            className="t-mono flex items-center gap-1"
+                            style={{
+                              fontSize: 10,
+                              color:
+                                dueDateStatus === "overdue"
+                                  ? "var(--pink)"
+                                  : dueDateStatus === "today"
+                                  ? "var(--yellow)"
+                                  : "var(--fg-mute)",
+                            }}
                           >
                             {dueDateStatus === "overdue" ? (
                               <AlertCircle className="w-3 h-3" />
@@ -521,26 +569,38 @@ export function TasksClient({
                           </span>
                         )}
                         {formattedDueDate && task.status === "completed" && (
-                          <span className="text-xs text-[color:var(--fg-mute)]/60 flex items-center gap-1">
+                          <span
+                            className="t-mono flex items-center gap-1"
+                            style={{ fontSize: 10, color: "var(--fg-faint)" }}
+                          >
                             <Calendar className="w-3 h-3" />
-                            {new Date(task.dueDate!).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            {new Date(task.dueDate!).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <button
+                        type="button"
                         onClick={() => openEditSheet(task)}
-                        className="text-[color:var(--fg-mute)]/60 hover:text-blue-400 transition-colors"
+                        className="p-1.5"
+                        style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
                         disabled={isPending}
+                        aria-label="Edit"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(task.id)}
-                        className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
+                        className="p-1.5"
+                        style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
                         disabled={isPending}
+                        aria-label="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
