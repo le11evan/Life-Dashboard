@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Chip } from "@/components/ui/chip";
 import {
   Sheet,
   SheetContent,
@@ -224,173 +225,207 @@ export function DietClient({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
+    <div className="pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-lime-500/20 to-green-500/20">
-                <Apple className="w-6 h-6 text-lime-400" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Diet & Nutrition</h1>
-                <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
-                  <span>{activeSupplementCount} active supplements</span>
-                  {latestWeight && (
-                    <span className="flex items-center gap-1 text-lime-400">
-                      <Scale className="w-3 h-3" />
-                      {latestWeight.weight} lbs
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {activeTab === "goals" && (
-              <Button
-                onClick={() => setGoalsSheetOpen(true)}
-                size="sm"
-                className="bg-lime-500 hover:bg-lime-600 text-black"
-              >
-                <Edit2 className="w-4 h-4 mr-1" />
-                Edit
-              </Button>
-            )}
-            {activeTab === "supplements" && (
-              <Button
-                onClick={() => {
-                  resetSupplementForm();
-                  setSupplementSheetOpen(true);
-                }}
-                size="sm"
-                className="bg-purple-500 hover:bg-purple-600 text-white"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add
-              </Button>
-            )}
-            {activeTab === "weight" && (
-              <Button
-                onClick={() => setWeightSheetOpen(true)}
-                size="sm"
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                <Scale className="w-4 h-4 mr-1" />
-                Log
-              </Button>
-            )}
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-1 bg-white/[0.03] rounded-xl p-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all",
-                  activeTab === tab.id
-                    ? "bg-white/[0.06] text-white"
-                    : "text-[color:var(--fg-mute)] hover:text-white"
-                )}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
+      <div className="px-5 pt-16 pb-4">
+        <div className="t-kicker mb-2">05 · diet</div>
+        <div className="flex items-end justify-between">
+          <h1 className="t-display text-[44px] text-[var(--fg)]">Diet</h1>
+          <span className="t-mono text-[var(--fg-mute)] text-[12px]">
+            {activeSupplementCount} supplements
+            {latestWeight ? ` · ${latestWeight.weight} lb` : ""}
+          </span>
         </div>
       </div>
 
+      {/* Seg + Action */}
+      <div className="px-4 pb-3 flex items-center gap-2">
+        <div className="seg flex-1 justify-between">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`seg__b flex-1 ${activeTab === tab.id ? "active" : ""}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        {activeTab === "goals" && (
+          <button
+            type="button"
+            onClick={() => setGoalsSheetOpen(true)}
+            aria-label="Edit goals"
+            className="flex items-center justify-center"
+            style={{
+              width: 36,
+              height: 32,
+              borderRadius: 99,
+              background: "linear-gradient(135deg, var(--lime), var(--cyan))",
+              color: "#0a0a14",
+              border: "none",
+              boxShadow: "0 8px 24px -12px rgba(57,255,20,0.5)",
+            }}
+          >
+            <Edit2 className="w-4 h-4" />
+          </button>
+        )}
+        {activeTab === "supplements" && (
+          <button
+            type="button"
+            onClick={() => {
+              resetSupplementForm();
+              setSupplementSheetOpen(true);
+            }}
+            aria-label="Add supplement"
+            className="flex items-center justify-center"
+            style={{
+              width: 36,
+              height: 32,
+              borderRadius: 99,
+              background: "linear-gradient(135deg, var(--pink), var(--purple))",
+              color: "#fff",
+              border: "none",
+              boxShadow: "0 8px 24px -12px rgba(255,45,120,0.5)",
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        )}
+        {activeTab === "weight" && (
+          <button
+            type="button"
+            onClick={() => setWeightSheetOpen(true)}
+            aria-label="Log weight"
+            className="flex items-center justify-center"
+            style={{
+              width: 36,
+              height: 32,
+              borderRadius: 99,
+              background: "linear-gradient(135deg, var(--cyan), var(--purple))",
+              color: "#0a0a14",
+              border: "none",
+              boxShadow: "0 8px 24px -12px rgba(0,229,255,0.5)",
+            }}
+          >
+            <Scale className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
       {/* Tab Content */}
-      <div className="px-4 py-4">
+      <div className="px-4 pt-1">
         {/* Goals Tab */}
         {activeTab === "goals" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Quote */}
             {quote && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-xl bg-gradient-to-r from-lime-500/10 to-green-500/10 border border-lime-500/20"
-              >
-                <p className="text-sm text-lime-200 italic">&ldquo;{quote.text}&rdquo;</p>
-                <p className="text-xs text-lime-400 mt-1">- {quote.author}</p>
-              </motion.div>
+              <div className="text-center pb-2">
+                <p
+                  className="t-display italic"
+                  style={{ fontWeight: 500, fontSize: 15, lineHeight: 1.35, color: "var(--fg-dim)" }}
+                >
+                  &ldquo;{quote.text}&rdquo;
+                </p>
+                <p
+                  className="t-mono mt-2"
+                  style={{
+                    fontSize: 9,
+                    color: "var(--fg-mute)",
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  — {quote.author}
+                </p>
+              </div>
             )}
 
-            {/* Daily Macro Goals */}
-            <div className="rounded-2xl p-4 bg-gradient-to-br from-lime-500/10 to-green-500/5 border border-lime-500/20">
-              <div className="flex items-center gap-2 mb-4">
-                <Target className="w-5 h-5 text-lime-400" />
-                <h3 className="font-semibold text-white">Daily Macro Goals</h3>
-              </div>
+            {/* Daily Macro Goals — feature tile */}
+            <div className="tile tile--elev edge-lime p-5">
+              <div className="t-kicker mb-3">daily macro goals</div>
 
               {/* Calories - Featured */}
-              <div className="bg-white/[0.03] rounded-xl p-4 mb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-500/20">
-                      <Flame className="w-6 h-6 text-orange-400" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-[color:var(--fg-mute)]">Daily Calories</div>
-                      <div className="text-2xl font-bold text-white">{dietGoals.calories}</div>
+              <div className="flex items-end justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <Flame className="w-7 h-7" style={{ color: "var(--orange)" }} />
+                  <div>
+                    <div className="t-caps">daily calories</div>
+                    <div
+                      className="t-display glow-lime"
+                      style={{ fontSize: 40, color: "var(--lime)" }}
+                    >
+                      {dietGoals.calories}
                     </div>
                   </div>
                 </div>
               </div>
 
+              <div className="hair mb-3" />
+
               {/* Macros Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="bg-white/[0.03] rounded-xl p-3 text-center">
-                  <Beef className="w-5 h-5 text-red-400 mx-auto mb-1" />
-                  <div className="text-xl font-bold text-white">{dietGoals.protein}g</div>
-                  <div className="text-xs text-[color:var(--fg-mute)]">Protein</div>
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="text-center">
+                  <Beef className="w-4 h-4 mx-auto mb-1" style={{ color: "var(--pink)" }} />
+                  <div className="t-mono" style={{ fontSize: 16, color: "var(--fg)" }}>
+                    {dietGoals.protein}g
+                  </div>
+                  <div className="t-caps" style={{ fontSize: 8 }}>protein</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-xl p-3 text-center">
-                  <Wheat className="w-5 h-5 text-amber-400 mx-auto mb-1" />
-                  <div className="text-xl font-bold text-white">{dietGoals.carbs}g</div>
-                  <div className="text-xs text-[color:var(--fg-mute)]">Carbs</div>
+                <div className="text-center">
+                  <Wheat className="w-4 h-4 mx-auto mb-1" style={{ color: "var(--orange)" }} />
+                  <div className="t-mono" style={{ fontSize: 16, color: "var(--fg)" }}>
+                    {dietGoals.carbs}g
+                  </div>
+                  <div className="t-caps" style={{ fontSize: 8 }}>carbs</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-xl p-3 text-center">
-                  <Droplet className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
-                  <div className="text-xl font-bold text-white">{dietGoals.fat}g</div>
-                  <div className="text-xs text-[color:var(--fg-mute)]">Fat</div>
+                <div className="text-center">
+                  <Droplet className="w-4 h-4 mx-auto mb-1" style={{ color: "var(--yellow)" }} />
+                  <div className="t-mono" style={{ fontSize: 16, color: "var(--fg)" }}>
+                    {dietGoals.fat}g
+                  </div>
+                  <div className="t-caps" style={{ fontSize: 8 }}>fat</div>
                 </div>
               </div>
 
               {/* Water & Fiber */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center justify-between bg-white/[0.03] rounded-xl p-3">
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", borderRadius: 10, padding: "8px 12px" }}>
                   <div className="flex items-center gap-2">
-                    <Droplets className="w-5 h-5 text-blue-400" />
-                    <span className="text-[color:var(--fg-mute)]">Water</span>
+                    <Droplets className="w-4 h-4" style={{ color: "var(--cyan)" }} />
+                    <span className="t-caps">water</span>
                   </div>
-                  <span className="text-white font-semibold">{dietGoals.water}oz</span>
+                  <span className="t-mono" style={{ fontSize: 13, color: "var(--fg)" }}>
+                    {dietGoals.water}oz
+                  </span>
                 </div>
-                <div className="flex items-center justify-between bg-white/[0.03] rounded-xl p-3">
+                <div className="flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", borderRadius: 10, padding: "8px 12px" }}>
                   <div className="flex items-center gap-2">
-                    <Wheat className="w-5 h-5 text-green-400" />
-                    <span className="text-[color:var(--fg-mute)]">Fiber</span>
+                    <Wheat className="w-4 h-4" style={{ color: "var(--lime)" }} />
+                    <span className="t-caps">fiber</span>
                   </div>
-                  <span className="text-white font-semibold">{dietGoals.fiber}g</span>
+                  <span className="t-mono" style={{ fontSize: 13, color: "var(--fg)" }}>
+                    {dietGoals.fiber}g
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/5 border border-purple-500/20">
-                <Pill className="w-5 h-5 text-purple-400 mb-2" />
-                <div className="text-2xl font-bold text-white">{activeSupplementCount}</div>
-                <div className="text-sm text-[color:var(--fg-mute)]">Active Supplements</div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="tile tile--elev p-4">
+                <Pill className="w-5 h-5 mb-2" style={{ color: "var(--purple)" }} />
+                <div className="t-display" style={{ fontSize: 28, color: "var(--fg)" }}>
+                  {activeSupplementCount}
+                </div>
+                <div className="t-caps">active supplements</div>
               </div>
-              <div className="rounded-xl p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-blue-500/20">
-                <Scale className="w-5 h-5 text-blue-400 mb-2" />
-                <div className="text-2xl font-bold text-white">{latestWeight?.weight || "---"}</div>
-                <div className="text-sm text-[color:var(--fg-mute)]">Current Weight (lbs)</div>
+              <div className="tile tile--elev p-4">
+                <Scale className="w-5 h-5 mb-2" style={{ color: "var(--cyan)" }} />
+                <div className="t-display" style={{ fontSize: 28, color: "var(--fg)" }}>
+                  {latestWeight?.weight ?? "---"}
+                </div>
+                <div className="t-caps">current weight (lb)</div>
               </div>
             </div>
           </div>
@@ -401,7 +436,12 @@ export function DietClient({
           <div className="space-y-4">
             {/* Active Supplements */}
             <div>
-              <h3 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3">Active Supplements ({activeSupplementCount})</h3>
+              <div className="flex items-center justify-between mb-3 px-1">
+                <span className="t-kicker">active</span>
+                <span className="t-mono text-[10px] text-[var(--fg-mute)]">
+                  {activeSupplementCount} taken
+                </span>
+              </div>
               <div className="space-y-2">
                 {supplements
                   .filter((s) => s.isActive)
@@ -411,40 +451,49 @@ export function DietClient({
                       layout
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="rounded-xl p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/5 border border-purple-500/20"
+                      className="tile p-4"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-white">{supplement.name}</span>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[14px] font-medium" style={{ color: "var(--fg)" }}>
+                              {supplement.name}
+                            </span>
                             {supplement.dosage && (
-                              <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-lg">
-                                {supplement.dosage}
-                              </span>
+                              <Chip tone="purple">{supplement.dosage}</Chip>
                             )}
                           </div>
-                          <div className="text-sm text-[color:var(--fg-mute)] mt-1">
+                          <div className="t-mono text-[11px] text-[var(--fg-mute)] mt-1">
                             {FREQUENCY_OPTIONS.find((f) => f.value === supplement.frequency)?.label}
                             {supplement.timeOfDay && (
-                              <span className="ml-2">
-                                • {TIME_OF_DAY_OPTIONS.find((t) => t.value === supplement.timeOfDay)?.label}
-                              </span>
+                              <>
+                                {" · "}
+                                {TIME_OF_DAY_OPTIONS.find((t) => t.value === supplement.timeOfDay)?.label}
+                              </>
                             )}
                           </div>
                           {supplement.notes && (
-                            <p className="text-xs text-[color:var(--fg-mute)]/60 mt-1 italic">{supplement.notes}</p>
+                            <p className="text-[11px] text-[var(--fg-mute)] mt-1 italic">
+                              {supplement.notes}
+                            </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           <button
+                            type="button"
                             onClick={() => editSupplement(supplement)}
-                            className="p-2 text-[color:var(--fg-mute)] hover:text-white transition-colors"
+                            className="p-2"
+                            style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
+                            aria-label="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleToggleSupplement(supplement.id)}
-                            className="p-2 text-green-400 hover:text-green-300 transition-colors"
+                            className="p-2"
+                            style={{ color: "var(--lime)", background: "none", border: "none" }}
+                            aria-label="Mark inactive"
                           >
                             <Check className="w-4 h-4" />
                           </button>
@@ -453,8 +502,8 @@ export function DietClient({
                     </motion.div>
                   ))}
                 {supplements.filter((s) => s.isActive).length === 0 && (
-                  <div className="text-center py-8 text-[color:var(--fg-mute)] text-sm">
-                    No active supplements. Add one to track your stack.
+                  <div className="text-center py-8 t-mono" style={{ fontSize: 12, color: "var(--fg-mute)" }}>
+                    no active supplements yet
                   </div>
                 )}
               </div>
@@ -463,7 +512,9 @@ export function DietClient({
             {/* Inactive Supplements */}
             {supplements.filter((s) => !s.isActive).length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3">Inactive</h3>
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <span className="t-kicker">inactive</span>
+                </div>
                 <div className="space-y-2">
                   {supplements
                     .filter((s) => !s.isActive)
@@ -471,25 +522,35 @@ export function DietClient({
                       <motion.div
                         key={supplement.id}
                         layout
-                        className="rounded-xl p-4 tile tile--elev opacity-60"
+                        className="tile p-3 opacity-60"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <span className="font-medium text-[color:var(--fg-mute)]">{supplement.name}</span>
+                            <span className="text-[13px] font-medium" style={{ color: "var(--fg-mute)" }}>
+                              {supplement.name}
+                            </span>
                             {supplement.dosage && (
-                              <span className="text-xs text-[color:var(--fg-mute)]/60 ml-2">{supplement.dosage}</span>
+                              <span className="text-[11px] ml-2" style={{ color: "var(--fg-faint)" }}>
+                                {supplement.dosage}
+                              </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <button
+                              type="button"
                               onClick={() => handleToggleSupplement(supplement.id)}
-                              className="p-2 text-[color:var(--fg-mute)]/60 hover:text-purple-400 transition-colors"
+                              className="p-2"
+                              style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
+                              aria-label="Reactivate"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleDeleteSupplement(supplement.id)}
-                              className="p-2 text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
+                              className="p-2"
+                              style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
+                              aria-label="Delete"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
