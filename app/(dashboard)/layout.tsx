@@ -1,4 +1,5 @@
 import { BottomNav, Sidebar, Header, FAB } from "@/components/layout";
+import { InstallBanner } from "@/components/install-banner";
 
 export default function DashboardLayout({
   children,
@@ -15,9 +16,10 @@ export default function DashboardLayout({
     >
       <Sidebar />
       <div className="flex-1 flex flex-col md:max-h-screen md:overflow-hidden">
+        <InstallBanner />
         <Header />
         <main className="flex-1 overflow-auto pb-24 md:pb-0">
-          {children}
+          <div className="page-shell">{children}</div>
         </main>
         <BottomNav />
         <FAB />

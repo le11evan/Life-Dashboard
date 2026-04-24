@@ -47,6 +47,7 @@ next-env.d.ts
 
 # design prototype (not for repo)
 /.elevan-life-zip/
+/.elevan-life-zip-2/
 /elevan-life*.zip
 
 # DB backup dumps (local only)

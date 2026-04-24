@@ -264,14 +264,15 @@
 .span-2 { grid-column: span 2; }
 
 /* ── Habit dots ──────────────────────────────────────────── */
-.dots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.dots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
 .dot {
   aspect-ratio: 1 / 1;
-  border-radius: 6px;
+  min-height: 38px;
+  border-radius: 10px;
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--line-soft);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--ff-mono); font-size: 9px; color: var(--fg-faint);
+  font-family: var(--ff-mono); font-size: 13px; font-weight: 600; color: var(--fg-faint);
   position: relative;
 }
 .dot.done.pink   { background: rgba(255,45,120,0.85); border-color: rgba(255,45,120,0.9); color: #0a0a14; font-weight: 700; box-shadow: 0 0 12px rgba(255,45,120,0.5); }
@@ -427,6 +428,83 @@
 @media (prefers-reduced-motion: reduce) {
   .screen-enter { animation: none; }
   * { transition-duration: 0.01ms !important; }
+}
+
+/* ── Install banner (iOS PWA add-to-home-screen prompt) ── */
+.install-banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background:
+    linear-gradient(90deg, rgba(255,45,120,0.12), rgba(157,78,221,0.10) 60%, rgba(0,229,255,0.10)),
+    var(--ink-050);
+  border-bottom: 1px solid var(--line);
+  color: var(--fg);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.install-banner__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+}
+.install-banner__icon {
+  width: 30px; height: 30px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px -4px rgba(255,45,120,0.6);
+  flex-shrink: 0;
+}
+.install-banner__text {
+  display: flex; flex-direction: column; gap: 2px; flex: 1;
+}
+.install-banner__title {
+  font-size: 13px; font-weight: 600; color: var(--fg);
+}
+.install-banner__x {
+  background: transparent;
+  border: none;
+  color: var(--fg-mute);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 6px;
+  cursor: pointer;
+}
+.install-banner__x:hover { color: var(--fg); }
+.install-banner__steps {
+  padding: 4px 14px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  border-top: 1px solid var(--line-soft);
+}
+.install-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-family: var(--ff-ui);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--fg);
+}
+.install-step__n {
+  flex-shrink: 0;
+  width: 20px; height: 20px; border-radius: 99px;
+  background: rgba(255,255,255,0.08);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+.install-step__txt { flex: 1; }
+
+/* ── Page container (mobile-first, centered on desktop) ── */
+.page-shell {
+  max-width: 440px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  position: relative;
 }
 
 /* ── Utility helpers (layout) ───────────────────────────── */
