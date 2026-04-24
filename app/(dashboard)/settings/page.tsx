@@ -67,10 +67,10 @@ export default function SettingsPage() {
         className="mb-6"
       >
         <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-          <Settings className="w-6 h-6 text-[#FF2D78]" />
+          <Settings className="w-6 h-6 text-[color:var(--pink)]" />
           Settings
         </h1>
-        <p className="text-[#8888a0]">App preferences and data management</p>
+        <p className="text-[color:var(--fg-mute)]">App preferences and data management</p>
       </motion.div>
 
       <motion.div
@@ -80,15 +80,15 @@ export default function SettingsPage() {
         className="space-y-4"
       >
         {/* Data Backup Card */}
-        <Card className="rounded-2xl bg-[#12121e] border-white/[0.08]">
+        <Card className="rounded-2xl bg-[var(--ink-100)] border-[color:var(--line)]">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2 text-white">
-              <Database className="w-5 h-5 text-[#00E5FF]" />
+              <Database className="w-5 h-5 text-[color:var(--cyan)]" />
               Data Backup
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-[#8888a0]">
+            <p className="text-sm text-[color:var(--fg-mute)]">
               Export all your data as a JSON file for backup or migration.
             </p>
 
@@ -112,7 +112,7 @@ export default function SettingsPage() {
             <Button
               onClick={handleExport}
               disabled={isPending}
-              className="w-full sm:w-auto bg-[#FF2D78] hover:bg-[#FF1565] text-white"
+              className="w-full sm:w-auto bg-[color:var(--pink)] hover:bg-[#FF1565] text-white"
             >
               {isPending ? (
                 <>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Account Card */}
-        <Card className="rounded-2xl bg-[#12121e] border-white/[0.08]">
+        <Card className="rounded-2xl bg-[var(--ink-100)] border-[color:var(--line)]">
           <CardHeader>
             <CardTitle className="text-base text-white">Account</CardTitle>
           </CardHeader>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* About Card */}
-        <Card className="rounded-2xl bg-[#12121e] border-white/[0.08]">
+        <Card className="rounded-2xl bg-[var(--ink-100)] border-[color:var(--line)]">
           <CardHeader>
             <CardTitle className="text-base text-white">About</CardTitle>
           </CardHeader>
@@ -165,14 +165,14 @@ export default function SettingsPage() {
               <Mark47 size={32} gradient />
               <div>
                 <p className="text-sm font-semibold text-white">
-                  elevan<span className="text-[#FF2D78]">.life</span> v2.0
+                  elevan<span className="text-[color:var(--pink)]">.life</span> v2.0
                 </p>
-                <p className="text-xs text-[#8888a0]">
+                <p className="text-xs text-[color:var(--fg-mute)]">
                   Personal dashboard by elevan
                 </p>
               </div>
             </div>
-            <p className="text-xs text-[#8888a0]/60">
+            <p className="text-xs text-[color:var(--fg-mute)]/60">
               Timezone: Los Angeles (Pacific)
             </p>
           </CardContent>
@@ -195,18 +195,18 @@ function StatBadge({
     <div
       className={`px-3 py-2 rounded-lg text-center ${
         highlight
-          ? "bg-[#FF2D78]/15 border border-[#FF2D78]/30"
-          : "bg-white/[0.03] border border-white/[0.04]"
+          ? "bg-[color:var(--pink)]/15 border border-[color:var(--pink)]/30"
+          : "bg-white/[0.03] border border-[color:var(--line-soft)]"
       }`}
     >
       <p
         className={`text-lg font-bold ${
-          highlight ? "text-[#FF2D78]" : "text-white"
+          highlight ? "text-[color:var(--pink)]" : "text-[color:var(--fg)]"
         }`}
       >
         {value}
       </p>
-      <p className="text-xs text-[#8888a0]">{label}</p>
+      <p className="text-xs text-[color:var(--fg-mute)]">{label}</p>
     </div>
   );
 }

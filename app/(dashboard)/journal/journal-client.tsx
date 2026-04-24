@@ -176,7 +176,7 @@ export function JournalClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export function JournalClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Journal</h1>
-                <div className="flex items-center gap-2 text-xs text-[#8888a0]">
+                <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
                   <span>{entries.length} entries</span>
                   {streak > 0 && (
                     <span className="flex items-center gap-1 text-orange-400">
@@ -221,12 +221,12 @@ export function JournalClient({
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8888a0]/60" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[color:var(--fg-mute)]/60" />
             <Input
               placeholder="Search entries..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-9 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+              className="pl-9 bg-white/[0.03] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
             />
           </div>
         </div>
@@ -247,7 +247,7 @@ export function JournalClient({
               <h3 className="text-lg font-medium text-white mb-2">
                 {search ? "No entries found" : "Start your journal"}
               </h3>
-              <p className="text-[#8888a0] text-sm mb-4">
+              <p className="text-[color:var(--fg-mute)] text-sm mb-4">
                 {search ? "Try a different search term" : "Capture your thoughts and reflections"}
               </p>
               {!search && (
@@ -274,10 +274,10 @@ export function JournalClient({
                   className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20"
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-center gap-2 text-xs text-[#8888a0]">
+                    <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
                       <Calendar className="w-3.5 h-3.5" />
                       <span>{formatDate(entry.createdAt)}</span>
-                      <span className="text-[#8888a0]/40">·</span>
+                      <span className="text-[color:var(--fg-mute)]/40">·</span>
                       <span>{formatTime(entry.createdAt)}</span>
                       {mood && (
                         <span className="ml-1 text-base">{mood.emoji}</span>
@@ -286,14 +286,14 @@ export function JournalClient({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openEditSheet(entry)}
-                        className="text-[#8888a0]/60 hover:text-amber-400 transition-colors"
+                        className="text-[color:var(--fg-mute)]/60 hover:text-amber-400 transition-colors"
                         disabled={isPending}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(entry.id)}
-                        className="text-[#8888a0]/60 hover:text-red-400 transition-colors"
+                        className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
                         disabled={isPending}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -327,23 +327,23 @@ export function JournalClient({
 
       {/* Add Entry Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] h-[85vh] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] h-[85vh] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">New Journal Entry</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">New Journal Entry</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddEntry} className="flex flex-col h-full pb-8">
             <textarea
               placeholder="What's on your mind?"
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              className="flex-1 min-h-[200px] w-full resize-none bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 text-white placeholder:text-[#8888a0]/60 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              className="flex-1 min-h-[200px] w-full resize-none tile tile--elev rounded-xl p-4 text-white placeholder:text-[color:var(--fg-mute)]/60 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               autoFocus
             />
 
             <div className="space-y-4 mt-4">
               {/* Mood */}
               <div>
-                <span className="text-sm text-[#8888a0] mb-2 block">
+                <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">
                   How are you feeling?
                 </span>
                 <div className="flex gap-2">
@@ -356,7 +356,7 @@ export function JournalClient({
                         "px-3 py-2 rounded-xl text-sm font-medium transition-all border",
                         newMood === mood.value
                           ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
-                          : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                          : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                       )}
                     >
                       {mood.emoji} {mood.label}
@@ -367,7 +367,7 @@ export function JournalClient({
 
               {/* Tags */}
               <div>
-                <span className="text-sm text-[#8888a0] mb-2 block">Tags</span>
+                <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Tags</span>
                 {newTags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     {newTags.map((tag) => (
@@ -394,13 +394,13 @@ export function JournalClient({
                         addTag();
                       }
                     }}
-                    className="flex-1 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                    className="flex-1 bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     onClick={addTag}
-                    className="border-white/[0.08] text-[#8888a0]"
+                    className="border-[color:var(--line)] text-[color:var(--fg-mute)]"
                   >
                     Add
                   </Button>
@@ -421,23 +421,23 @@ export function JournalClient({
 
       {/* Edit Entry Sheet */}
       <Sheet open={editOpen} onOpenChange={setEditOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] h-[85vh] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] h-[85vh] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Edit Journal Entry</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">Edit Journal Entry</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleEditEntry} className="flex flex-col h-full pb-8">
             <textarea
               placeholder="What's on your mind?"
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="flex-1 min-h-[200px] w-full resize-none bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 text-white placeholder:text-[#8888a0]/60 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              className="flex-1 min-h-[200px] w-full resize-none tile tile--elev rounded-xl p-4 text-white placeholder:text-[color:var(--fg-mute)]/60 text-base focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               autoFocus
             />
 
             <div className="space-y-4 mt-4">
               {/* Mood */}
               <div>
-                <span className="text-sm text-[#8888a0] mb-2 block">
+                <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">
                   How are you feeling?
                 </span>
                 <div className="flex gap-2">
@@ -450,7 +450,7 @@ export function JournalClient({
                         "px-3 py-2 rounded-xl text-sm font-medium transition-all border",
                         editMood === mood.value
                           ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
-                          : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                          : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                       )}
                     >
                       {mood.emoji} {mood.label}
@@ -461,7 +461,7 @@ export function JournalClient({
 
               {/* Tags */}
               <div>
-                <span className="text-sm text-[#8888a0] mb-2 block">Tags</span>
+                <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Tags</span>
                 {editTags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     {editTags.map((tag) => (
@@ -488,13 +488,13 @@ export function JournalClient({
                         addEditTag();
                       }
                     }}
-                    className="flex-1 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                    className="flex-1 bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     onClick={addEditTag}
-                    className="border-white/[0.08] text-[#8888a0]"
+                    className="border-[color:var(--line)] text-[color:var(--fg-mute)]"
                   >
                     Add
                   </Button>

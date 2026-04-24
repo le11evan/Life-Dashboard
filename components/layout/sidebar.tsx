@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import { Mark47 } from "@/components/ui/mark-47";
 import {
   LayoutDashboard,
@@ -19,67 +18,84 @@ import {
   Apple,
 } from "lucide-react";
 
-const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, color: "pink" },
-  { href: "/tasks", label: "Tasks", icon: CheckSquare, color: "cyan" },
-  { href: "/fitness", label: "Fitness", icon: Dumbbell, color: "orange" },
-  { href: "/diet", label: "Diet", icon: Apple, color: "green" },
-  { href: "/finance", label: "Finance", icon: Wallet, color: "purple" },
-  { href: "/journal", label: "Journal", icon: BookOpen, color: "yellow" },
-  { href: "/groceries", label: "Groceries", icon: ShoppingCart, color: "teal" },
-  { href: "/goals", label: "Goals", icon: Target, color: "pink" },
-  { href: "/learn", label: "Learn", icon: GraduationCap, color: "cyan" },
-  { href: "/creative", label: "Creative", icon: Lightbulb, color: "purple" },
-];
+type Accent = "pink" | "cyan" | "orange" | "lime" | "purple" | "yellow";
 
-const colorClasses: Record<string, { active: string; icon: string }> = {
-  pink: { active: "bg-[#FF2D78]/15 border-[#FF2D78]/30", icon: "text-[#FF2D78]" },
-  cyan: { active: "bg-[#00E5FF]/15 border-[#00E5FF]/30", icon: "text-[#00E5FF]" },
-  orange: { active: "bg-[#FF6B35]/15 border-[#FF6B35]/30", icon: "text-[#FF6B35]" },
-  green: { active: "bg-[#39FF14]/15 border-[#39FF14]/30", icon: "text-[#39FF14]" },
-  purple: { active: "bg-[#9D4EDD]/15 border-[#9D4EDD]/30", icon: "text-[#9D4EDD]" },
-  yellow: { active: "bg-[#FFD600]/15 border-[#FFD600]/30", icon: "text-[#FFD600]" },
-  teal: { active: "bg-teal-500/15 border-teal-500/30", icon: "text-teal-400" },
-};
+const navItems: Array<{
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  accent: Accent;
+}> = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, accent: "pink" },
+  { href: "/tasks", label: "Tasks", icon: CheckSquare, accent: "cyan" },
+  { href: "/fitness", label: "Fitness", icon: Dumbbell, accent: "orange" },
+  { href: "/diet", label: "Diet", icon: Apple, accent: "lime" },
+  { href: "/finance", label: "Finance", icon: Wallet, accent: "purple" },
+  { href: "/journal", label: "Journal", icon: BookOpen, accent: "yellow" },
+  { href: "/groceries", label: "Groceries", icon: ShoppingCart, accent: "lime" },
+  { href: "/goals", label: "Goals", icon: Target, accent: "pink" },
+  { href: "/learn", label: "Learn", icon: GraduationCap, accent: "cyan" },
+  { href: "/creative", label: "Creative", icon: Lightbulb, accent: "purple" },
+];
 
 export function Sidebar() {
   const pathname = usePathname();
 
-  const NavItem = ({ item }: { item: typeof navItems[0] }) => {
-    const isActive = pathname === item.href ||
+  const NavItem = ({ item }: { item: (typeof navItems)[number] }) => {
+    const isActive =
+      pathname === item.href ||
       (item.href !== "/" && pathname.startsWith(item.href));
     const Icon = item.icon;
-    const colors = colorClasses[item.color];
 
     return (
       <Link
         href={item.href}
-        className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all border ${
-          isActive
-            ? `${colors.active} text-white`
-            : "text-[#8888a0] hover:bg-white/[0.03] hover:text-white border-transparent"
-        }`}
+        className="relative flex items-center gap-3 px-3 py-2.5 row-press"
+        style={{
+          borderRadius: 14,
+          color: isActive ? "var(--fg)" : "var(--fg-dim)",
+          background: isActive ? "rgba(255,255,255,0.04)" : "transparent",
+          border: "1px solid",
+          borderColor: isActive ? "var(--line)" : "transparent",
+          transition: "color .15s ease, background .15s ease",
+        }}
       >
-        <Icon className={`w-5 h-5 ${isActive ? colors.icon : ""}`} />
-        <span className="font-medium">{item.label}</span>
-        {isActive && (
-          <motion.div
-            layoutId="sidebarActiveIndicator"
-            className={`absolute inset-0 ${colors.active} rounded-xl -z-10 border`}
-            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          />
-        )}
+        <Icon
+          className="w-5 h-5"
+          style={{
+            color: isActive ? `var(--${item.accent})` : "var(--fg-mute)",
+            filter: isActive
+              ? `drop-shadow(0 0 6px var(--${item.accent}))`
+              : "none",
+          }}
+        />
+        <span style={{ fontWeight: 600, fontSize: 13 }}>{item.label}</span>
       </Link>
     );
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen bg-[#0e0e1a]/80 backdrop-blur-xl border-r border-white/[0.06] p-4">
+    <aside
+      className="hidden md:flex flex-col w-64 h-screen p-4"
+      style={{
+        background: "rgba(11,11,24,0.72)",
+        backdropFilter: "blur(20px) saturate(160%)",
+        WebkitBackdropFilter: "blur(20px) saturate(160%)",
+        borderRight: "1px solid var(--line-soft)",
+      }}
+    >
       <div className="flex items-center gap-3 px-3 py-4 mb-4">
-        <Mark47 size={36} gradient />
-        <div>
-          <span className="text-lg font-semibold text-white">elevan</span>
-          <span className="text-lg font-semibold text-[#FF2D78]">.life</span>
+        <Mark47 size={30} gradient />
+        <div
+          style={{
+            fontFamily: "var(--ff-display)",
+            fontWeight: 700,
+            letterSpacing: "-0.03em",
+            fontSize: 20,
+          }}
+        >
+          <span style={{ color: "var(--fg)" }}>elevan</span>
+          <span className="brand-gradient-text">.life</span>
         </div>
       </div>
 
@@ -89,30 +105,55 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-white/[0.06] pt-4 space-y-1">
+      <div
+        className="pt-4 space-y-1"
+        style={{ borderTop: "1px solid var(--line-soft)" }}
+      >
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#8888a0] hover:bg-white/[0.03] hover:text-white transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 row-press"
+          style={{ borderRadius: 14, color: "var(--fg-dim)" }}
         >
           <Settings className="w-5 h-5" />
-          <span className="font-medium">Settings</span>
+          <span style={{ fontWeight: 600, fontSize: 13 }}>Settings</span>
         </Link>
         <button
+          type="button"
           onClick={() => {
             fetch("/api/logout", { method: "POST" }).then(() => {
               window.location.href = "/login";
             });
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#8888a0] hover:bg-red-500/10 hover:text-red-400 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 row-press"
+          style={{
+            borderRadius: 14,
+            color: "var(--pink)",
+            background: "none",
+            border: "none",
+            textAlign: "left",
+            cursor: "pointer",
+          }}
         >
           <LogOut className="w-5 h-5" />
-          <span className="font-medium">Logout</span>
+          <span style={{ fontWeight: 600, fontSize: 13 }}>Logout</span>
         </button>
       </div>
 
-      {/* Footer */}
-      <div className="mt-3 pt-3 border-t border-white/[0.04]">
-        <p className="text-[10px] text-[#8888a0]/40 text-center">elevan.life v2.0</p>
+      <div
+        className="mt-3 pt-3"
+        style={{ borderTop: "1px solid var(--line-soft)" }}
+      >
+        <p
+          className="t-mono"
+          style={{
+            fontSize: 9,
+            color: "var(--fg-faint)",
+            textAlign: "center",
+            letterSpacing: "0.12em",
+          }}
+        >
+          elevan.life v2.0
+        </p>
       </div>
     </aside>
   );

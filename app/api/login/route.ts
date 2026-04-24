@@ -1,21 +1,27 @@
 import { NextResponse } from "next/server";
-import { verifyPassword, createSession } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { verifyPassword } from "@/lib/passwords";
+import { createSession } from "@/lib/session";
 
 export async function POST(request: Request) {
   try {
-    const { password } = await request.json();
+    const { username, password } = await request.json();
 
-    if (!password || typeof password !== "string") {
-      return NextResponse.json({ error: "Password required" }, { status: 400 });
+    if (!username || typeof username !== "string" || !password || typeof password !== "string") {
+      return NextResponse.json({ error: "Username and password required" }, { status: 400 });
     }
 
-    const valid = await verifyPassword(password);
+    const user = await db.user.findUnique({ where: { username } });
+    if (!user) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
 
+    const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    await createSession();
+    await createSession(user.id);
 
     return NextResponse.json({ success: true });
   } catch {

@@ -4,13 +4,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X, CheckSquare, ShoppingCart, BookOpen, Dumbbell } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 
 const quickActions = [
-  { id: "task", label: "Add Task", icon: CheckSquare, href: "/tasks?add=true", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20 hover:bg-blue-500/20" },
-  { id: "grocery", label: "Add Grocery", icon: ShoppingCart, href: "/groceries?add=true", color: "text-green-400", bg: "bg-green-500/10 border-green-500/20 hover:bg-green-500/20" },
-  { id: "journal", label: "Journal Entry", icon: BookOpen, href: "/journal?add=true", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20" },
-  { id: "workout", label: "Log Workout", icon: Dumbbell, href: "/fitness?add=true", color: "text-red-400", bg: "bg-red-500/10 border-red-500/20 hover:bg-red-500/20" },
+  { id: "task", label: "Add Task", icon: CheckSquare, href: "/tasks?add=true", accent: "cyan" },
+  { id: "grocery", label: "Add Grocery", icon: ShoppingCart, href: "/groceries?add=true", accent: "lime" },
+  { id: "journal", label: "Journal Entry", icon: BookOpen, href: "/journal?add=true", accent: "yellow" },
+  { id: "workout", label: "Log Workout", icon: Dumbbell, href: "/fitness?add=true", accent: "orange" },
 ];
 
 export function FAB() {
@@ -18,12 +17,13 @@ export function FAB() {
 
   return (
     <>
-      {/* FAB Button */}
       <motion.button
+        type="button"
+        aria-label="Quick add"
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 z-50 w-14 h-14 bg-gradient-to-br from-[#FF2D78] to-[#9D4EDD] text-white rounded-full shadow-lg shadow-[#FF2D78]/30 flex items-center justify-center md:hidden"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        className="fab md:hidden"
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.94 }}
       >
         <AnimatePresence mode="wait">
           {open ? (
@@ -50,34 +50,53 @@ export function FAB() {
         </AnimatePresence>
       </motion.button>
 
-      {/* Quick Add Sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08]">
+        <SheetContent
+          side="bottom"
+          className="rounded-t-3xl border-t"
+          style={{
+            background: "var(--ink-100)",
+            borderColor: "var(--line)",
+          }}
+        >
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Quick Add</SheetTitle>
+            <SheetTitle style={{ color: "var(--fg)", fontFamily: "var(--ff-display)", letterSpacing: "-0.02em" }}>
+              Quick add
+            </SheetTitle>
           </SheetHeader>
           <div className="grid grid-cols-2 gap-3 pb-8">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <motion.div
+                <motion.button
+                  type="button"
                   key={action.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
+                  className={`tile tile--elev edge-${action.accent} flex flex-col items-center justify-center gap-2`}
+                  style={{ padding: "22px 16px", cursor: "pointer" }}
+                  onClick={() => {
+                    setOpen(false);
+                    window.location.href = action.href;
+                  }}
                 >
-                  <Button
-                    variant="outline"
-                    className={`w-full h-auto py-6 flex flex-col gap-2 rounded-2xl border ${action.bg} transition-all`}
-                    onClick={() => {
-                      setOpen(false);
-                      window.location.href = action.href;
+                  <Icon
+                    className="w-6 h-6"
+                    style={{ color: `var(--${action.accent})` }}
+                  />
+                  <span
+                    className="t-mono"
+                    style={{
+                      fontSize: 10,
+                      color: "var(--fg)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
                     }}
                   >
-                    <Icon className={`w-6 h-6 ${action.color}`} />
-                    <span className="text-sm font-medium text-white">{action.label}</span>
-                  </Button>
-                </motion.div>
+                    {action.label}
+                  </span>
+                </motion.button>
               );
             })}
           </div>

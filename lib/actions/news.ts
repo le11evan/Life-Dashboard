@@ -1,10 +1,12 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { requireAdmin, requireUser } from "@/lib/session";
 import type { NewsArticle, DailyNewsData } from "@/lib/types/news";
 
 // Get today's cached news or return placeholder
 export async function getDailyNews(): Promise<DailyNewsData> {
+  await requireUser();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -56,8 +58,9 @@ export async function getDailyNews(): Promise<DailyNewsData> {
   };
 }
 
-// Save fetched news to cache
+// Save fetched news to cache (admin-only — news is shared)
 export async function saveDailyNews(articles: NewsArticle[]) {
+  await requireAdmin();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 

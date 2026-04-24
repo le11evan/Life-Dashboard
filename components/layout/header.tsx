@@ -17,10 +17,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 const menuItems = [
-  { href: "/goals", label: "Goals", icon: Target, color: "text-[#FF2D78]" },
-  { href: "/learn", label: "Learn", icon: GraduationCap, color: "text-[#00E5FF]" },
-  { href: "/creative", label: "Creative", icon: Lightbulb, color: "text-[#9D4EDD]" },
-  { href: "/settings", label: "Settings", icon: Settings, color: "text-[#8888a0]" },
+  { href: "/goals", label: "Goals", icon: Target, color: "var(--pink)" },
+  { href: "/learn", label: "Learn", icon: GraduationCap, color: "var(--cyan)" },
+  { href: "/creative", label: "Creative", icon: Lightbulb, color: "var(--purple)" },
+  { href: "/settings", label: "Settings", icon: Settings, color: "var(--fg-mute)" },
 ];
 
 interface HeaderProps {
@@ -31,31 +31,69 @@ export function Header({ title = "elevan.life" }: HeaderProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06] md:hidden">
+    <header
+      className="sticky top-0 z-40 md:hidden"
+      style={{
+        background: "rgba(7,7,15,0.72)",
+        backdropFilter: "blur(20px) saturate(160%)",
+        WebkitBackdropFilter: "blur(20px) saturate(160%)",
+        borderBottom: "1px solid var(--line-soft)",
+      }}
+    >
       <div className="flex items-center justify-between h-14 px-4">
         <div className="flex items-center gap-2.5">
-          <Mark47 size={28} gradient />
-          <h1 className="text-lg font-semibold">
-            <span className="text-white">elevan</span>
-            <span className="text-[#FF2D78]">.life</span>
+          <Mark47 size={24} gradient />
+          <h1
+            style={{
+              fontFamily: "var(--ff-display)",
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              fontSize: 18,
+            }}
+          >
+            <span style={{ color: "var(--fg)" }}>elevan</span>
+            <span className="brand-gradient-text">.life</span>
           </h1>
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9 text-[#8888a0] hover:text-white hover:bg-white/[0.05]">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9"
+              style={{ color: "var(--fg-dim)" }}
+              aria-label="Open menu"
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 p-0 bg-[#12121e] border-white/[0.08]">
+          <SheetContent
+            side="right"
+            className="w-72 p-0"
+            style={{
+              background: "var(--ink-100)",
+              borderLeft: "1px solid var(--line)",
+            }}
+          >
             <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
-                <span className="font-semibold text-white">Menu</span>
+              <div
+                className="flex items-center justify-between p-4"
+                style={{ borderBottom: "1px solid var(--line-soft)" }}
+              >
+                <span
+                  className="t-kicker"
+                  style={{ fontSize: 11 }}
+                >
+                  menu
+                </span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-[#8888a0] hover:text-white hover:bg-white/[0.05]"
+                  className="h-8 w-8"
                   onClick={() => setOpen(false)}
+                  style={{ color: "var(--fg-mute)" }}
+                  aria-label="Close menu"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -75,10 +113,14 @@ export function Header({ title = "elevan.life" }: HeaderProps) {
                         <Link
                           href={item.href}
                           onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 px-3 py-3 rounded-xl text-[#8888a0] hover:bg-white/[0.03] hover:text-white transition-colors"
+                          className="flex items-center gap-3 px-3 py-3 row-press"
+                          style={{
+                            borderRadius: 14,
+                            color: "var(--fg-dim)",
+                          }}
                         >
-                          <Icon className={`w-5 h-5 ${item.color}`} />
-                          <span className="font-medium">{item.label}</span>
+                          <Icon className="w-5 h-5" style={{ color: item.color }} />
+                          <span style={{ fontWeight: 600 }}>{item.label}</span>
                         </Link>
                       </motion.div>
                     );
@@ -86,17 +128,26 @@ export function Header({ title = "elevan.life" }: HeaderProps) {
                 </AnimatePresence>
               </nav>
 
-              <div className="p-4 border-t border-white/[0.06]">
+              <div
+                className="p-4"
+                style={{ borderTop: "1px solid var(--line-soft)" }}
+              >
                 <button
                   onClick={() => {
                     fetch("/api/logout", { method: "POST" }).then(() => {
                       window.location.href = "/login";
                     });
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-3 row-press"
+                  style={{
+                    borderRadius: 14,
+                    color: "var(--pink)",
+                    background: "rgba(255,45,120,0.06)",
+                    border: "1px solid rgba(255,45,120,0.18)",
+                  }}
                 >
                   <LogOut className="w-5 h-5" />
-                  <span className="font-medium">Logout</span>
+                  <span style={{ fontWeight: 600 }}>Logout</span>
                 </button>
               </div>
             </div>

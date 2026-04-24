@@ -201,7 +201,7 @@ export function FinanceClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -210,7 +210,7 @@ export function FinanceClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Finance</h1>
-                <div className="flex items-center gap-2 text-xs text-[#8888a0]">
+                <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
                   <span>{formatCurrency(stats.totalValue)}</span>
                   {stats.totalGain !== 0 && (
                     <span className={stats.totalGain >= 0 ? "text-emerald-400" : "text-red-400"}>
@@ -256,7 +256,7 @@ export function FinanceClient({
                   "flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2",
                   activeTab === key
                     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                    : "bg-white/[0.03] text-[#8888a0]"
+                    : "bg-white/[0.03] text-[color:var(--fg-mute)]"
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -278,7 +278,7 @@ export function FinanceClient({
                 animate={{ opacity: 1, y: 0 }}
                 className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-green-500/5 border border-emerald-500/20"
               >
-                <h3 className="text-sm font-medium text-[#8888a0] mb-3">Allocation</h3>
+                <h3 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3">Allocation</h3>
                 <div className="flex items-center gap-4">
                   <div className="flex-1 h-8 rounded-full overflow-hidden bg-white/[0.04] flex">
                     {allocation.map((a) => (
@@ -302,7 +302,7 @@ export function FinanceClient({
                         style={{ backgroundColor: a.color }}
                       />
                       <span className="font-medium text-white">{a.symbol}</span>
-                      <span className="text-[#8888a0]/60">
+                      <span className="text-[color:var(--fg-mute)]/60">
                         {a.percentage.toFixed(1)}%
                       </span>
                     </div>
@@ -323,7 +323,7 @@ export function FinanceClient({
                     <PieChart className="w-8 h-8 text-emerald-400" />
                   </div>
                   <h3 className="text-lg font-medium text-white mb-2">No positions yet</h3>
-                  <p className="text-[#8888a0] text-sm mb-4">
+                  <p className="text-[color:var(--fg-mute)] text-sm mb-4">
                     Track your investment portfolio
                   </p>
                   <Button
@@ -366,13 +366,13 @@ export function FinanceClient({
                             </span>
                             <button
                               onClick={() => handleResearch(holding.symbol)}
-                              className="text-[#8888a0]/60 hover:text-emerald-400 transition-colors"
+                              className="text-[color:var(--fg-mute)]/60 hover:text-emerald-400 transition-colors"
                               title="Research"
                             >
                               <Search className="w-4 h-4" />
                             </button>
                           </div>
-                          <p className="text-sm text-[#8888a0]">
+                          <p className="text-sm text-[color:var(--fg-mute)]">
                             {holding.shares} shares @ {formatCurrency(holding.avgCost)}
                           </p>
                         </div>
@@ -396,7 +396,7 @@ export function FinanceClient({
                       <div className="flex justify-end mt-2">
                         <button
                           onClick={() => handleDeleteHolding(holding.id)}
-                          className="text-[#8888a0]/60 hover:text-red-400 transition-colors"
+                          className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
                           disabled={isPending}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -421,7 +421,7 @@ export function FinanceClient({
                   <Eye className="w-8 h-8 text-yellow-400" />
                 </div>
                 <h3 className="text-lg font-medium text-white mb-2">Your watchlist is empty</h3>
-                <p className="text-[#8888a0] text-sm mb-4">
+                <p className="text-[color:var(--fg-mute)] text-sm mb-4">
                   Add stocks to track
                 </p>
                 <Button
@@ -453,14 +453,14 @@ export function FinanceClient({
                         variant="outline"
                         size="sm"
                         onClick={() => handleResearch(item.symbol)}
-                        className="border-white/[0.08] text-[#8888a0] hover:text-white gap-1"
+                        className="border-[color:var(--line)] text-[color:var(--fg-mute)] hover:text-white gap-1"
                       >
                         <Search className="w-4 h-4" />
                         Research
                       </Button>
                       <button
                         onClick={() => handleDeleteWatchlistItem(item.id)}
-                        className="text-[#8888a0]/60 hover:text-red-400 transition-colors"
+                        className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
                         disabled={isPending}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -468,7 +468,7 @@ export function FinanceClient({
                     </div>
                   </div>
                   {item.notes && (
-                    <p className="text-sm text-[#8888a0] mt-2">
+                    <p className="text-sm text-[color:var(--fg-mute)] mt-2">
                       {item.notes}
                     </p>
                   )}
@@ -481,47 +481,47 @@ export function FinanceClient({
 
       {/* Add Holding Sheet */}
       <Sheet open={addHoldingOpen} onOpenChange={setAddHoldingOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Add Position</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">Add Position</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddHolding} className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-1 block text-[#8888a0]">Symbol</label>
+              <label className="text-sm font-medium mb-1 block text-[color:var(--fg-mute)]">Symbol</label>
               <Input
                 placeholder="e.g., AAPL"
                 value={newSymbol}
                 onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-                className="uppercase bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                className="uppercase bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
                 autoFocus
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-1 block text-[#8888a0]">Shares</label>
+                <label className="text-sm font-medium mb-1 block text-[color:var(--fg-mute)]">Shares</label>
                 <Input
                   type="number"
                   step="any"
                   placeholder="100"
                   value={newShares}
                   onChange={(e) => setNewShares(e.target.value)}
-                  className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                  className="bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block text-[#8888a0]">Avg Cost</label>
+                <label className="text-sm font-medium mb-1 block text-[color:var(--fg-mute)]">Avg Cost</label>
                 <Input
                   type="number"
                   step="any"
                   placeholder="150.00"
                   value={newAvgCost}
                   onChange={(e) => setNewAvgCost(e.target.value)}
-                  className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                  className="bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
                 />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block text-[#8888a0]">
+              <label className="text-sm font-medium mb-1 block text-[color:var(--fg-mute)]">
                 Current Price (optional)
               </label>
               <Input
@@ -530,7 +530,7 @@ export function FinanceClient({
                 placeholder="155.00"
                 value={newCurrentPrice}
                 onChange={(e) => setNewCurrentPrice(e.target.value)}
-                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                className="bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
               />
             </div>
             <Button
@@ -546,18 +546,18 @@ export function FinanceClient({
 
       {/* Add Watchlist Sheet */}
       <Sheet open={addWatchlistOpen} onOpenChange={setAddWatchlistOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Add to Watchlist</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">Add to Watchlist</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddWatchlistItem} className="space-y-4 pb-8">
             <div>
-              <label className="text-sm font-medium mb-1 block text-[#8888a0]">Symbol</label>
+              <label className="text-sm font-medium mb-1 block text-[color:var(--fg-mute)]">Symbol</label>
               <Input
                 placeholder="e.g., TSLA"
                 value={watchlistSymbol}
                 onChange={(e) => setWatchlistSymbol(e.target.value.toUpperCase())}
-                className="uppercase bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+                className="uppercase bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
                 autoFocus
               />
             </div>
@@ -574,7 +574,7 @@ export function FinanceClient({
 
       {/* Research Sheet */}
       <Sheet open={researchOpen} onOpenChange={setResearchOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-[#12121e] border-white/[0.08] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl h-[85vh] overflow-y-auto bg-[var(--ink-100)] border-[color:var(--line)] px-6">
           <SheetHeader className="pb-4">
             <SheetTitle className="flex items-center gap-2 text-white">
               <Search className="w-5 h-5 text-emerald-400" />
@@ -585,14 +585,14 @@ export function FinanceClient({
           {researchLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-4" />
-              <p className="text-[#8888a0]">Analyzing {researchSymbol}...</p>
+              <p className="text-[color:var(--fg-mute)]">Analyzing {researchSymbol}...</p>
             </div>
           ) : researchData ? (
             <div className="space-y-6 pb-8">
               {/* Summary */}
               <div>
                 <h4 className="font-semibold mb-2 text-white">Summary</h4>
-                <p className="text-sm text-[#8888a0]">{researchData.summary}</p>
+                <p className="text-sm text-[color:var(--fg-mute)]">{researchData.summary}</p>
               </div>
 
               {/* Sentiment */}
@@ -606,12 +606,12 @@ export function FinanceClient({
                         ? "bg-emerald-500/20 text-emerald-400"
                         : researchData.sentiment.overall === "bearish"
                         ? "bg-red-500/20 text-red-400"
-                        : "bg-white/[0.05] text-[#8888a0]"
+                        : "bg-white/[0.05] text-[color:var(--fg-mute)]"
                     )}
                   >
                     {researchData.sentiment.overall.toUpperCase()}
                   </span>
-                  <span className="text-sm text-[#8888a0]">
+                  <span className="text-sm text-[color:var(--fg-mute)]">
                     {researchData.sentiment.socialMedia}
                   </span>
                 </div>
@@ -623,7 +623,7 @@ export function FinanceClient({
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {Object.entries(researchData.financials).map(([key, value]) => (
                     <div key={key} className="flex justify-between py-2 px-3 bg-white/[0.03] rounded-lg">
-                      <span className="text-[#8888a0] capitalize">
+                      <span className="text-[color:var(--fg-mute)] capitalize">
                         {key.replace(/([A-Z])/g, " $1").trim()}
                       </span>
                       <span className="font-medium text-white">{value}</span>
@@ -637,17 +637,17 @@ export function FinanceClient({
                 <h4 className="font-semibold mb-2 text-white">Price Targets</h4>
                 <div className="flex gap-3 text-sm">
                   <div className="flex-1 text-center p-3 bg-white/[0.03] rounded-xl">
-                    <p className="text-[#8888a0] text-xs">Low</p>
+                    <p className="text-[color:var(--fg-mute)] text-xs">Low</p>
                     <p className="font-semibold text-red-400">{researchData.priceTargets.low}</p>
                   </div>
                   <div className="flex-1 text-center p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                    <p className="text-[#8888a0] text-xs">Average</p>
+                    <p className="text-[color:var(--fg-mute)] text-xs">Average</p>
                     <p className="font-semibold text-emerald-400">
                       {researchData.priceTargets.average}
                     </p>
                   </div>
                   <div className="flex-1 text-center p-3 bg-white/[0.03] rounded-xl">
-                    <p className="text-[#8888a0] text-xs">High</p>
+                    <p className="text-[color:var(--fg-mute)] text-xs">High</p>
                     <p className="font-semibold text-emerald-400">{researchData.priceTargets.high}</p>
                   </div>
                 </div>
@@ -658,7 +658,7 @@ export function FinanceClient({
                 <h4 className="font-semibold mb-2 text-white">Catalysts</h4>
                 <ul className="space-y-2">
                   {researchData.catalysts.map((c, i) => (
-                    <li key={i} className="text-sm text-[#8888a0] flex items-start gap-2">
+                    <li key={i} className="text-sm text-[color:var(--fg-mute)] flex items-start gap-2">
                       <TrendingUp className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                       {c}
                     </li>
@@ -671,7 +671,7 @@ export function FinanceClient({
                 <h4 className="font-semibold mb-2 text-white">Risks</h4>
                 <ul className="space-y-2">
                   {researchData.risks.map((r, i) => (
-                    <li key={i} className="text-sm text-[#8888a0] flex items-start gap-2">
+                    <li key={i} className="text-sm text-[color:var(--fg-mute)] flex items-start gap-2">
                       <TrendingDown className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                       {r}
                     </li>
@@ -684,21 +684,21 @@ export function FinanceClient({
                 <h4 className="font-semibold mb-2 text-white">Recent News</h4>
                 <ul className="space-y-2">
                   {researchData.recentNews.map((n, i) => (
-                    <li key={i} className="text-sm text-[#8888a0] bg-white/[0.03] p-2 rounded-lg">
+                    <li key={i} className="text-sm text-[color:var(--fg-mute)] bg-white/[0.03] p-2 rounded-lg">
                       {n}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <p className="text-xs text-[#8888a0]/60 text-center pt-4 border-t border-white/[0.06]">
+              <p className="text-xs text-[color:var(--fg-mute)]/60 text-center pt-4 border-t border-[color:var(--line-soft)]">
                 Generated: {new Date(researchData.generatedAt).toLocaleString()}
                 <br />
                 For live data, integrate with a financial API
               </p>
             </div>
           ) : (
-            <p className="text-[#8888a0] text-center py-8">
+            <p className="text-[color:var(--fg-mute)] text-center py-8">
               No research data available
             </p>
           )}

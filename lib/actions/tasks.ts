@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getStartOfDayLA } from "@/lib/utils";
+import { requireUser } from "@/lib/session";
 import {
   createTaskSchema,
   updateTaskSchema,
@@ -11,14 +12,17 @@ import {
 } from "@/lib/validations/task";
 
 export async function getTasks(filter?: "all" | "today" | "completed") {
+  const user = await requireUser();
   const today = getStartOfDayLA();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
+  const scope = { userId: user.id };
   const where = (() => {
     switch (filter) {
       case "today":
         return {
+          ...scope,
           status: "pending",
           OR: [
             { dueDate: { gte: today, lt: tomorrow } },
@@ -26,9 +30,9 @@ export async function getTasks(filter?: "all" | "today" | "completed") {
           ],
         };
       case "completed":
-        return { status: "completed" };
+        return { ...scope, status: "completed" };
       default:
-        return {};
+        return scope;
     }
   })();
 
@@ -43,6 +47,7 @@ export async function getTasks(filter?: "all" | "today" | "completed") {
 }
 
 export async function getTodayTasksCount() {
+  const user = await requireUser();
   const today = getStartOfDayLA();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -50,6 +55,7 @@ export async function getTodayTasksCount() {
   const [pending, completed] = await Promise.all([
     db.task.count({
       where: {
+        userId: user.id,
         status: "pending",
         OR: [
           { dueDate: { gte: today, lt: tomorrow } },
@@ -59,6 +65,7 @@ export async function getTodayTasksCount() {
     }),
     db.task.count({
       where: {
+        userId: user.id,
         status: "completed",
         updatedAt: { gte: today, lt: tomorrow },
       },
@@ -69,10 +76,12 @@ export async function getTodayTasksCount() {
 }
 
 export async function createTask(input: CreateTaskInput) {
+  const user = await requireUser();
   const validated = createTaskSchema.parse(input);
 
   const task = await db.task.create({
     data: {
+      userId: user.id,
       title: validated.title,
       notes: validated.notes,
       dueDate: validated.dueDate ? new Date(validated.dueDate) : null,
@@ -86,6 +95,7 @@ export async function createTask(input: CreateTaskInput) {
 }
 
 export async function updateTask(input: UpdateTaskInput) {
+  const user = await requireUser();
   const validated = updateTaskSchema.parse(input);
   const { id, ...data } = validated;
 
@@ -98,18 +108,20 @@ export async function updateTask(input: UpdateTaskInput) {
     updateData.dueDate = data.dueDate ? new Date(data.dueDate) : null;
   }
 
-  const task = await db.task.update({
-    where: { id },
+  const res = await db.task.updateMany({
+    where: { id, userId: user.id },
     data: updateData,
   });
+  if (res.count === 0) throw new Error("Task not found");
 
   revalidatePath("/tasks");
   revalidatePath("/");
-  return task;
+  return db.task.findUniqueOrThrow({ where: { id } });
 }
 
 export async function toggleTaskStatus(id: string) {
-  const task = await db.task.findUnique({ where: { id } });
+  const user = await requireUser();
+  const task = await db.task.findFirst({ where: { id, userId: user.id } });
   if (!task) throw new Error("Task not found");
 
   const updated = await db.task.update({
@@ -125,7 +137,8 @@ export async function toggleTaskStatus(id: string) {
 }
 
 export async function deleteTask(id: string) {
-  await db.task.delete({ where: { id } });
+  const user = await requireUser();
+  await db.task.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/tasks");
   revalidatePath("/");
 }

@@ -72,7 +72,7 @@ export default function LearnPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -81,7 +81,7 @@ export default function LearnPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Daily News</h1>
-                <p className="text-xs text-[#8888a0]">
+                <p className="text-xs text-[color:var(--fg-mute)]">
                   {articles.length} articles today
                 </p>
               </div>
@@ -94,7 +94,7 @@ export default function LearnPage() {
             >
               <RefreshCw
                 className={cn(
-                  "w-5 h-5 text-[#8888a0]",
+                  "w-5 h-5 text-[color:var(--fg-mute)]",
                   isLoading && "animate-spin"
                 )}
               />
@@ -121,7 +121,7 @@ export default function LearnPage() {
                 "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
                 selectedCategory === null
                   ? "bg-white/10 text-white"
-                  : "bg-white/[0.03] text-[#8888a0]"
+                  : "bg-white/[0.03] text-[color:var(--fg-mute)]"
               )}
             >
               All
@@ -137,7 +137,7 @@ export default function LearnPage() {
                     "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
                     selectedCategory === category
                       ? "bg-white/10 text-white"
-                      : "bg-white/[0.03] text-[#8888a0]"
+                      : "bg-white/[0.03] text-[color:var(--fg-mute)]"
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export default function LearnPage() {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] animate-pulse"
+                className="p-4 rounded-2xl tile tile--elev animate-pulse"
               >
                 <div className="h-4 w-20 bg-white/[0.06] rounded mb-3" />
                 <div className="h-5 w-3/4 bg-white/[0.06] rounded mb-2" />
@@ -177,7 +177,7 @@ export default function LearnPage() {
               <Newspaper className="w-8 h-8 text-cyan-400" />
             </div>
             <h3 className="text-lg font-medium text-white mb-2">No articles found</h3>
-            <p className="text-[#8888a0] text-sm">
+            <p className="text-[color:var(--fg-mute)] text-sm">
               {selectedCategory
                 ? `No ${selectedCategory} news available today`
                 : "Check back later for updates"}
@@ -214,7 +214,7 @@ export default function LearnPage() {
                       href={article.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 mt-3 text-xs text-[#8888a0] hover:text-white transition-colors"
+                      className="inline-flex items-center gap-1 mt-3 text-xs text-[color:var(--fg-mute)] hover:text-white transition-colors"
                     >
                       Read more <ExternalLink className="w-3 h-3" />
                     </a>
@@ -228,7 +228,7 @@ export default function LearnPage() {
         {/* Category Overview Cards */}
         {!selectedCategory && articles.length > 0 && (
           <div className="mt-8">
-            <h2 className="text-sm font-medium text-[#8888a0] mb-4">Browse by Category</h2>
+            <h2 className="text-sm font-medium text-[color:var(--fg-mute)] mb-4">Browse by Category</h2>
             <div className="grid grid-cols-2 gap-3">
               {NEWS_CATEGORIES.map((category) => {
                 const Icon = CATEGORY_ICONS[category] || Globe;

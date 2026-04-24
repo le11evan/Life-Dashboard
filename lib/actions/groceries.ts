@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { requireUser } from "@/lib/session";
 import {
   createGroceryItemSchema,
   updateGroceryItemSchema,
@@ -10,7 +11,9 @@ import {
 } from "@/lib/validations/grocery";
 
 export async function getGroceryItems() {
+  const user = await requireUser();
   return db.groceryItem.findMany({
+    where: { userId: user.id },
     orderBy: [
       { isChecked: "asc" },
       { category: "asc" },
@@ -20,18 +23,21 @@ export async function getGroceryItems() {
 }
 
 export async function getGroceryItemsCount() {
+  const user = await requireUser();
   const [total, unchecked] = await Promise.all([
-    db.groceryItem.count(),
-    db.groceryItem.count({ where: { isChecked: false } }),
+    db.groceryItem.count({ where: { userId: user.id } }),
+    db.groceryItem.count({ where: { userId: user.id, isChecked: false } }),
   ]);
   return { total, unchecked };
 }
 
 export async function createGroceryItem(input: CreateGroceryItemInput) {
+  const user = await requireUser();
   const validated = createGroceryItemSchema.parse(input);
 
   const item = await db.groceryItem.create({
     data: {
+      userId: user.id,
       name: validated.name,
       category: validated.category,
     },
@@ -43,6 +49,7 @@ export async function createGroceryItem(input: CreateGroceryItemInput) {
 }
 
 export async function updateGroceryItem(input: UpdateGroceryItemInput) {
+  const user = await requireUser();
   const validated = updateGroceryItemSchema.parse(input);
   const { id, ...data } = validated;
 
@@ -51,18 +58,20 @@ export async function updateGroceryItem(input: UpdateGroceryItemInput) {
   if (data.category !== undefined) updateData.category = data.category;
   if (data.isChecked !== undefined) updateData.isChecked = data.isChecked;
 
-  const item = await db.groceryItem.update({
-    where: { id },
+  const res = await db.groceryItem.updateMany({
+    where: { id, userId: user.id },
     data: updateData,
   });
+  if (res.count === 0) throw new Error("Item not found");
 
   revalidatePath("/groceries");
   revalidatePath("/");
-  return item;
+  return db.groceryItem.findUniqueOrThrow({ where: { id } });
 }
 
 export async function toggleGroceryItem(id: string) {
-  const item = await db.groceryItem.findUnique({ where: { id } });
+  const user = await requireUser();
+  const item = await db.groceryItem.findFirst({ where: { id, userId: user.id } });
   if (!item) throw new Error("Item not found");
 
   const updated = await db.groceryItem.update({
@@ -76,13 +85,15 @@ export async function toggleGroceryItem(id: string) {
 }
 
 export async function deleteGroceryItem(id: string) {
-  await db.groceryItem.delete({ where: { id } });
+  const user = await requireUser();
+  await db.groceryItem.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/groceries");
   revalidatePath("/");
 }
 
 export async function clearCheckedItems() {
-  await db.groceryItem.deleteMany({ where: { isChecked: true } });
+  const user = await requireUser();
+  await db.groceryItem.deleteMany({ where: { userId: user.id, isChecked: true } });
   revalidatePath("/groceries");
   revalidatePath("/");
 }

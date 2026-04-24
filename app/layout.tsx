@@ -1,18 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Exo_2, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Manrope, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const exo2 = Exo_2({
-  variable: "--font-exo2",
+const display = Bricolage_Grotesque({
+  variable: "--ff-display",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const ui = Manrope({
+  variable: "--ff-ui",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  variable: "--ff-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -31,7 +40,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0a0a14",
+  themeColor: "#07070f",
   viewportFit: "cover",
 };
 
@@ -45,10 +54,10 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="theme-color" content="#0a0a14" />
+        <meta name="theme-color" content="#07070f" />
       </head>
       <body
-        className={`${exo2.variable} ${jetbrainsMono.variable} antialiased bg-[#0a0a14]`}
+        className={`${display.variable} ${ui.variable} ${mono.variable} font-ui antialiased bg-[#07070f]`}
       >
         {children}
         <Toaster />

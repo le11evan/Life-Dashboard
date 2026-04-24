@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { requireUser } from "@/lib/session";
 import {
   createJournalEntrySchema,
   updateJournalEntrySchema,
@@ -10,14 +11,16 @@ import {
 } from "@/lib/validations/journal";
 
 export async function getJournalEntries(search?: string) {
+  const user = await requireUser();
   const where = search
     ? {
+        userId: user.id,
         OR: [
           { content: { contains: search, mode: "insensitive" as const } },
           { tags: { hasSome: [search] } },
         ],
       }
-    : {};
+    : { userId: user.id };
 
   return db.journalEntry.findMany({
     where,
@@ -26,11 +29,14 @@ export async function getJournalEntries(search?: string) {
 }
 
 export async function getJournalEntry(id: string) {
-  return db.journalEntry.findUnique({ where: { id } });
+  const user = await requireUser();
+  return db.journalEntry.findFirst({ where: { id, userId: user.id } });
 }
 
 export async function getJournalStreak() {
+  const user = await requireUser();
   const entries = await db.journalEntry.findMany({
+    where: { userId: user.id },
     orderBy: { createdAt: "desc" },
     select: { createdAt: true },
     take: 100,
@@ -42,7 +48,6 @@ export async function getJournalStreak() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Check if there's an entry today or yesterday to start the streak
   const lastEntryDate = new Date(entries[0].createdAt);
   lastEntryDate.setHours(0, 0, 0, 0);
 
@@ -50,9 +55,8 @@ export async function getJournalStreak() {
     (today.getTime() - lastEntryDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  if (daysDiff > 1) return 0; // Streak broken
+  if (daysDiff > 1) return 0;
 
-  // Count consecutive days
   const seenDates = new Set<string>();
   for (const entry of entries) {
     const date = new Date(entry.createdAt);
@@ -70,19 +74,22 @@ export async function getJournalStreak() {
 }
 
 export async function getRecentEntryCount() {
+  const user = await requireUser();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   return db.journalEntry.count({
-    where: { createdAt: { gte: thirtyDaysAgo } },
+    where: { userId: user.id, createdAt: { gte: thirtyDaysAgo } },
   });
 }
 
 export async function createJournalEntry(input: CreateJournalEntryInput) {
+  const user = await requireUser();
   const validated = createJournalEntrySchema.parse(input);
 
   const entry = await db.journalEntry.create({
     data: {
+      userId: user.id,
       content: validated.content,
       tags: validated.tags,
       mood: validated.mood,
@@ -95,6 +102,7 @@ export async function createJournalEntry(input: CreateJournalEntryInput) {
 }
 
 export async function updateJournalEntry(input: UpdateJournalEntryInput) {
+  const user = await requireUser();
   const validated = updateJournalEntrySchema.parse(input);
   const { id, ...data } = validated;
 
@@ -103,18 +111,20 @@ export async function updateJournalEntry(input: UpdateJournalEntryInput) {
   if (data.tags !== undefined) updateData.tags = data.tags;
   if (data.mood !== undefined) updateData.mood = data.mood;
 
-  const entry = await db.journalEntry.update({
-    where: { id },
+  const res = await db.journalEntry.updateMany({
+    where: { id, userId: user.id },
     data: updateData,
   });
+  if (res.count === 0) throw new Error("Entry not found");
 
   revalidatePath("/journal");
   revalidatePath("/");
-  return entry;
+  return db.journalEntry.findUniqueOrThrow({ where: { id } });
 }
 
 export async function deleteJournalEntry(id: string) {
-  await db.journalEntry.delete({ where: { id } });
+  const user = await requireUser();
+  await db.journalEntry.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/journal");
   revalidatePath("/");
 }

@@ -2,8 +2,12 @@
 
 import { db } from "@/lib/db";
 import { formatDateLA } from "@/lib/utils";
+import { requireUser } from "@/lib/session";
 
 export async function exportAllData() {
+  const user = await requireUser();
+  const scope = { userId: user.id };
+
   const [
     tasks,
     workoutTemplates,
@@ -18,8 +22,9 @@ export async function exportAllData() {
     goals,
     creativeIdeas,
   ] = await Promise.all([
-    db.task.findMany({ orderBy: { createdAt: "desc" } }),
+    db.task.findMany({ where: scope, orderBy: { createdAt: "desc" } }),
     db.workoutTemplate.findMany({
+      where: scope,
       include: {
         exercises: {
           include: { logs: true },
@@ -28,16 +33,16 @@ export async function exportAllData() {
       },
       orderBy: { order: "asc" },
     }),
-    db.dietLog.findMany({ orderBy: { date: "desc" } }),
-    db.dietGoals.findFirst(),
-    db.supplement.findMany({ orderBy: { name: "asc" } }),
-    db.weightLog.findMany({ orderBy: { date: "desc" } }),
-    db.holding.findMany({ orderBy: { symbol: "asc" } }),
-    db.watchlistItem.findMany({ orderBy: { symbol: "asc" } }),
-    db.journalEntry.findMany({ orderBy: { createdAt: "desc" } }),
-    db.groceryItem.findMany({ orderBy: { createdAt: "desc" } }),
-    db.goal.findMany({ orderBy: { createdAt: "desc" } }),
-    db.creativeIdea.findMany({ orderBy: { createdAt: "desc" } }),
+    db.dietLog.findMany({ where: scope, orderBy: { date: "desc" } }),
+    db.dietGoals.findUnique({ where: { userId: user.id } }),
+    db.supplement.findMany({ where: scope, orderBy: { name: "asc" } }),
+    db.weightLog.findMany({ where: scope, orderBy: { date: "desc" } }),
+    db.holding.findMany({ where: scope, orderBy: { symbol: "asc" } }),
+    db.watchlistItem.findMany({ where: scope, orderBy: { symbol: "asc" } }),
+    db.journalEntry.findMany({ where: scope, orderBy: { createdAt: "desc" } }),
+    db.groceryItem.findMany({ where: scope, orderBy: { createdAt: "desc" } }),
+    db.goal.findMany({ where: scope, orderBy: { createdAt: "desc" } }),
+    db.creativeIdea.findMany({ where: scope, orderBy: { createdAt: "desc" } }),
   ]);
 
   const backup = {
@@ -47,9 +52,10 @@ export async function exportAllData() {
       month: "long",
       day: "numeric",
       hour: "numeric",
-      minute: "2-digit"
+      minute: "2-digit",
     }),
     version: "1.0",
+    user: { username: user.username },
     data: {
       tasks,
       fitness: {
@@ -90,6 +96,9 @@ export async function exportAllData() {
 }
 
 export async function getBackupStats() {
+  const user = await requireUser();
+  const scope = { userId: user.id };
+
   const [
     tasks,
     templates,
@@ -104,18 +113,18 @@ export async function getBackupStats() {
     goals,
     ideas,
   ] = await Promise.all([
-    db.task.count(),
-    db.workoutTemplate.count(),
-    db.templateExercise.count(),
-    db.dietLog.count(),
-    db.supplement.count(),
-    db.weightLog.count(),
-    db.holding.count(),
-    db.watchlistItem.count(),
-    db.journalEntry.count(),
-    db.groceryItem.count(),
-    db.goal.count(),
-    db.creativeIdea.count(),
+    db.task.count({ where: scope }),
+    db.workoutTemplate.count({ where: scope }),
+    db.templateExercise.count({ where: { template: { userId: user.id } } }),
+    db.dietLog.count({ where: scope }),
+    db.supplement.count({ where: scope }),
+    db.weightLog.count({ where: scope }),
+    db.holding.count({ where: scope }),
+    db.watchlistItem.count({ where: scope }),
+    db.journalEntry.count({ where: scope }),
+    db.groceryItem.count({ where: scope }),
+    db.goal.count({ where: scope }),
+    db.creativeIdea.count({ where: scope }),
   ]);
 
   return {
@@ -131,7 +140,18 @@ export async function getBackupStats() {
     groceries,
     goals,
     ideas,
-    total: tasks + templates + exercises + dietLogs + supplements + weightLogs +
-           holdings + watchlist + journal + groceries + goals + ideas,
+    total:
+      tasks +
+      templates +
+      exercises +
+      dietLogs +
+      supplements +
+      weightLogs +
+      holdings +
+      watchlist +
+      journal +
+      groceries +
+      goals +
+      ideas,
   };
 }

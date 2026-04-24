@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { requireUser } from "@/lib/session";
 import {
   createIdeaSchema,
   updateIdeaSchema,
@@ -10,7 +11,8 @@ import {
 } from "@/lib/validations/creative";
 
 export async function getIdeas(category?: string) {
-  const where = category ? { category } : {};
+  const user = await requireUser();
+  const where = category ? { userId: user.id, category } : { userId: user.id };
   return db.creativeIdea.findMany({
     where,
     orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
@@ -18,18 +20,21 @@ export async function getIdeas(category?: string) {
 }
 
 export async function getIdeaStats() {
+  const user = await requireUser();
   const [total, pinned] = await Promise.all([
-    db.creativeIdea.count(),
-    db.creativeIdea.count({ where: { isPinned: true } }),
+    db.creativeIdea.count({ where: { userId: user.id } }),
+    db.creativeIdea.count({ where: { userId: user.id, isPinned: true } }),
   ]);
   return { total, pinned };
 }
 
 export async function createIdea(input: CreateIdeaInput) {
+  const user = await requireUser();
   const validated = createIdeaSchema.parse(input);
 
   const idea = await db.creativeIdea.create({
     data: {
+      userId: user.id,
       title: validated.title,
       content: validated.content,
       category: validated.category,
@@ -43,6 +48,7 @@ export async function createIdea(input: CreateIdeaInput) {
 }
 
 export async function updateIdea(input: UpdateIdeaInput) {
+  const user = await requireUser();
   const validated = updateIdeaSchema.parse(input);
   const { id, ...data } = validated;
 
@@ -53,24 +59,27 @@ export async function updateIdea(input: UpdateIdeaInput) {
   if (data.tags !== undefined) updateData.tags = data.tags;
   if (data.isPinned !== undefined) updateData.isPinned = data.isPinned;
 
-  const idea = await db.creativeIdea.update({
-    where: { id },
+  const res = await db.creativeIdea.updateMany({
+    where: { id, userId: user.id },
     data: updateData,
   });
+  if (res.count === 0) throw new Error("Idea not found");
 
   revalidatePath("/creative");
   revalidatePath("/");
-  return idea;
+  return db.creativeIdea.findUniqueOrThrow({ where: { id } });
 }
 
 export async function deleteIdea(id: string) {
-  await db.creativeIdea.delete({ where: { id } });
+  const user = await requireUser();
+  await db.creativeIdea.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/creative");
   revalidatePath("/");
 }
 
 export async function toggleIdeaPin(id: string) {
-  const idea = await db.creativeIdea.findUnique({ where: { id } });
+  const user = await requireUser();
+  const idea = await db.creativeIdea.findFirst({ where: { id, userId: user.id } });
   if (!idea) throw new Error("Idea not found");
 
   await db.creativeIdea.update({

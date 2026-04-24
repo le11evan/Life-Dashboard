@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { requireAdmin, requireUser } from "@/lib/session";
 import { createQuoteSchema, type CreateQuoteInput } from "@/lib/validations/quote";
 
 // Default quotes to use when no quote is set for today
@@ -37,6 +38,7 @@ const DEFAULT_QUOTES = [
 ];
 
 export async function getTodayQuote() {
+  await requireUser();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -66,6 +68,7 @@ export async function getTodayQuote() {
 }
 
 export async function setTodayQuote(input: CreateQuoteInput) {
+  await requireAdmin();
   const validated = createQuoteSchema.parse(input);
 
   const today = new Date();

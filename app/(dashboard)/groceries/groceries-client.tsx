@@ -125,7 +125,7 @@ export function GroceriesClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -134,7 +134,7 @@ export function GroceriesClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Groceries</h1>
-                <p className="text-xs text-[#8888a0]">
+                <p className="text-xs text-[color:var(--fg-mute)]">
                   {uncheckedItems.length} items to get
                 </p>
               </div>
@@ -176,7 +176,7 @@ export function GroceriesClient({
               <ShoppingBag className="w-8 h-8 text-green-400" />
             </div>
             <h3 className="text-lg font-medium text-white mb-2">List is empty</h3>
-            <p className="text-[#8888a0] text-sm mb-4">
+            <p className="text-[color:var(--fg-mute)] text-sm mb-4">
               Add items to your shopping list
             </p>
             <Button
@@ -192,7 +192,7 @@ export function GroceriesClient({
             {/* Grouped by category */}
             {Object.entries(groupedItems).map(([category, categoryItems]) => (
               <div key={category}>
-                <h3 className="text-sm font-medium text-[#8888a0] mb-3 px-1">
+                <h3 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3 px-1">
                   {category} ({categoryItems.length})
                 </h3>
                 <div className="space-y-2">
@@ -225,7 +225,7 @@ export function GroceriesClient({
                           </span>
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className="text-[#8888a0]/60 hover:text-red-400 transition-colors"
+                            className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
                             disabled={isPending}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -242,14 +242,14 @@ export function GroceriesClient({
             {checkedItems.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <h3 className="text-sm font-medium text-[#8888a0]">
+                  <h3 className="text-sm font-medium text-[color:var(--fg-mute)]">
                     Checked ({checkedItems.length})
                   </h3>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleClearChecked}
-                    className="h-7 text-xs text-[#8888a0]/60 hover:text-red-400"
+                    className="h-7 text-xs text-[color:var(--fg-mute)]/60 hover:text-red-400"
                   >
                     <X className="w-3 h-3 mr-1" />
                     Clear
@@ -264,7 +264,7 @@ export function GroceriesClient({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]"
+                        className="p-3 rounded-xl tile tile--elev"
                       >
                         <div className="flex items-center gap-3">
                           <button
@@ -276,7 +276,7 @@ export function GroceriesClient({
                               <CheckSquare className="w-5 h-5 text-green-500" />
                             </motion.div>
                           </button>
-                          <span className="flex-1 line-through text-[#8888a0]/60">
+                          <span className="flex-1 line-through text-[color:var(--fg-mute)]/60">
                             {item.name}
                           </span>
                         </div>
@@ -292,21 +292,21 @@ export function GroceriesClient({
 
       {/* Add Item Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Add Item</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">Add Item</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddItem} className="space-y-4 pb-8">
             <Input
               placeholder="What do you need?"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="h-12 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+              className="h-12 bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
               autoFocus
             />
 
             <div>
-              <span className="text-sm text-[#8888a0] mb-2 block">Category</span>
+              <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Category</span>
               <div className="flex flex-wrap gap-2">
                 {GROCERY_CATEGORIES.map((cat) => (
                   <button
@@ -317,7 +317,7 @@ export function GroceriesClient({
                       "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                       newCategory === cat
                         ? "bg-green-500/20 border-green-500/50 text-green-400"
-                        : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                        : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                     )}
                   >
                     {cat}

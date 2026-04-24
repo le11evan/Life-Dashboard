@@ -37,14 +37,14 @@ import { getQuoteForCategory, type Quote } from "@/lib/quotes";
 import type { Task } from "@prisma/client";
 
 const priorityColors = {
-  0: "text-[#8888a0]",
+  0: "text-[color:var(--fg-mute)]",
   1: "text-blue-400",
   2: "text-yellow-400",
   3: "text-red-400",
 };
 
 const priorityBg = {
-  0: "bg-white/[0.03] border-white/[0.04]",
+  0: "bg-white/[0.03] border-[color:var(--line-soft)]",
   1: "bg-blue-500/10 border-blue-500/20",
   2: "bg-yellow-500/10 border-yellow-500/20",
   3: "bg-red-500/10 border-red-500/20",
@@ -129,7 +129,7 @@ const dueDateStyles = {
   today: "text-blue-400 bg-blue-500/10",
   tomorrow: "text-amber-400 bg-amber-500/10",
   "this-week": "text-green-400 bg-green-500/10",
-  later: "text-[#8888a0] bg-white/[0.03]",
+  later: "text-[color:var(--fg-mute)] bg-white/[0.03]",
 };
 
 export function TasksClient({
@@ -343,7 +343,7 @@ export function TasksClient({
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -352,7 +352,7 @@ export function TasksClient({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Tasks</h1>
-                <div className="flex items-center gap-2 text-xs text-[#8888a0]">
+                <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
                   <span>{pendingCount} pending, {completedCount} done</span>
                   {overdueCount > 0 && (
                     <span className="flex items-center gap-1 text-red-400">
@@ -400,7 +400,7 @@ export function TasksClient({
                   "flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2",
                   filter === key
                     ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                    : "bg-white/[0.03] text-[#8888a0]"
+                    : "bg-white/[0.03] text-[color:var(--fg-mute)]"
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -424,7 +424,7 @@ export function TasksClient({
                 <CheckSquare className="w-8 h-8 text-blue-400" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">No tasks here</h3>
-              <p className="text-[#8888a0] text-sm mb-4">
+              <p className="text-[color:var(--fg-mute)] text-sm mb-4">
                 {filter === "completed"
                   ? "Nothing completed yet"
                   : "Add a task to get started"}
@@ -453,7 +453,7 @@ export function TasksClient({
                   className={cn(
                     "p-4 rounded-2xl border transition-all",
                     task.status === "completed"
-                      ? "bg-white/[0.03] border-white/[0.06]"
+                      ? "bg-white/[0.03] border-[color:var(--line-soft)]"
                       : dueDateStatus === "overdue"
                       ? "bg-gradient-to-br from-red-500/15 to-red-500/5 border-red-500/30"
                       : `bg-gradient-to-br ${priorityBg[task.priority as keyof typeof priorityBg]}`
@@ -486,8 +486,8 @@ export function TasksClient({
                         className={cn(
                           "font-medium",
                           task.status === "completed"
-                            ? "line-through text-[#8888a0]/60"
-                            : "text-white"
+                            ? "line-through text-[color:var(--fg-mute)]/60"
+                            : "text-[color:var(--fg)]"
                         )}
                       >
                         {task.title}
@@ -521,7 +521,7 @@ export function TasksClient({
                           </span>
                         )}
                         {formattedDueDate && task.status === "completed" && (
-                          <span className="text-xs text-[#8888a0]/60 flex items-center gap-1">
+                          <span className="text-xs text-[color:var(--fg-mute)]/60 flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {new Date(task.dueDate!).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </span>
@@ -532,14 +532,14 @@ export function TasksClient({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openEditSheet(task)}
-                        className="text-[#8888a0]/60 hover:text-blue-400 transition-colors"
+                        className="text-[color:var(--fg-mute)]/60 hover:text-blue-400 transition-colors"
                         disabled={isPending}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(task.id)}
-                        className="text-[#8888a0]/60 hover:text-red-400 transition-colors"
+                        className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
                         disabled={isPending}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -555,22 +555,22 @@ export function TasksClient({
 
       {/* Add Task Sheet */}
       <Sheet open={addOpen} onOpenChange={setAddOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Add Task</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">Add Task</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleAddTask} className="space-y-4 pb-8 px-1">
             <Input
               placeholder="What needs to be done?"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="h-12 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+              className="h-12 bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
               autoFocus
             />
 
             {/* Due Date */}
             <div>
-              <span className="text-sm text-[#8888a0] mb-2 block">Due Date</span>
+              <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Due Date</span>
 
               {newDueDate ? (
                 <div className="flex items-center gap-2 mb-3">
@@ -587,7 +587,7 @@ export function TasksClient({
                   <button
                     type="button"
                     onClick={() => handleQuickDate("clear")}
-                    className="p-2 text-[#8888a0] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="p-2 text-[color:var(--fg-mute)] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -602,7 +602,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                     newDueDate && new Date(newDueDate).toDateString() === getToday().toDateString()
                       ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-blue-500/30 hover:text-blue-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-blue-500/30 hover:text-blue-400"
                   )}
                 >
                   Today
@@ -614,7 +614,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                     newDueDate && new Date(newDueDate).toDateString() === getTomorrow().toDateString()
                       ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-amber-500/30 hover:text-amber-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-amber-500/30 hover:text-amber-400"
                   )}
                 >
                   Tomorrow
@@ -626,7 +626,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                     newDueDate && new Date(newDueDate).toDateString() === getNextWeek().toDateString()
                       ? "bg-green-500/20 border-green-500/50 text-green-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-green-500/30 hover:text-green-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-green-500/30 hover:text-green-400"
                   )}
                 >
                   Next Week
@@ -638,7 +638,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border flex items-center gap-1",
                     showDatePicker
                       ? "bg-violet-500/20 border-violet-500/50 text-violet-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-violet-500/30 hover:text-violet-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-violet-500/30 hover:text-violet-400"
                   )}
                 >
                   <Calendar className="w-3.5 h-3.5" />
@@ -659,7 +659,7 @@ export function TasksClient({
                       type="date"
                       min={formatDateForInput(getToday())}
                       onChange={(e) => handleCustomDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="w-full px-3 py-2 tile tile--elev rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </motion.div>
                 )}
@@ -668,7 +668,7 @@ export function TasksClient({
 
             {/* Priority */}
             <div>
-              <span className="text-sm text-[#8888a0] mb-2 block">Priority</span>
+              <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Priority</span>
               <div className="grid grid-cols-4 gap-2">
                 {([0, 1, 2, 3] as const).map((p) => (
                   <button
@@ -679,7 +679,7 @@ export function TasksClient({
                       "py-2 px-3 rounded-xl text-sm font-medium transition-all border",
                       newPriority === p
                         ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
-                        : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                        : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                     )}
                   >
                     {priorityLabels[p]}
@@ -701,22 +701,22 @@ export function TasksClient({
 
       {/* Edit Task Sheet */}
       <Sheet open={editOpen} onOpenChange={setEditOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-[#12121e] border-white/[0.08] px-6">
+        <SheetContent side="bottom" className="rounded-t-3xl bg-[var(--ink-100)] border-[color:var(--line)] px-6">
           <SheetHeader className="pb-4">
-            <SheetTitle className="text-white">Edit Task</SheetTitle>
+            <SheetTitle className="text-[color:var(--fg)]">Edit Task</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleEditTask} className="space-y-4 pb-8 px-1">
             <Input
               placeholder="What needs to be done?"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="h-12 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-[#8888a0]/60"
+              className="h-12 bg-white/[0.04] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
               autoFocus
             />
 
             {/* Due Date */}
             <div>
-              <span className="text-sm text-[#8888a0] mb-2 block">Due Date</span>
+              <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Due Date</span>
 
               {editDueDate ? (
                 <div className="flex items-center gap-2 mb-3">
@@ -733,7 +733,7 @@ export function TasksClient({
                   <button
                     type="button"
                     onClick={() => handleEditQuickDate("clear")}
-                    className="p-2 text-[#8888a0] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="p-2 text-[color:var(--fg-mute)] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -748,7 +748,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                     editDueDate && new Date(editDueDate).toDateString() === getToday().toDateString()
                       ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-blue-500/30 hover:text-blue-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-blue-500/30 hover:text-blue-400"
                   )}
                 >
                   Today
@@ -760,7 +760,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                     editDueDate && new Date(editDueDate).toDateString() === getTomorrow().toDateString()
                       ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-amber-500/30 hover:text-amber-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-amber-500/30 hover:text-amber-400"
                   )}
                 >
                   Tomorrow
@@ -772,7 +772,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
                     editDueDate && new Date(editDueDate).toDateString() === getNextWeek().toDateString()
                       ? "bg-green-500/20 border-green-500/50 text-green-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-green-500/30 hover:text-green-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-green-500/30 hover:text-green-400"
                   )}
                 >
                   Next Week
@@ -784,7 +784,7 @@ export function TasksClient({
                     "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border flex items-center gap-1",
                     editShowDatePicker
                       ? "bg-violet-500/20 border-violet-500/50 text-violet-400"
-                      : "bg-white/[0.04] border-white/[0.08] text-[#8888a0] hover:border-violet-500/30 hover:text-violet-400"
+                      : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)] hover:border-violet-500/30 hover:text-violet-400"
                   )}
                 >
                   <Calendar className="w-3.5 h-3.5" />
@@ -805,7 +805,7 @@ export function TasksClient({
                       type="date"
                       min={formatDateForInput(getToday())}
                       onChange={(e) => handleEditCustomDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="w-full px-3 py-2 tile tile--elev rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     />
                   </motion.div>
                 )}
@@ -814,7 +814,7 @@ export function TasksClient({
 
             {/* Priority */}
             <div>
-              <span className="text-sm text-[#8888a0] mb-2 block">Priority</span>
+              <span className="text-sm text-[color:var(--fg-mute)] mb-2 block">Priority</span>
               <div className="grid grid-cols-4 gap-2">
                 {([0, 1, 2, 3] as const).map((p) => (
                   <button
@@ -825,7 +825,7 @@ export function TasksClient({
                       "py-2 px-3 rounded-xl text-sm font-medium transition-all border",
                       editPriority === p
                         ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
-                        : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                        : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                     )}
                   >
                     {priorityLabels[p]}

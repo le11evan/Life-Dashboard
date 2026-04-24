@@ -7,9 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Multi-user auth
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  isAdmin      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tasks            Task[]
+  groceryItems     GroceryItem[]
+  journalEntries   JournalEntry[]
+  workoutTemplates WorkoutTemplate[]
+  holdings         Holding[]
+  watchlist        WatchlistItem[]
+  goals            Goal[]
+  ideas            CreativeIdea[]
+  dietLogs         DietLog[]
+  dietGoals        DietGoals?
+  supplements      Supplement[]
+  weightLogs       WeightLog[]
+  sessions         Session[]
+
+  @@index([username])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
 // Milestone 2: Tasks
 model Task {
   id        String    @id @default(cuid())
+  userId    String 
   title     String
   notes     String?
   status    String    @default("pending") // pending, completed
@@ -17,7 +55,9 @@ model Task {
   priority  Int       @default(0) // 0=none, 1=low, 2=medium, 3=high
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([status])
   @@index([dueDate])
 }
@@ -25,28 +65,34 @@ model Task {
 // Milestone 2: Groceries
 model GroceryItem {
   id        String   @id @default(cuid())
+  userId    String 
   name      String
   category  String?
   isChecked Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([isChecked])
 }
 
 // Milestone 3: Journal
 model JournalEntry {
   id        String   @id @default(cuid())
+  userId    String 
   content   String
   tags      String[] @default([])
   mood      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([createdAt])
 }
 
-// Milestone 3: Daily Quote
+// Milestone 3: Daily Quote (GLOBAL — shared across users)
 model DailyQuote {
   id        String   @id @default(cuid())
   date      DateTime @unique @db.Date
@@ -59,11 +105,15 @@ model DailyQuote {
 // Milestone 4: Fitness - Workout Templates (Push Day, Pull Day, etc.)
 model WorkoutTemplate {
   id        String             @id @default(cuid())
+  userId    String 
   name      String             // e.g., "PUSH DAY", "PULL DAY"
   order     Int                @default(0)
   exercises TemplateExercise[]
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Milestone 4: Fitness - Exercises within a template
@@ -101,29 +151,37 @@ model ExerciseLog {
 // Milestone 5: Finance - Portfolio Holdings
 model Holding {
   id           String   @id @default(cuid())
-  symbol       String   @unique
+  userId       String 
+  symbol       String
   shares       Float
   avgCost      Float
   currentPrice Float?   // Optional: manually updated or from API
   notes        String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, symbol])
+  @@index([userId])
   @@index([symbol])
 }
 
 // Milestone 5: Finance - Watchlist
 model WatchlistItem {
   id        String   @id @default(cuid())
-  symbol    String   @unique
+  userId    String 
+  symbol    String
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, symbol])
+  @@index([userId])
   @@index([symbol])
 }
 
-// Milestone 5: Finance - Stock Research Cache
+// Milestone 5: Finance - Stock Research Cache (GLOBAL — AI-generated, shared)
 model StockResearch {
   id          String   @id @default(cuid())
   symbol      String   @unique
@@ -137,6 +195,7 @@ model StockResearch {
 // Milestone 6: Goals
 model Goal {
   id          String    @id @default(cuid())
+  userId      String 
   title       String
   description String?
   type        String    @default("short") // short, long
@@ -145,12 +204,14 @@ model Goal {
   targetDate  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([type])
   @@index([status])
 }
 
-// Milestone 6: Daily News Cache
+// Milestone 6: Daily News Cache (GLOBAL — shared across users)
 model DailyNews {
   id          String   @id @default(cuid())
   date        DateTime @unique @db.Date
@@ -162,6 +223,7 @@ model DailyNews {
 // Milestone 6: Creative Ideas
 model CreativeIdea {
   id        String   @id @default(cuid())
+  userId    String 
   title     String
   content   String?
   category  String?  // music, writing, design, etc.
@@ -169,7 +231,9 @@ model CreativeIdea {
   isPinned  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([category])
   @@index([isPinned])
 }
@@ -177,7 +241,8 @@ model CreativeIdea {
 // Milestone 7: Fitness Enhanced - Diet/Nutrition Log
 model DietLog {
   id        String   @id @default(cuid())
-  date      DateTime @unique @db.Date
+  userId    String 
+  date      DateTime @db.Date
   calories  Int      @default(0)
   protein   Int      @default(0)  // grams
   carbs     Int      @default(0)  // grams
@@ -187,13 +252,17 @@ model DietLog {
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, date])
+  @@index([userId])
   @@index([date])
 }
 
-// Milestone 7: Fitness Enhanced - Diet Goals
+// Milestone 7: Fitness Enhanced - Diet Goals (one per user)
 model DietGoals {
   id        String   @id @default(cuid())
+  userId    String   @unique
   calories  Int      @default(2000)
   protein   Int      @default(150)  // grams
   carbs     Int      @default(200)  // grams
@@ -201,11 +270,13 @@ model DietGoals {
   fiber     Int      @default(30)   // grams
   water     Float    @default(100)  // oz (about 3 liters)
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Milestone 7: Fitness Enhanced - Supplements
 model Supplement {
   id        String   @id @default(cuid())
+  userId    String 
   name      String
   dosage    String?  // e.g., "500mg", "1 scoop"
   frequency String   @default("daily") // daily, twice-daily, as-needed, etc.
@@ -214,17 +285,23 @@ model Supplement {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@index([isActive])
 }
 
 // Milestone 7: Fitness Enhanced - Body Weight Log
 model WeightLog {
   id        String   @id @default(cuid())
-  date      DateTime @unique @db.Date
+  userId    String 
+  date      DateTime @db.Date
   weight    Float    // lbs or kg based on user preference
   notes     String?
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, date])
+  @@index([userId])
   @@index([date])
 }

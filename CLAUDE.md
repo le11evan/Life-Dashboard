@@ -1,7 +1,7 @@
 # Life Dashboard - Project Memory
 
 ## Overview
-Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping priority.
+Personal Dashboard / Life OS for Evan (admin username `le11evan`). Multi-user — friends/family/portfolio visitors can sign up with username + password and get isolated data. Mobile-first, fast shipping priority.
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router) + TypeScript
@@ -14,13 +14,20 @@ Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping 
 
 ## Architecture Decisions
 
-### Auth (Single User)
-- ENV: `APP_PASSWORD` for password gate
-- httpOnly secure cookie for session
-- middleware.ts protects all routes except /login + static assets
+### Auth (Multi-user, custom lightweight session)
+- `User` table: `username` (unique), `passwordHash` (bcryptjs), `isAdmin`
+- `Session` table: opaque `id` → `userId` + `expiresAt` (30 days)
+- httpOnly secure cookie holds the session id
+- `middleware.ts` does a presence check only (fast, no DB hit); page-level `requireUser()` (lib/session.ts) validates the session via DB lookup and returns the current user (cached per request)
+- `lib/session.ts` exports `getCurrentUser`, `requireUser`, `requireAdmin`, `createSession`, `destroySession`
+- `lib/passwords.ts` wraps `bcryptjs` (cost 10)
+- API routes: `/api/login`, `/api/signup`, `/api/logout`
+- UI: `/login`, `/signup`
 
 ### Database
-- Single user = no users table needed
+- Per-user tables (have `userId` FK with cascade delete): Task, GroceryItem, JournalEntry, WorkoutTemplate, Holding, WatchlistItem, Goal, CreativeIdea, DietLog, DietGoals (unique on userId), Supplement, WeightLog
+- Global tables: DailyQuote, DailyNews, StockResearch (shared cached content — admin-only writes for quotes/news)
+- Every server action in `lib/actions/*` scopes queries by `userId` via `requireUser()`
 - JSON fields for complex nested data (workout sets, links)
 - Dates stored as DateTime, displayed in user timezone
 
@@ -64,7 +71,9 @@ Personal Dashboard / Life OS for Evan. Single user, mobile-first, fast shipping 
   /features (module-specific)
 /lib
   /db.ts (prisma client)
-  /auth.ts (password check, cookie utils)
+  /session.ts (getCurrentUser, requireUser, createSession, destroySession)
+  /passwords.ts (bcryptjs wrappers)
+  /auth.ts (re-exports from session + passwords)
   /utils.ts
   /validations (zod schemas)
 /prisma

@@ -146,7 +146,7 @@ export default function CreativePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -155,7 +155,7 @@ export default function CreativePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Creative Ideas</h1>
-                <p className="text-xs text-[#8888a0]">
+                <p className="text-xs text-[color:var(--fg-mute)]">
                   {stats.total} ideas, {stats.pinned} pinned
                 </p>
               </div>
@@ -171,26 +171,26 @@ export default function CreativePage() {
                   New Idea
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-[#12121e] border-white/[0.08] max-h-[90vh] overflow-y-auto">
+              <DialogContent className="bg-[var(--ink-100)] border-[color:var(--line)] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-white">Capture Your Idea</DialogTitle>
+                  <DialogTitle className="text-[color:var(--fg)]">Capture Your Idea</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 mt-4">
                   <Input
                     placeholder="What's your idea?"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="bg-white/[0.04] border-white/[0.08] text-white"
+                    className="bg-white/[0.04] border-[color:var(--line)] text-white"
                   />
                   <Textarea
                     placeholder="Details, notes, inspiration... (optional)"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="bg-white/[0.04] border-white/[0.08] text-white resize-none"
+                    className="bg-white/[0.04] border-[color:var(--line)] text-white resize-none"
                     rows={4}
                   />
                   <div>
-                    <label className="text-xs text-[#8888a0] mb-2 block">Category</label>
+                    <label className="text-xs text-[color:var(--fg-mute)] mb-2 block">Category</label>
                     <div className="grid grid-cols-4 gap-2">
                       {IDEA_CATEGORIES.map((cat) => {
                         const Icon = CATEGORY_ICONS[cat] || MoreHorizontal;
@@ -202,7 +202,7 @@ export default function CreativePage() {
                               "p-2 rounded-lg border text-xs font-medium transition-all flex flex-col items-center gap-1",
                               category === cat
                                 ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-400"
-                                : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                                : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                             )}
                           >
                             <Icon className="w-4 h-4" />
@@ -213,7 +213,7 @@ export default function CreativePage() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-[#8888a0] mb-2 block">
+                    <label className="text-xs text-[color:var(--fg-mute)] mb-2 block">
                       Tags ({tags.length}/10)
                     </label>
                     <div className="flex gap-2">
@@ -222,7 +222,7 @@ export default function CreativePage() {
                         value={tagInput}
                         onChange={(e) => setTagInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())}
-                        className="bg-white/[0.04] border-white/[0.08] text-white"
+                        className="bg-white/[0.04] border-[color:var(--line)] text-white"
                       />
                       <Button
                         type="button"
@@ -282,7 +282,7 @@ export default function CreativePage() {
                 "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
                 selectedCategory === null
                   ? "bg-yellow-500/20 text-yellow-400"
-                  : "bg-white/[0.03] text-[#8888a0]"
+                  : "bg-white/[0.03] text-[color:var(--fg-mute)]"
               )}
             >
               All
@@ -297,7 +297,7 @@ export default function CreativePage() {
                     "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
                     selectedCategory === cat
                       ? "bg-yellow-500/20 text-yellow-400"
-                      : "bg-white/[0.03] text-[#8888a0]"
+                      : "bg-white/[0.03] text-[color:var(--fg-mute)]"
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -314,7 +314,7 @@ export default function CreativePage() {
         {/* Pinned Ideas */}
         {pinnedIdeas.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-[#8888a0] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3 flex items-center gap-2">
               <Pin className="w-4 h-4 text-yellow-400" />
               Pinned ({pinnedIdeas.length})
             </h2>
@@ -338,7 +338,7 @@ export default function CreativePage() {
         {unpinnedIdeas.length > 0 && (
           <div>
             {pinnedIdeas.length > 0 && (
-              <h2 className="text-sm font-medium text-[#8888a0] mb-3">
+              <h2 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3">
                 All Ideas ({unpinnedIdeas.length})
               </h2>
             )}
@@ -369,7 +369,7 @@ export default function CreativePage() {
               <Lightbulb className="w-8 h-8 text-yellow-400" />
             </div>
             <h3 className="text-lg font-medium text-white mb-2">No ideas yet</h3>
-            <p className="text-[#8888a0] text-sm mb-4">
+            <p className="text-[color:var(--fg-mute)] text-sm mb-4">
               Capture your creative sparks and inspirations
             </p>
             <Button
@@ -440,17 +440,17 @@ function IdeaCard({
               ))}
             </div>
           )}
-          <p className="text-xs text-[#8888a0]/60 mt-2">
+          <p className="text-xs text-[color:var(--fg-mute)]/60 mt-2">
             {new Date(idea.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 mt-3 pt-3 border-t border-white/[0.08] opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex gap-2 mt-3 pt-3 border-t border-[color:var(--line)] opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => onTogglePin(idea.id)}
-          className="flex-1 py-1.5 rounded-lg bg-white/5 text-xs text-[#8888a0] hover:text-yellow-400 hover:bg-white/10 transition-colors flex items-center justify-center gap-1"
+          className="flex-1 py-1.5 rounded-lg bg-white/5 text-xs text-[color:var(--fg-mute)] hover:text-yellow-400 hover:bg-white/10 transition-colors flex items-center justify-center gap-1"
         >
           {idea.isPinned ? (
             <>
@@ -464,7 +464,7 @@ function IdeaCard({
         </button>
         <button
           onClick={() => onDelete(idea.id)}
-          className="flex-1 py-1.5 rounded-lg bg-white/5 text-xs text-[#8888a0] hover:text-red-400 hover:bg-white/10 transition-colors flex items-center justify-center gap-1"
+          className="flex-1 py-1.5 rounded-lg bg-white/5 text-xs text-[color:var(--fg-mute)] hover:text-red-400 hover:bg-white/10 transition-colors flex items-center justify-center gap-1"
         >
           <Trash2 className="w-3.5 h-3.5" /> Delete
         </button>

@@ -131,7 +131,7 @@ export default function GoalsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#0a0a14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ export default function GoalsPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Goals</h1>
-                <p className="text-xs text-[#8888a0]">
+                <p className="text-xs text-[color:var(--fg-mute)]">
                   {stats.active} active, {stats.completed} completed
                 </p>
               </div>
@@ -156,22 +156,22 @@ export default function GoalsPage() {
                   Add Goal
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-[#12121e] border-white/[0.08]">
+              <DialogContent className="bg-[var(--ink-100)] border-[color:var(--line)]">
                 <DialogHeader>
-                  <DialogTitle className="text-white">New Goal</DialogTitle>
+                  <DialogTitle className="text-[color:var(--fg)]">New Goal</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 mt-4">
                   <Input
                     placeholder="What do you want to achieve?"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="bg-white/[0.04] border-white/[0.08] text-white"
+                    className="bg-white/[0.04] border-[color:var(--line)] text-white"
                   />
                   <Textarea
                     placeholder="Description (optional)"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="bg-white/[0.04] border-white/[0.08] text-white resize-none"
+                    className="bg-white/[0.04] border-[color:var(--line)] text-white resize-none"
                     rows={3}
                   />
                   <div className="grid grid-cols-2 gap-2">
@@ -181,7 +181,7 @@ export default function GoalsPage() {
                         "p-3 rounded-xl border text-sm font-medium transition-all",
                         goalType === "short"
                           ? "bg-blue-500/20 border-blue-500/50 text-blue-400"
-                          : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                          : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                       )}
                     >
                       <Flag className="w-4 h-4 mx-auto mb-1" />
@@ -193,7 +193,7 @@ export default function GoalsPage() {
                         "p-3 rounded-xl border text-sm font-medium transition-all",
                         goalType === "long"
                           ? "bg-purple-500/20 border-purple-500/50 text-purple-400"
-                          : "bg-white/[0.04] border-white/[0.08] text-[#8888a0]"
+                          : "bg-white/[0.04] border-[color:var(--line)] text-[color:var(--fg-mute)]"
                       )}
                     >
                       <Sparkles className="w-4 h-4 mx-auto mb-1" />
@@ -201,14 +201,14 @@ export default function GoalsPage() {
                     </button>
                   </div>
                   <div>
-                    <label className="text-xs text-[#8888a0] mb-1 block">
+                    <label className="text-xs text-[color:var(--fg-mute)] mb-1 block">
                       Target Date (optional)
                     </label>
                     <Input
                       type="date"
                       value={targetDate}
                       onChange={(e) => setTargetDate(e.target.value)}
-                      className="bg-white/[0.04] border-white/[0.08] text-white"
+                      className="bg-white/[0.04] border-[color:var(--line)] text-white"
                     />
                   </div>
                   <Button
@@ -243,7 +243,7 @@ export default function GoalsPage() {
                 "flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all",
                 activeTab === "short"
                   ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                  : "bg-white/[0.03] text-[#8888a0]"
+                  : "bg-white/[0.03] text-[color:var(--fg-mute)]"
               )}
             >
               <Flag className="w-4 h-4 inline mr-2" />
@@ -255,7 +255,7 @@ export default function GoalsPage() {
                 "flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all",
                 activeTab === "long"
                   ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-                  : "bg-white/[0.03] text-[#8888a0]"
+                  : "bg-white/[0.03] text-[color:var(--fg-mute)]"
               )}
             >
               <Sparkles className="w-4 h-4 inline mr-2" />
@@ -270,7 +270,7 @@ export default function GoalsPage() {
         {/* Active Goals */}
         {activeGoals.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-[#8888a0] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3 flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               In Progress ({activeGoals.length})
             </h2>
@@ -317,7 +317,7 @@ export default function GoalsPage() {
                         <div className="flex-1 min-w-0">
                           <h3 className="font-medium text-white">{goal.title}</h3>
                           {goal.description && (
-                            <p className="text-sm text-[#8888a0] mt-1 line-clamp-2">
+                            <p className="text-sm text-[color:var(--fg-mute)] mt-1 line-clamp-2">
                               {goal.description}
                             </p>
                           )}
@@ -330,7 +330,7 @@ export default function GoalsPage() {
                                     ? "text-red-400"
                                     : daysRemaining !== null && daysRemaining <= 7
                                     ? "text-yellow-400"
-                                    : "text-[#8888a0]"
+                                    : "text-[color:var(--fg-mute)]"
                                 )}
                               >
                                 <Calendar className="w-3 h-3" />
@@ -341,7 +341,7 @@ export default function GoalsPage() {
                                   : `${daysRemaining}d left`}
                               </span>
                             )}
-                            <span className="text-xs text-[#8888a0]/60">
+                            <span className="text-xs text-[color:var(--fg-mute)]/60">
                               {goal.progress}% complete
                             </span>
                           </div>
@@ -361,7 +361,7 @@ export default function GoalsPage() {
                         </div>
                         <ChevronRight
                           className={cn(
-                            "w-5 h-5 text-[#8888a0]/60 transition-transform",
+                            "w-5 h-5 text-[color:var(--fg-mute)]/60 transition-transform",
                             isExpanded && "rotate-90"
                           )}
                         />
@@ -376,8 +376,8 @@ export default function GoalsPage() {
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="pt-4 mt-4 border-t border-white/[0.08]">
-                              <label className="text-xs text-[#8888a0] mb-2 block">
+                            <div className="pt-4 mt-4 border-t border-[color:var(--line)]">
+                              <label className="text-xs text-[color:var(--fg-mute)] mb-2 block">
                                 Update Progress
                               </label>
                               <div className="flex items-center gap-2">
@@ -421,7 +421,7 @@ export default function GoalsPage() {
         {/* Completed Goals */}
         {completedGoals.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-[#8888a0] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-medium text-[color:var(--fg-mute)] mb-3 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-green-400" />
               Completed ({completedGoals.length})
             </h2>
@@ -431,16 +431,16 @@ export default function GoalsPage() {
                   key={goal.id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]"
+                  className="p-3 rounded-xl tile tile--elev"
                 >
                   <div className="flex items-center gap-3">
                     <button onClick={() => handleToggle(goal.id)}>
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
                     </button>
-                    <span className="text-[#8888a0] line-through">{goal.title}</span>
+                    <span className="text-[color:var(--fg-mute)] line-through">{goal.title}</span>
                     <button
                       onClick={() => handleDelete(goal.id)}
-                      className="ml-auto text-[#8888a0]/60 hover:text-red-400"
+                      className="ml-auto text-[color:var(--fg-mute)]/60 hover:text-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -464,7 +464,7 @@ export default function GoalsPage() {
             <h3 className="text-lg font-medium text-white mb-2">
               No {activeTab === "short" ? "short-term" : "long-term"} goals yet
             </h3>
-            <p className="text-[#8888a0] text-sm mb-4">
+            <p className="text-[color:var(--fg-mute)] text-sm mb-4">
               Set your first goal to start tracking your progress
             </p>
             <Button

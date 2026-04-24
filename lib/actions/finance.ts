@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { requireUser } from "@/lib/session";
 import {
   createHoldingSchema,
   updateHoldingSchema,
@@ -15,13 +16,16 @@ import {
 // ============ Holdings ============
 
 export async function getHoldings() {
+  const user = await requireUser();
   return db.holding.findMany({
+    where: { userId: user.id },
     orderBy: { symbol: "asc" },
   });
 }
 
 export async function getPortfolioStats() {
-  const holdings = await db.holding.findMany();
+  const user = await requireUser();
+  const holdings = await db.holding.findMany({ where: { userId: user.id } });
 
   let totalValue = 0;
   let totalCost = 0;
@@ -45,10 +49,12 @@ export async function getPortfolioStats() {
 }
 
 export async function createHolding(input: CreateHoldingInput) {
+  const user = await requireUser();
   const validated = createHoldingSchema.parse(input);
 
   const holding = await db.holding.create({
     data: {
+      userId: user.id,
       symbol: validated.symbol.toUpperCase(),
       shares: validated.shares,
       avgCost: validated.avgCost,
@@ -63,6 +69,7 @@ export async function createHolding(input: CreateHoldingInput) {
 }
 
 export async function updateHolding(input: UpdateHoldingInput) {
+  const user = await requireUser();
   const validated = updateHoldingSchema.parse(input);
   const { id, ...data } = validated;
 
@@ -72,18 +79,20 @@ export async function updateHolding(input: UpdateHoldingInput) {
   if (data.currentPrice !== undefined) updateData.currentPrice = data.currentPrice;
   if (data.notes !== undefined) updateData.notes = data.notes;
 
-  const holding = await db.holding.update({
-    where: { id },
+  const res = await db.holding.updateMany({
+    where: { id, userId: user.id },
     data: updateData,
   });
+  if (res.count === 0) throw new Error("Holding not found");
 
   revalidatePath("/finance");
   revalidatePath("/");
-  return holding;
+  return db.holding.findUniqueOrThrow({ where: { id } });
 }
 
 export async function deleteHolding(id: string) {
-  await db.holding.delete({ where: { id } });
+  const user = await requireUser();
+  await db.holding.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/finance");
   revalidatePath("/");
 }
@@ -91,16 +100,20 @@ export async function deleteHolding(id: string) {
 // ============ Watchlist ============
 
 export async function getWatchlist() {
+  const user = await requireUser();
   return db.watchlistItem.findMany({
+    where: { userId: user.id },
     orderBy: { createdAt: "desc" },
   });
 }
 
 export async function createWatchlistItem(input: CreateWatchlistItemInput) {
+  const user = await requireUser();
   const validated = createWatchlistItemSchema.parse(input);
 
   const item = await db.watchlistItem.create({
     data: {
+      userId: user.id,
       symbol: validated.symbol.toUpperCase(),
       notes: validated.notes,
     },
@@ -111,41 +124,43 @@ export async function createWatchlistItem(input: CreateWatchlistItemInput) {
 }
 
 export async function updateWatchlistItem(id: string, notes: string | null) {
-  const item = await db.watchlistItem.update({
-    where: { id },
+  const user = await requireUser();
+  const res = await db.watchlistItem.updateMany({
+    where: { id, userId: user.id },
     data: { notes },
   });
+  if (res.count === 0) throw new Error("Watchlist item not found");
 
   revalidatePath("/finance");
-  return item;
+  return db.watchlistItem.findUniqueOrThrow({ where: { id } });
 }
 
 export async function deleteWatchlistItem(id: string) {
-  await db.watchlistItem.delete({ where: { id } });
+  const user = await requireUser();
+  await db.watchlistItem.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/finance");
 }
 
-// ============ Research ============
+// ============ Research (GLOBAL cache) ============
 
 export async function getCachedResearch(symbol: string): Promise<StockResearchData | null> {
+  await requireUser();
   const research = await db.stockResearch.findUnique({
     where: { symbol: symbol.toUpperCase() },
   });
 
   if (!research) return null;
 
-  // Check if cache is older than 24 hours
   const cacheAge = Date.now() - new Date(research.generatedAt).getTime();
-  const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+  const maxAge = 24 * 60 * 60 * 1000;
 
-  if (cacheAge > maxAge) {
-    return null; // Cache expired
-  }
+  if (cacheAge > maxAge) return null;
 
   return research.data as unknown as StockResearchData;
 }
 
 export async function saveResearch(symbol: string, data: StockResearchData) {
+  await requireUser();
   await db.stockResearch.upsert({
     where: { symbol: symbol.toUpperCase() },
     update: {

@@ -3,17 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { getStartOfDayLA } from "@/lib/utils";
+import { requireUser } from "@/lib/session";
 
 // ============ WORKOUT TEMPLATES ============
 
 export async function getWorkoutTemplates() {
+  const user = await requireUser();
   return db.workoutTemplate.findMany({
+    where: { userId: user.id },
     include: {
       exercises: {
         include: {
           logs: {
             orderBy: { date: "desc" },
-            take: 10, // Get last 10 log entries per exercise
+            take: 10,
           },
         },
         orderBy: { order: "asc" },
@@ -24,8 +27,9 @@ export async function getWorkoutTemplates() {
 }
 
 export async function getWorkoutTemplate(id: string) {
-  return db.workoutTemplate.findUnique({
-    where: { id },
+  const user = await requireUser();
+  return db.workoutTemplate.findFirst({
+    where: { id, userId: user.id },
     include: {
       exercises: {
         include: {
@@ -41,12 +45,15 @@ export async function getWorkoutTemplate(id: string) {
 }
 
 export async function createWorkoutTemplate(name: string) {
+  const user = await requireUser();
   const maxOrder = await db.workoutTemplate.aggregate({
+    where: { userId: user.id },
     _max: { order: true },
   });
 
   const template = await db.workoutTemplate.create({
     data: {
+      userId: user.id,
       name: name.toUpperCase(),
       order: (maxOrder._max.order ?? -1) + 1,
     },
@@ -57,25 +64,29 @@ export async function createWorkoutTemplate(name: string) {
 }
 
 export async function updateWorkoutTemplate(id: string, name: string) {
-  const template = await db.workoutTemplate.update({
-    where: { id },
+  const user = await requireUser();
+  const res = await db.workoutTemplate.updateMany({
+    where: { id, userId: user.id },
     data: { name: name.toUpperCase() },
   });
+  if (res.count === 0) throw new Error("Template not found");
 
   revalidatePath("/fitness");
-  return template;
+  return db.workoutTemplate.findUniqueOrThrow({ where: { id } });
 }
 
 export async function deleteWorkoutTemplate(id: string) {
-  await db.workoutTemplate.delete({ where: { id } });
+  const user = await requireUser();
+  await db.workoutTemplate.deleteMany({ where: { id, userId: user.id } });
   revalidatePath("/fitness");
 }
 
 export async function reorderWorkoutTemplates(ids: string[]) {
+  const user = await requireUser();
   await Promise.all(
     ids.map((id, index) =>
-      db.workoutTemplate.update({
-        where: { id },
+      db.workoutTemplate.updateMany({
+        where: { id, userId: user.id },
         data: { order: index },
       })
     )
@@ -84,11 +95,30 @@ export async function reorderWorkoutTemplates(ids: string[]) {
 }
 
 // ============ TEMPLATE EXERCISES ============
+// Scoped via parent template — verify the template belongs to the user before mutating.
+
+async function assertOwnsExercise(exerciseId: string, userId: string) {
+  const ex = await db.templateExercise.findFirst({
+    where: { id: exerciseId, template: { userId } },
+    select: { id: true },
+  });
+  if (!ex) throw new Error("Exercise not found");
+}
+
+async function assertOwnsTemplate(templateId: string, userId: string) {
+  const tpl = await db.workoutTemplate.findFirst({
+    where: { id: templateId, userId },
+    select: { id: true },
+  });
+  if (!tpl) throw new Error("Template not found");
+}
 
 export async function addExercise(
   templateId: string,
   data: { name: string; sets: string; repRange: string; notes?: string }
 ) {
+  const user = await requireUser();
+  await assertOwnsTemplate(templateId, user.id);
   const maxOrder = await db.templateExercise.aggregate({
     where: { templateId },
     _max: { order: true },
@@ -113,6 +143,9 @@ export async function updateExercise(
   id: string,
   data: { name?: string; sets?: string; repRange?: string; notes?: string | null }
 ) {
+  const user = await requireUser();
+  await assertOwnsExercise(id, user.id);
+
   const exercise = await db.templateExercise.update({
     where: { id },
     data,
@@ -123,15 +156,19 @@ export async function updateExercise(
 }
 
 export async function deleteExercise(id: string) {
+  const user = await requireUser();
+  await assertOwnsExercise(id, user.id);
   await db.templateExercise.delete({ where: { id } });
   revalidatePath("/fitness");
 }
 
 export async function reorderExercises(templateId: string, exerciseIds: string[]) {
+  const user = await requireUser();
+  await assertOwnsTemplate(templateId, user.id);
   await Promise.all(
     exerciseIds.map((id, index) =>
-      db.templateExercise.update({
-        where: { id },
+      db.templateExercise.updateMany({
+        where: { id, template: { userId: user.id } },
         data: { order: index },
       })
     )
@@ -146,23 +183,16 @@ export async function logExercise(
   date: Date,
   entries: { weight: number; reps: number }[]
 ) {
+  const user = await requireUser();
+  await assertOwnsExercise(exerciseId, user.id);
   const logDate = getStartOfDayLA(date);
 
   const log = await db.exerciseLog.upsert({
     where: {
-      exerciseId_date: {
-        exerciseId,
-        date: logDate,
-      },
+      exerciseId_date: { exerciseId, date: logDate },
     },
-    update: {
-      entries,
-    },
-    create: {
-      exerciseId,
-      date: logDate,
-      entries,
-    },
+    update: { entries },
+    create: { exerciseId, date: logDate, entries },
   });
 
   revalidatePath("/fitness");
@@ -170,11 +200,19 @@ export async function logExercise(
 }
 
 export async function deleteExerciseLog(id: string) {
+  const user = await requireUser();
+  const log = await db.exerciseLog.findFirst({
+    where: { id, exercise: { template: { userId: user.id } } },
+    select: { id: true },
+  });
+  if (!log) throw new Error("Log not found");
   await db.exerciseLog.delete({ where: { id } });
   revalidatePath("/fitness");
 }
 
 export async function getExerciseLogs(exerciseId: string, limit: number = 10) {
+  const user = await requireUser();
+  await assertOwnsExercise(exerciseId, user.id);
   return db.exerciseLog.findMany({
     where: { exerciseId },
     orderBy: { date: "desc" },
@@ -185,14 +223,14 @@ export async function getExerciseLogs(exerciseId: string, limit: number = 10) {
 // ============ STATS FOR DASHBOARD ============
 
 export async function getFitnessStats() {
+  const user = await requireUser();
   const [templateCount, exerciseCount, recentLogs] = await Promise.all([
-    db.workoutTemplate.count(),
-    db.templateExercise.count(),
+    db.workoutTemplate.count({ where: { userId: user.id } }),
+    db.templateExercise.count({ where: { template: { userId: user.id } } }),
     db.exerciseLog.findMany({
       where: {
-        date: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-        },
+        exercise: { template: { userId: user.id } },
+        date: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
       },
       select: { date: true },
       distinct: ["date"],

@@ -8,8 +8,8 @@ import {
   LayoutDashboard,
   CheckSquare,
   Dumbbell,
-  Wallet,
   Apple,
+  Wallet,
   BookOpen,
   ShoppingCart,
   Target,
@@ -20,77 +20,106 @@ import {
 } from "lucide-react";
 
 const primaryNavItems = [
-  { href: "/", label: "Home", icon: LayoutDashboard, activeColor: "text-[#FF2D78]", dotColor: "bg-[#FF2D78]" },
-  { href: "/tasks", label: "Tasks", icon: CheckSquare, activeColor: "text-[#00E5FF]", dotColor: "bg-[#00E5FF]" },
-  { href: "/fitness", label: "Fitness", icon: Dumbbell, activeColor: "text-[#FF6B35]", dotColor: "bg-[#FF6B35]" },
-  { href: "/diet", label: "Diet", icon: Apple, activeColor: "text-[#39FF14]", dotColor: "bg-[#39FF14]" },
+  { href: "/", label: "Home", icon: LayoutDashboard },
+  { href: "/tasks", label: "Tasks", icon: CheckSquare },
+  { href: "/fitness", label: "Fitness", icon: Dumbbell },
+  { href: "/diet", label: "Diet", icon: Apple },
 ];
 
 const moreNavItems = [
-  { href: "/finance", label: "Finance", icon: Wallet, activeColor: "text-[#9D4EDD]", activeBg: "bg-[#9D4EDD]/15" },
-  { href: "/journal", label: "Journal", icon: BookOpen, activeColor: "text-[#FFD600]", activeBg: "bg-[#FFD600]/15" },
-  { href: "/groceries", label: "Groceries", icon: ShoppingCart, activeColor: "text-teal-400", activeBg: "bg-teal-500/15" },
-  { href: "/goals", label: "Goals", icon: Target, activeColor: "text-[#FF2D78]", activeBg: "bg-[#FF2D78]/15" },
-  { href: "/creative", label: "Creative", icon: Lightbulb, activeColor: "text-[#9D4EDD]", activeBg: "bg-[#9D4EDD]/15" },
-  { href: "/settings", label: "Settings", icon: Settings, activeColor: "text-[#8888a0]", activeBg: "bg-white/[0.05]" },
+  { href: "/finance", label: "Finance", icon: Wallet },
+  { href: "/journal", label: "Journal", icon: BookOpen },
+  { href: "/groceries", label: "Groceries", icon: ShoppingCart },
+  { href: "/goals", label: "Goals", icon: Target },
+  { href: "/creative", label: "Creative", icon: Lightbulb },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
+
+function isItemActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(href + "/");
+}
 
 export function BottomNav() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
-
-  const isMoreActive = moreNavItems.some(
-    (item) => pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
-  );
+  const isMoreActive = moreNavItems.some((item) => isItemActive(pathname, item.href));
 
   return (
     <>
-      {/* More Menu Overlay */}
       <AnimatePresence>
         {moreOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#0a0a14]/80 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-40 md:hidden"
+            style={{
+              background: "rgba(7,7,15,0.82)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+            }}
             onClick={() => setMoreOpen(false)}
           >
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="absolute bottom-20 left-4 right-4 bg-[#12121e] rounded-2xl border border-white/[0.08] p-4"
+              className="absolute left-4 right-4"
+              style={{
+                bottom: 92,
+                background: "var(--ink-150)",
+                border: "1px solid var(--line)",
+                borderRadius: 22,
+                padding: 16,
+              }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-white">More</span>
+                <span className="t-kicker">more</span>
                 <button
                   onClick={() => setMoreOpen(false)}
-                  className="p-1 text-[#8888a0] hover:text-white"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--fg-mute)",
+                    cursor: "pointer",
+                    padding: 4,
+                  }}
+                  aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {moreNavItems.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname.startsWith(item.href));
+                  const isActive = isItemActive(pathname, item.href);
                   const Icon = item.icon;
-
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setMoreOpen(false)}
-                      className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-colors ${
-                        isActive
-                          ? `${item.activeBg} ${item.activeColor}`
-                          : "text-[#8888a0] hover:bg-white/[0.03]"
-                      }`}
+                      className="flex flex-col items-center gap-2 p-3"
+                      style={{
+                        borderRadius: 14,
+                        background: isActive ? "rgba(255,255,255,0.04)" : "transparent",
+                        color: isActive ? "var(--fg)" : "var(--fg-mute)",
+                        border: "1px solid",
+                        borderColor: isActive ? "var(--line)" : "transparent",
+                      }}
                     >
                       <Icon className="w-6 h-6" />
-                      <span className="text-xs font-medium">{item.label}</span>
+                      <span
+                        className="t-mono"
+                        style={{
+                          fontSize: 9,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                        }}
+                      >
+                        {item.label}
+                      </span>
                     </Link>
                   );
                 })}
@@ -100,64 +129,32 @@ export function BottomNav() {
         )}
       </AnimatePresence>
 
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a14]/90 backdrop-blur-xl border-t border-white/[0.06] md:hidden">
-        <div className="flex items-center justify-around h-16 px-2">
-          {primaryNavItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/" && pathname.startsWith(item.href));
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="relative flex flex-col items-center justify-center flex-1 h-full"
-              >
-                <motion.div
-                  whileTap={{ scale: 0.9 }}
-                  className={`flex flex-col items-center gap-1 ${
-                    isActive ? item.activeColor : "text-[#8888a0]/60"
-                  }`}
-                >
-                  <div className="relative">
-                    <Icon className="w-5 h-5" />
-                    {isActive && (
-                      <motion.div
-                        layoutId="bottomNavIndicator"
-                        className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${item.dotColor}`}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
-                    )}
-                  </div>
-                  <span className="text-[10px] font-medium">{item.label}</span>
-                </motion.div>
-              </Link>
-            );
-          })}
-
-          {/* More Button */}
-          <button
-            onClick={() => setMoreOpen(!moreOpen)}
-            className="relative flex flex-col items-center justify-center flex-1 h-full"
-          >
-            <motion.div
-              whileTap={{ scale: 0.9 }}
-              className={`flex flex-col items-center gap-1 ${
-                isMoreActive || moreOpen ? "text-white" : "text-[#8888a0]/60"
-              }`}
+      <nav className="nav md:hidden" aria-label="Primary">
+        {primaryNavItems.map((item) => {
+          const isActive = isItemActive(pathname, item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`nav__item ${isActive ? "active" : ""}`}
             >
-              <div className="relative">
-                <MoreHorizontal className="w-5 h-5" />
-                {isMoreActive && !moreOpen && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white" />
-                )}
-              </div>
-              <span className="text-[10px] font-medium">More</span>
-            </motion.div>
-          </button>
-        </div>
+              <Icon className="w-5 h-5" />
+              <span>{item.label}</span>
+              <span className="nav__dot" />
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setMoreOpen((v) => !v)}
+          className={`nav__item ${isMoreActive || moreOpen ? "active" : ""}`}
+          aria-label="More"
+        >
+          <MoreHorizontal className="w-5 h-5" />
+          <span>More</span>
+          <span className="nav__dot" />
+        </button>
       </nav>
     </>
   );
