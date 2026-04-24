@@ -23,6 +23,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
 import {
   createJournalEntry,
@@ -174,66 +175,81 @@ export function JournalClient({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
+    <div className="pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20">
-                <BookOpen className="w-6 h-6 text-amber-400" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Journal</h1>
-                <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
-                  <span>{entries.length} entries</span>
-                  {streak > 0 && (
-                    <span className="flex items-center gap-1 text-orange-400">
-                      <Flame className="w-3 h-3" />
-                      {streak} day streak
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <Button
-              onClick={() => setAddOpen(true)}
-              size="sm"
-              className="bg-amber-500 hover:bg-amber-600 text-black"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Write
-            </Button>
-          </div>
-
-          {/* Quote */}
-          {quote && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20"
-            >
-              <p className="text-sm text-amber-200 italic">&ldquo;{quote.text}&rdquo;</p>
-              <p className="text-xs text-amber-400 mt-1">- {quote.author}</p>
-            </motion.div>
+      <div className="px-5 pt-16 pb-4">
+        <div className="t-kicker mb-2">06 · journal</div>
+        <div className="flex items-end justify-between">
+          <h1 className="t-display text-[44px] text-[var(--fg)]">Journal</h1>
+          {streak > 0 ? (
+            <Chip tone="yellow">
+              <Flame size={10} />
+              {streak} day streak
+            </Chip>
+          ) : (
+            <Chip>{entries.length} entries</Chip>
           )}
-
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[color:var(--fg-mute)]/60" />
-            <Input
-              placeholder="Search entries..."
-              value={search}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-9 bg-white/[0.03] border-[color:var(--line)] text-white placeholder:text-[color:var(--fg-mute)]/60"
-            />
-          </div>
         </div>
       </div>
 
+      {/* Quote */}
+      {quote && (
+        <div className="px-4 pb-3 text-center">
+          <p
+            className="t-display italic"
+            style={{ fontWeight: 500, fontSize: 15, lineHeight: 1.35, color: "var(--fg-dim)" }}
+          >
+            &ldquo;{quote.text}&rdquo;
+          </p>
+          <p
+            className="t-mono mt-2"
+            style={{ fontSize: 9, color: "var(--fg-mute)", letterSpacing: "0.14em", textTransform: "uppercase" }}
+          >
+            — {quote.author}
+          </p>
+        </div>
+      )}
+
+      {/* Search + Add */}
+      <div className="px-4 pb-3 flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+            style={{ color: "var(--fg-mute)" }}
+          />
+          <Input
+            placeholder="search entries..."
+            value={search}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="pl-9 h-10 rounded-xl"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              borderColor: "var(--line)",
+              color: "var(--fg)",
+            }}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => setAddOpen(true)}
+          aria-label="Write entry"
+          className="flex items-center justify-center"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 99,
+            background: "linear-gradient(135deg, var(--yellow), var(--orange))",
+            color: "#0a0a14",
+            border: "none",
+            boxShadow: "0 8px 24px -12px rgba(255,214,0,0.6)",
+          }}
+        >
+          <Plus className="w-5 h-5" />
+        </button>
+      </div>
+
       {/* Entries List */}
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 pt-2 space-y-2">
         <AnimatePresence mode="popLayout">
           {entries.length === 0 ? (
             <motion.div
@@ -241,19 +257,28 @@ export function JournalClient({
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-16"
             >
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/10 flex items-center justify-center">
-                <PenLine className="w-8 h-8 text-amber-400" />
+              <div
+                className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{
+                  background: "rgba(255,214,0,0.08)",
+                  border: "1px solid rgba(255,214,0,0.2)",
+                }}
+              >
+                <PenLine className="w-7 h-7" style={{ color: "var(--yellow)" }} />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">
+              <div className="t-display text-[22px]" style={{ color: "var(--fg-dim)" }}>
                 {search ? "No entries found" : "Start your journal"}
-              </h3>
-              <p className="text-[color:var(--fg-mute)] text-sm mb-4">
-                {search ? "Try a different search term" : "Capture your thoughts and reflections"}
+              </div>
+              <p className="t-mono mt-2 mb-4" style={{ fontSize: 11, color: "var(--fg-mute)" }}>
+                {search ? "try a different search" : "capture today's thoughts"}
               </p>
               {!search && (
                 <Button
                   onClick={() => setAddOpen(true)}
-                  className="bg-amber-500 hover:bg-amber-600 text-black"
+                  style={{
+                    background: "linear-gradient(135deg, var(--yellow), var(--orange))",
+                    color: "#0a0a14",
+                  }}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Write First Entry
@@ -271,50 +296,55 @@ export function JournalClient({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.03 }}
-                  className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20"
+                  className="tile p-4"
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-center gap-2 text-xs text-[color:var(--fg-mute)]">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{formatDate(entry.createdAt)}</span>
-                      <span className="text-[color:var(--fg-mute)]/40">·</span>
-                      <span>{formatTime(entry.createdAt)}</span>
-                      {mood && (
-                        <span className="ml-1 text-base">{mood.emoji}</span>
-                      )}
+                    <div className="flex items-center gap-2">
+                      <span className="t-kicker">
+                        {formatDate(entry.createdAt)} · {formatTime(entry.createdAt)}
+                      </span>
+                      {mood && <span className="text-base">{mood.emoji}</span>}
                     </div>
                     <div className="flex items-center gap-2">
                       <button
+                        type="button"
                         onClick={() => openEditSheet(entry)}
-                        className="text-[color:var(--fg-mute)]/60 hover:text-amber-400 transition-colors"
+                        style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
                         disabled={isPending}
+                        aria-label="Edit"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(entry.id)}
-                        className="text-[color:var(--fg-mute)]/60 hover:text-red-400 transition-colors"
+                        style={{ color: "var(--fg-mute)", background: "none", border: "none" }}
                         disabled={isPending}
+                        aria-label="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  <p className="text-white/90 whitespace-pre-wrap leading-relaxed">
+                  <p
+                    className="whitespace-pre-wrap"
+                    style={{
+                      color: "var(--fg)",
+                      fontSize: 14,
+                      lineHeight: 1.55,
+                    }}
+                  >
                     {entry.content}
                   </p>
 
                   {entry.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3">
                       {entry.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-xs text-amber-300"
-                        >
+                        <Chip key={tag} tone="yellow">
                           <Tag className="w-2.5 h-2.5" />
                           {tag}
-                        </span>
+                        </Chip>
                       ))}
                     </div>
                   )}
