@@ -19,6 +19,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Chip } from "@/components/ui/chip";
 import {
   createWorkoutTemplate,
   updateWorkoutTemplate,
@@ -254,45 +255,101 @@ export function FitnessClient({
       .join(" | ");
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-[#0e0e1a] to-[#0a0a14] pb-24">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-[var(--ink-000)]/80 backdrop-blur-xl border-b border-[color:var(--line-soft)]">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20">
-                <Dumbbell className="w-6 h-6 text-red-400" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Fitness</h1>
-                <p className="text-xs text-[color:var(--fg-mute)]">
-                  {templates.length} workout{templates.length !== 1 ? "s" : ""} •{" "}
-                  {templates.reduce((acc, t) => acc + t.exercises.length, 0)} exercises
-                </p>
-              </div>
-            </div>
+  const exerciseCount = templates.reduce((acc, t) => acc + t.exercises.length, 0);
+  const totalSets = templates.reduce(
+    (acc, t) =>
+      acc +
+      t.exercises.reduce((s, e) => {
+        const m = e.sets.match(/\d+/);
+        return s + (m ? parseInt(m[0]) : 0);
+      }, 0),
+    0,
+  );
 
-            <Button
-              onClick={openNewTemplate}
-              size="sm"
-              className="bg-red-500 hover:bg-red-600 text-white"
+  return (
+    <div className="pb-24">
+      {/* Header */}
+      <div className="px-5 pt-16 pb-4">
+        <div className="t-kicker mb-2">04 · fitness</div>
+        <div className="flex items-end justify-between">
+          <h1 className="t-display text-[44px] text-[var(--fg)]">Fitness</h1>
+          <Chip tone="orange">{templates.length} workouts</Chip>
+        </div>
+      </div>
+
+      {/* Feature tile */}
+      <div className="px-4 pb-3">
+        <div className="tile tile--elev edge-orange p-5">
+          <div className="t-kicker mb-2">your stack</div>
+          <div className="flex items-end justify-between">
+            <span
+              className="t-display glow-orange"
+              style={{ fontSize: 50, color: "var(--orange)" }}
             >
-              <Plus className="w-4 h-4 mr-1" />
-              New Workout
-            </Button>
+              {exerciseCount}
+              <span className="t-mono text-[16px] text-[var(--fg-mute)]">
+                /{totalSets} sets
+              </span>
+            </span>
+            <div className="flex flex-col items-end gap-[2px]">
+              <span className="t-caps">exercises</span>
+              <span className="t-mono text-[10px] text-[var(--fg-mute)]">
+                across {templates.length} workouts
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Add new workout */}
+      <div className="px-4 pb-3 flex items-center gap-2">
+        <span className="t-kicker flex-1">all workouts</span>
+        <button
+          type="button"
+          onClick={openNewTemplate}
+          aria-label="New workout"
+          className="flex items-center gap-1.5 px-3 py-1.5"
+          style={{
+            borderRadius: 99,
+            background: "linear-gradient(135deg, var(--orange), var(--pink))",
+            color: "#fff",
+            border: "none",
+            boxShadow: "0 8px 24px -12px rgba(255,107,53,0.5)",
+          }}
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span className="t-mono" style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            New
+          </span>
+        </button>
+      </div>
+
       {/* Templates */}
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 pt-1 space-y-3">
         {templates.length === 0 ? (
           <div className="text-center py-12">
-            <Dumbbell className="w-12 h-12 text-[color:var(--fg-mute)]/40 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No Workouts Yet</h3>
-            <p className="text-[color:var(--fg-mute)] mb-4">Create your first workout template to get started.</p>
-            <Button onClick={openNewTemplate} className="bg-red-500 hover:bg-red-600">
+            <div
+              className="w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center"
+              style={{
+                background: "rgba(255,107,53,0.08)",
+                border: "1px solid rgba(255,107,53,0.2)",
+              }}
+            >
+              <Dumbbell className="w-7 h-7" style={{ color: "var(--orange)" }} />
+            </div>
+            <div className="t-display text-[22px]" style={{ color: "var(--fg-dim)" }}>
+              No workouts yet
+            </div>
+            <p className="t-mono mt-2 mb-4" style={{ fontSize: 11, color: "var(--fg-mute)" }}>
+              create your first workout template
+            </p>
+            <Button
+              onClick={openNewTemplate}
+              style={{
+                background: "linear-gradient(135deg, var(--orange), var(--pink))",
+                color: "#fff",
+              }}
+            >
               <Plus className="w-4 h-4 mr-1" />
               Create Workout
             </Button>
@@ -302,7 +359,7 @@ export function FitnessClient({
             <motion.div
               key={template.id}
               layout
-              className="rounded-2xl bg-gradient-to-br from-white/[0.04] to-white/[0.03] border border-[color:var(--line)] overflow-hidden"
+              className="tile overflow-hidden"
             >
               {/* Template Header */}
               <div
