@@ -6,7 +6,30 @@ const prisma = new PrismaClient();
 const ADMIN_USERNAME = "le11evan";
 const ADMIN_PASSWORD = "password";
 
+function guardAgainstProd() {
+  const url = process.env.DATABASE_URL ?? "";
+  const looksProd =
+    (url.includes("neon.tech") ||
+      url.includes("vercel") ||
+      url.includes("supabase") ||
+      url.includes("amazonaws") ||
+      url.includes("render.com")) &&
+    !url.includes("localhost") &&
+    !url.includes("127.0.0.1");
+
+  if (looksProd && process.env.ALLOW_SEED_PROD !== "yes-wipe-everything") {
+    console.error(
+      "\n✗ Refusing to seed. DATABASE_URL looks like a hosted database.\n" +
+        "  This script wipes your user's data before reseeding — it would destroy your live data.\n\n" +
+        "  If you REALLY want to seed prod, re-run with:\n" +
+        "    ALLOW_SEED_PROD=yes-wipe-everything npm run db:seed\n",
+    );
+    process.exit(1);
+  }
+}
+
 async function main() {
+  guardAgainstProd();
   console.log("Seeding database with demo data...");
 
   // Ensure admin user
