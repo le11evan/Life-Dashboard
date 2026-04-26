@@ -25,10 +25,9 @@ function SunArc({ hour, minute }: { hour: number; minute: number }) {
   return (
     <svg
       width="100%"
-      height={H + 12}
       viewBox={`0 0 ${W} ${H + 12}`}
-      preserveAspectRatio="none"
-      style={{ display: "block" }}
+      preserveAspectRatio="xMidYMid meet"
+      style={{ display: "block", maxHeight: H + 12 }}
     >
       <defs>
         <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
@@ -100,59 +99,124 @@ export function Hero({
     >
       <div className="ambient-bg" />
 
-      <div className="z1 flex-row ai-c jc-sb mb-4">
-        <div className="flex-row ai-c gap-2">
-          <Cloud size={14} style={{ color: "var(--fg-dim)" }} />
-          <span className="t-mono" style={{ fontSize: 11, color: "var(--fg-dim)" }}>{weather}</span>
+      {/* Mobile-only stacked layout (≤lg). On desktop we lay it out side-by-side. */}
+      <div className="lg:hidden">
+        <div className="z1 flex-row ai-c jc-sb mb-4">
+          <div className="flex-row ai-c gap-2">
+            <Cloud size={14} style={{ color: "var(--fg-dim)" }} />
+            <span className="t-mono" style={{ fontSize: 11, color: "var(--fg-dim)" }}>
+              {weather}
+            </span>
+          </div>
+          <div className="t-mono" style={{ fontSize: 11, color: "var(--fg-mute)" }}>
+            {time}
+          </div>
         </div>
-        <div className="t-mono" style={{ fontSize: 11, color: "var(--fg-mute)" }}>
-          {time}
-        </div>
-      </div>
 
-      <div className="z1">
-        <div className="t-kicker mb-2">{date}</div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-          <span className="t-display" style={{ fontSize: 38, color: "var(--fg)" }}>
-            {greeting},
-          </span>
-          <span
-            className="t-display-i"
-            style={{
-              fontSize: 42,
-              background: "linear-gradient(90deg, var(--pink), var(--purple), var(--cyan))",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            {name}
-          </span>
+        <div className="z1">
+          <div className="t-kicker mb-2">{date}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+            <span className="t-display" style={{ fontSize: 38, color: "var(--fg)" }}>
+              {greeting},
+            </span>
+            <span
+              className="t-display-i"
+              style={{
+                fontSize: 42,
+                background: "linear-gradient(90deg, var(--pink), var(--purple), var(--cyan))",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              {name}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div className="z1 mt-4" style={{ position: "relative" }}>
-        <SunArc hour={h} minute={m} />
-        <div className="flex-row jc-sb" style={{ marginTop: -2 }}>
-          <span className="t-mono c-faint" style={{ fontSize: 9 }}>06:00</span>
-          <span className="t-mono c-faint" style={{ fontSize: 9 }}>12:00</span>
-          <span className="t-mono c-faint" style={{ fontSize: 9 }}>18:00</span>
-        </div>
-      </div>
-
-      <div className="z1 mt-6">
-        <div className="flex-row ai-c jc-sb mb-2">
-          <div className="t-kicker">this week</div>
-          {streak > 0 && (
-            <div className="flex-row ai-c gap-2">
-              <Flame size={12} style={{ color: "var(--pink)" }} />
-              <span className="t-mono" style={{ fontSize: 11, color: "var(--fg)" }}>
-                {streak} day streak
-              </span>
+        <div className="z1 mt-4" style={{ position: "relative" }}>
+          <div style={{ maxWidth: 320, margin: "0 auto" }}>
+            <SunArc hour={h} minute={m} />
+            <div className="flex-row jc-sb" style={{ marginTop: -2 }}>
+              <span className="t-mono c-faint" style={{ fontSize: 9 }}>06:00</span>
+              <span className="t-mono c-faint" style={{ fontSize: 9 }}>12:00</span>
+              <span className="t-mono c-faint" style={{ fontSize: 9 }}>18:00</span>
             </div>
-          )}
+          </div>
         </div>
-        <HabitDots pattern={weekPattern} todayIdx={resolvedTodayIdx} color="pink" />
+
+        <div className="z1 mt-6">
+          <div className="flex-row ai-c jc-sb mb-2">
+            <div className="t-kicker">this week</div>
+            {streak > 0 && (
+              <div className="flex-row ai-c gap-2">
+                <Flame size={12} style={{ color: "var(--pink)" }} />
+                <span className="t-mono" style={{ fontSize: 11, color: "var(--fg)" }}>
+                  {streak} day streak
+                </span>
+              </div>
+            )}
+          </div>
+          <HabitDots pattern={weekPattern} todayIdx={resolvedTodayIdx} color="pink" />
+        </div>
+      </div>
+
+      {/* Desktop layout (≥lg): two-column with greeting on left, arc + week on right */}
+      <div className="hidden lg:grid z1" style={{ gridTemplateColumns: "1.4fr 1fr", gap: 32, alignItems: "center" }}>
+        <div>
+          <div className="flex-row ai-c gap-2 mb-3">
+            <Cloud size={14} style={{ color: "var(--fg-dim)" }} />
+            <span className="t-mono" style={{ fontSize: 11, color: "var(--fg-dim)" }}>
+              {weather}
+            </span>
+            <span className="t-mono" style={{ fontSize: 11, color: "var(--fg-mute)", marginLeft: 8 }}>
+              · {time}
+            </span>
+          </div>
+          <div className="t-kicker mb-3">{date}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+            <span className="t-display" style={{ fontSize: 56, color: "var(--fg)" }}>
+              {greeting},
+            </span>
+            <span
+              className="t-display-i"
+              style={{
+                fontSize: 64,
+                background: "linear-gradient(90deg, var(--pink), var(--purple), var(--cyan))",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              {name}
+            </span>
+          </div>
+        </div>
+
+        <div className="col gap-5">
+          <div style={{ position: "relative", maxWidth: 320, marginLeft: "auto" }}>
+            <SunArc hour={h} minute={m} />
+            <div className="flex-row jc-sb" style={{ marginTop: -2 }}>
+              <span className="t-mono c-faint" style={{ fontSize: 9 }}>06:00</span>
+              <span className="t-mono c-faint" style={{ fontSize: 9 }}>12:00</span>
+              <span className="t-mono c-faint" style={{ fontSize: 9 }}>18:00</span>
+            </div>
+          </div>
+          <div>
+            <div className="flex-row ai-c jc-sb mb-2">
+              <div className="t-kicker">this week</div>
+              {streak > 0 && (
+                <div className="flex-row ai-c gap-2">
+                  <Flame size={12} style={{ color: "var(--pink)" }} />
+                  <span className="t-mono" style={{ fontSize: 11, color: "var(--fg)" }}>
+                    {streak} day streak
+                  </span>
+                </div>
+              )}
+            </div>
+            <HabitDots pattern={weekPattern} todayIdx={resolvedTodayIdx} color="pink" />
+          </div>
+        </div>
       </div>
     </div>
   );

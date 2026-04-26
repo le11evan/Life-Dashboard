@@ -351,6 +351,9 @@
 .nav__item.active { color: var(--fg); }
 .nav__item.active .nav__dot { opacity: 1; }
 .nav__dot { width: 4px; height: 4px; border-radius: 99px; background: var(--pink); margin-top: 2px; opacity: 0; box-shadow: 0 0 8px rgba(255,45,120,0.8); transition: opacity .15s ease; }
+@media (min-width: 1024px) {
+  .nav { display: none; }
+}
 
 /* ── FAB ─────────────────────────────────────────────────── */
 .fab {
@@ -366,6 +369,9 @@
   transition: transform .15s ease;
 }
 .fab:active { transform: scale(0.94); }
+@media (min-width: 1024px) {
+  .fab { display: none; }
+}
 
 /* ── Ambient hero background ────────────────────────────── */
 .ambient-bg {
