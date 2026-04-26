@@ -11,8 +11,20 @@ import { DashboardClient } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
 
+// Wrap a fetcher so one failure doesn't crash the whole dashboard.
+// Logs the failing source so we can find it in Vercel logs.
+async function safe<T>(label: string, fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error(`[dashboard] ${label} failed:`, err);
+    return fallback;
+  }
+}
+
 export default async function DashboardPage() {
   const user = await requireUser();
+
   const [
     tasks,
     groceries,
@@ -25,16 +37,47 @@ export default async function DashboardPage() {
     portfolio,
     shortGoals,
   ] = await Promise.all([
-    getTasks("all"),
-    getGroceryItems(),
-    getJournalStreak(),
-    getJournalEntries(),
-    getTodayQuote(),
-    getFitnessStats(),
-    getDietStats(),
-    getDietLog(),
-    getPortfolioStats(),
-    getGoals("short"),
+    safe("getTasks", () => getTasks("all"), []),
+    safe("getGroceryItems", () => getGroceryItems(), []),
+    safe("getJournalStreak", () => getJournalStreak(), 0),
+    safe("getJournalEntries", () => getJournalEntries(), []),
+    safe("getTodayQuote", () => getTodayQuote(), {
+      id: "fallback",
+      date: new Date(),
+      quote: "Begin where you are.",
+      author: null,
+      source: null,
+      createdAt: new Date(),
+    }),
+    safe("getFitnessStats", () => getFitnessStats(), {
+      workoutsThisWeek: 0,
+      templateCount: 0,
+      exerciseCount: 0,
+    }),
+    safe("getDietStats", () => getDietStats(), {
+      activeSupplements: 0,
+      currentWeight: null as number | null,
+      goals: {
+        id: "fallback",
+        userId: user.id,
+        calories: 2000,
+        protein: 150,
+        carbs: 200,
+        fat: 65,
+        fiber: 30,
+        water: 100,
+        updatedAt: new Date(),
+      },
+    }),
+    safe("getDietLog", () => getDietLog(), null),
+    safe("getPortfolioStats", () => getPortfolioStats(), {
+      totalValue: 0,
+      totalCost: 0,
+      totalGain: 0,
+      totalGainPercent: 0,
+      holdingsCount: 0,
+    }),
+    safe("getGoals", () => getGoals("short"), []),
   ]);
 
   const pendingTasks = tasks.filter((t) => t.status === "pending");

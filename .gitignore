@@ -52,3 +52,6 @@ next-env.d.ts
 
 # DB backup dumps (local only)
 /backups/
+
+# screenshots dropped in for debugging
+/Error_Screenshots/

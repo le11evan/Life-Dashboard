@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 export function InstallBanner() {
   const [open, setOpen] = useState(false);
@@ -29,8 +30,14 @@ export function InstallBanner() {
   };
 
   return (
-    <div className="install-banner" onClick={() => setExpanded((v) => !v)}>
-      <div className="install-banner__row">
+    <div className="install-banner">
+      <button
+        type="button"
+        className="install-banner__row"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        aria-controls="install-banner-steps"
+      >
         <div className="install-banner__icon" aria-hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path
@@ -52,18 +59,32 @@ export function InstallBanner() {
           <div className="t-kicker">install</div>
           <div className="install-banner__title">Add to Home Screen</div>
         </div>
-        <button
-          type="button"
+        <ChevronDown
+          className="install-banner__chev"
+          size={16}
+          style={{ transform: expanded ? "rotate(180deg)" : "none" }}
+          aria-hidden
+        />
+        <span
+          role="button"
+          tabIndex={0}
           className="install-banner__x"
           onClick={dismiss}
-          aria-label="dismiss"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              dismiss(e as unknown as React.MouseEvent);
+            }
+          }}
+          aria-label="Dismiss"
         >
           ×
-        </button>
-      </div>
+        </span>
+      </button>
 
       {expanded && (
-        <div className="install-banner__steps">
+        <div className="install-banner__steps" id="install-banner-steps">
           <div className="install-step">
             <span className="install-step__n">1</span>
             <span className="install-step__txt">

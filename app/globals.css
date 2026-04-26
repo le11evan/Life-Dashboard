@@ -321,7 +321,8 @@
 
 /* ── Bottom nav ──────────────────────────────────────────── */
 .nav {
-  position: fixed; left: 10px; right: 10px; bottom: 14px;
+  position: fixed; left: 10px; right: 10px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
   z-index: 40;
   background: rgba(14,14,26,0.78);
   backdrop-filter: blur(20px) saturate(160%);
@@ -346,7 +347,9 @@
 
 /* ── FAB ─────────────────────────────────────────────────── */
 .fab {
-  position: fixed; right: 14px; bottom: 86px; z-index: 45;
+  position: fixed; right: 14px;
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  z-index: 45;
   width: 54px; height: 54px; border-radius: 99px;
   background: linear-gradient(135deg, var(--pink), var(--purple));
   color: white;
@@ -440,7 +443,6 @@
     var(--ink-050);
   border-bottom: 1px solid var(--line);
   color: var(--fg);
-  cursor: pointer;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -449,7 +451,15 @@
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
 }
+.install-banner__row:active { background: rgba(255,255,255,0.03); }
 .install-banner__icon {
   width: 30px; height: 30px; border-radius: 10px;
   background: linear-gradient(135deg, var(--pink), var(--purple));
@@ -459,21 +469,31 @@
   flex-shrink: 0;
 }
 .install-banner__text {
-  display: flex; flex-direction: column; gap: 2px; flex: 1;
+  display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;
 }
 .install-banner__title {
   font-size: 13px; font-weight: 600; color: var(--fg);
 }
-.install-banner__x {
-  background: transparent;
-  border: none;
+.install-banner__chev {
   color: var(--fg-mute);
-  font-size: 20px;
-  line-height: 1;
-  padding: 0 6px;
-  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform .2s ease;
 }
-.install-banner__x:hover { color: var(--fg); }
+.install-banner__x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 99px;
+  color: var(--fg-mute);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  user-select: none;
+}
+.install-banner__x:hover { color: var(--fg); background: rgba(255,255,255,0.04); }
 .install-banner__steps {
   padding: 4px 14px 14px;
   display: flex; flex-direction: column; gap: 10px;

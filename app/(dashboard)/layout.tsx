@@ -18,7 +18,14 @@ export default function DashboardLayout({
       <div className="flex-1 flex flex-col md:max-h-screen md:overflow-hidden">
         <InstallBanner />
         <Header />
-        <main className="flex-1 overflow-auto pb-24 md:pb-0">
+        <main
+          className="flex-1 overflow-auto md:pb-0"
+          style={{
+            // Bottom nav is ~88px tall floating 14px above the screen edge,
+            // plus the iOS bottom safe-area inset on notched phones.
+            paddingBottom: "calc(120px + env(safe-area-inset-bottom))",
+          }}
+        >
           <div className="page-shell">{children}</div>
         </main>
         <BottomNav />
