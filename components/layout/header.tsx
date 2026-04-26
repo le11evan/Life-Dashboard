@@ -32,7 +32,7 @@ export function Header({ title = "elevan.life" }: HeaderProps) {
 
   return (
     <header
-      className="sticky top-0 z-40 md:hidden"
+      className="sticky top-0 z-40 lg:hidden"
       style={{
         background: "rgba(7,7,15,0.72)",
         backdropFilter: "blur(20px) saturate(160%)",

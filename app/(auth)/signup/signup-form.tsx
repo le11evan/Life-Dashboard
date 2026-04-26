@@ -60,8 +60,11 @@ export function SignupForm() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4 overflow-hidden relative"
-      style={{ background: "var(--ink-000)" }}
+      className="min-h-[100dvh] flex items-start justify-center p-4 overflow-hidden relative"
+      style={{
+        background: "var(--ink-000)",
+        paddingTop: "max(6vh, 36px)",
+      }}
     >
       <div className="ambient-bg" />
 

@@ -53,7 +53,7 @@ export function BottomNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 md:hidden"
+            className="fixed inset-0 z-40 lg:hidden"
             style={{
               background: "rgba(7,7,15,0.82)",
               backdropFilter: "blur(14px)",
@@ -129,7 +129,7 @@ export function BottomNav() {
         )}
       </AnimatePresence>
 
-      <nav className="nav md:hidden" aria-label="Primary">
+      <nav className="nav lg:hidden" aria-label="Primary">
         {primaryNavItems.map((item) => {
           const isActive = isItemActive(pathname, item.href);
           const Icon = item.icon;

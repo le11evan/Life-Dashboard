@@ -21,7 +21,7 @@ export function FAB() {
         type="button"
         aria-label="Quick add"
         onClick={() => setOpen(true)}
-        className="fab md:hidden"
+        className="fab lg:hidden"
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.94 }}
       >

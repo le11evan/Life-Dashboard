@@ -15,14 +15,16 @@ export default function DashboardLayout({
       }}
     >
       <Sidebar />
-      <div className="flex-1 flex flex-col md:max-h-screen md:overflow-hidden">
+      <div className="flex-1 flex flex-col lg:max-h-screen lg:overflow-hidden">
         <InstallBanner />
         <Header />
         <main
-          className="flex-1 overflow-auto md:pb-0"
+          className="flex-1 overflow-auto lg:pb-8"
           style={{
             // Bottom nav is ~88px tall floating 14px above the screen edge,
-            // plus the iOS bottom safe-area inset on notched phones.
+            // plus the iOS bottom safe-area inset on notched phones. On
+            // desktop (lg+) the bottom nav is hidden so we just use a small
+            // bottom pad — overridden by lg:pb-8 above.
             paddingBottom: "calc(120px + env(safe-area-inset-bottom))",
           }}
         >

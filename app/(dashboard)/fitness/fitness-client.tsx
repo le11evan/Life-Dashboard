@@ -269,7 +269,7 @@ export function FitnessClient({
   return (
     <div className="pb-24">
       {/* Header */}
-      <div className="px-5 pt-16 pb-4">
+      <div className="px-5 pt-6 pb-4 md:pt-10">
         <div className="t-kicker mb-2">04 · fitness</div>
         <div className="flex items-end justify-between">
           <h1 className="t-display text-[44px] text-[var(--fg)]">Fitness</h1>

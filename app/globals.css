@@ -179,16 +179,11 @@
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Safe-area applied once at the body level — iOS notch + home indicator */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-  }
-  @supports (padding-top: env(safe-area-inset-top)) {
-    html {
-      padding-top: env(safe-area-inset-top);
-      background: var(--ink-000);
-    }
   }
 }
 
@@ -262,6 +257,18 @@
 .bento--dense { gap: 10px; }
 .bento--loose { gap: 16px; }
 .span-2 { grid-column: span 2; }
+@media (min-width: 1024px) {
+  .bento {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 0 24px;
+  }
+}
+@media (min-width: 1280px) {
+  .bento {
+    gap: 20px;
+  }
+}
 
 /* ── Habit dots ──────────────────────────────────────────── */
 .dots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
@@ -519,12 +526,21 @@
 }
 .install-step__txt { flex: 1; }
 
-/* ── Page container (mobile-first, centered on desktop) ── */
+/* ── Page container ─────────────────────────────────────── */
+/* Mobile/tablet: phone-width centered column.             */
+/* Desktop (≥1024): fills the area next to the sidebar.    */
 .page-shell {
-  max-width: 440px;
   margin: 0 auto;
   min-height: 100dvh;
   position: relative;
+  width: 100%;
+  max-width: 440px;
+}
+@media (min-width: 1024px) {
+  .page-shell {
+    max-width: 1200px;
+    padding: 0 24px;
+  }
 }
 
 /* ── Utility helpers (layout) ───────────────────────────── */

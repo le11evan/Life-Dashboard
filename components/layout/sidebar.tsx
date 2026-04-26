@@ -76,7 +76,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-64 h-screen p-4"
+      className="hidden lg:flex flex-col w-64 h-screen p-4"
       style={{
         background: "rgba(11,11,24,0.72)",
         backdropFilter: "blur(20px) saturate(160%)",

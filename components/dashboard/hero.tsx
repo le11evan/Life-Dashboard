@@ -94,7 +94,10 @@ export function Hero({
   const resolvedTodayIdx = todayIdx ?? (now ? (now.getDay() + 6) % 7 : 0);
 
   return (
-    <div className="rel grain" style={{ padding: "78px 20px 22px", overflow: "hidden" }}>
+    <div
+      className="rel grain"
+      style={{ padding: "28px 20px 22px", overflow: "hidden" }}
+    >
       <div className="ambient-bg" />
 
       <div className="z1 flex-row ai-c jc-sb mb-4">
